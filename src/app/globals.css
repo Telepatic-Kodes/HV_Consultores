@@ -1,0 +1,408 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   HV CONSULTORES - EXECUTIVE DESIGN SYSTEM
+   Inspired by McKinsey & Deloitte aesthetics
+   ============================================ */
+
+@layer base {
+  :root {
+    /* Executive Color Palette */
+    --background: 210 20% 99%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Navy Blue - Primary consulting color */
+    --primary: 217 91% 22%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Consulting Blue - Secondary */
+    --secondary: 217 91% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Slate Gray tones */
+    --muted: 214 32% 96%;
+    --muted-foreground: 215 16% 43%;
+
+    /* Executive Gold accent */
+    --accent: 43 74% 49%;
+    --accent-foreground: 222 47% 11%;
+
+    /* Status colors */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 160 84% 28%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
+
+    /* Borders and inputs */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 50%;
+
+    /* Radius - slightly more squared for corporate feel */
+    --radius: 0.375rem;
+
+    /* Sidebar specific */
+    --sidebar-bg: 222 47% 8%;
+    --sidebar-foreground: 214 32% 91%;
+    --sidebar-accent: 217 91% 50%;
+    --sidebar-muted: 215 16% 32%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 214 32% 96%;
+
+    --card: 222 47% 9%;
+    --card-foreground: 214 32% 96%;
+
+    --popover: 222 47% 9%;
+    --popover-foreground: 214 32% 96%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 217 91% 50%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 217 33% 15%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 43 74% 55%;
+    --accent-foreground: 222 47% 6%;
+
+    --destructive: 0 62% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 160 84% 35%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 217 91% 60%;
+
+    --sidebar-bg: 222 47% 5%;
+    --sidebar-foreground: 214 32% 91%;
+    --sidebar-accent: 217 91% 60%;
+    --sidebar-muted: 215 16% 28%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+
+  /* Executive Typography Scale */
+  h1 {
+    @apply text-4xl font-semibold tracking-tight text-foreground;
+    font-family: var(--font-playfair), Georgia, serif;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold tracking-tight text-foreground;
+    font-family: var(--font-playfair), Georgia, serif;
+  }
+
+  h3 {
+    @apply text-xl font-medium tracking-tight text-foreground;
+  }
+
+  h4 {
+    @apply text-lg font-medium text-foreground;
+  }
+
+  /* Refined link styles */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Selection color */
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}
+
+@layer components {
+  /* Executive Card Style */
+  .card-executive {
+    @apply bg-card rounded-md border border-border/50;
+    box-shadow:
+      0 1px 2px 0 rgb(0 0 0 / 0.03),
+      0 1px 3px 0 rgb(0 0 0 / 0.05);
+  }
+
+  .card-executive:hover {
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.05),
+      0 2px 4px -2px rgb(0 0 0 / 0.05);
+  }
+
+  /* Consulting-style stat box */
+  .stat-box {
+    @apply relative overflow-hidden bg-card rounded-md border border-border/50 p-6;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  }
+
+  .stat-box::before {
+    content: '';
+    @apply absolute top-0 left-0 w-1 h-full bg-primary;
+  }
+
+  .stat-box-success::before {
+    @apply bg-success;
+  }
+
+  .stat-box-warning::before {
+    @apply bg-warning;
+  }
+
+  .stat-box-accent::before {
+    @apply bg-accent;
+  }
+
+  /* Executive button style */
+  .btn-executive {
+    @apply inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium;
+    @apply transition-all duration-200 ease-out;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-executive-primary {
+    @apply btn-executive bg-primary text-primary-foreground;
+    @apply hover:bg-primary/90 active:scale-[0.98];
+  }
+
+  .btn-executive-outline {
+    @apply btn-executive border border-border bg-transparent text-foreground;
+    @apply hover:bg-muted hover:border-border/80;
+  }
+
+  /* Sidebar Navigation Item */
+  .nav-item {
+    @apply flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium;
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .nav-item-active {
+    @apply nav-item bg-white/10 text-white;
+  }
+
+  .nav-item-inactive {
+    @apply nav-item text-slate-400 hover:bg-white/5 hover:text-slate-200;
+  }
+
+  /* Data table styles */
+  .table-executive {
+    @apply w-full text-sm;
+  }
+
+  .table-executive thead {
+    @apply border-b-2 border-border;
+  }
+
+  .table-executive th {
+    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+
+  .table-executive td {
+    @apply px-4 py-4 border-b border-border/50;
+  }
+
+  .table-executive tbody tr {
+    @apply transition-colors hover:bg-muted/30;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary/10 text-primary;
+  }
+
+  .badge-success {
+    @apply badge bg-success/10 text-success;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning/10 text-warning;
+  }
+
+  .badge-destructive {
+    @apply badge bg-destructive/10 text-destructive;
+  }
+
+  /* Input focus ring */
+  .input-executive {
+    @apply w-full rounded-md border border-border bg-background px-4 py-2.5 text-sm;
+    @apply placeholder:text-muted-foreground/60;
+    @apply transition-all duration-200;
+    @apply focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+  }
+
+  /* Consulting diagonal accent line */
+  .diagonal-accent {
+    @apply relative overflow-hidden;
+  }
+
+  .diagonal-accent::after {
+    content: '';
+    @apply absolute -right-10 -top-10 h-32 w-2 bg-gradient-to-b from-primary/20 to-transparent;
+    transform: rotate(45deg);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Animation utilities */
+  .animate-in {
+    animation: fade-in 0.4s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.4s ease-out forwards;
+  }
+
+  /* Stagger delays */
+  .delay-75 { animation-delay: 75ms; }
+  .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-250 { animation-delay: 250ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+
+  /* Gradient text */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  /* Executive shadow variants */
+  .shadow-executive {
+    box-shadow:
+      0 1px 2px 0 rgb(0 0 0 / 0.03),
+      0 1px 3px 0 rgb(0 0 0 / 0.05);
+  }
+
+  .shadow-executive-md {
+    box-shadow:
+      0 4px 6px -1px rgb(0 0 0 / 0.05),
+      0 2px 4px -2px rgb(0 0 0 / 0.05);
+  }
+
+  .shadow-executive-lg {
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.05),
+      0 4px 6px -4px rgb(0 0 0 / 0.05);
+  }
+
+  /* Backdrop blur for overlays */
+  .backdrop-executive {
+    @apply backdrop-blur-sm bg-background/80;
+  }
+}
+
+/* Keyframes */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Custom scrollbar - refined */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.35);
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
