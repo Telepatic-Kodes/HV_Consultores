@@ -310,7 +310,7 @@ export async function uploadCartola(
       .select('hash_transaccion')
       .eq('cuenta_id', cuentaId)
 
-    const hashSet = new Set(existingHashes?.map((h: { hash_transaccion: string }) => h.hash_transaccion) || [])
+    const hashSet = new Set<string>(existingHashes?.map((h: { hash_transaccion: string }) => h.hash_transaccion) || [])
     const { unique, duplicates } = detectDuplicates(normalizedTx, hashSet)
 
     // Insertar transacciones únicas

@@ -3,11 +3,49 @@
 import { createClient } from '@/lib/supabase-server'
 import { revalidatePath } from 'next/cache'
 import crypto from 'crypto'
-import type { Database } from '@/types/database.types'
 
-type DocumentoCarga = Database['public']['Tables']['documento_cargas']['Row']
-type DocumentoWorkflow = Database['public']['Tables']['documento_workflow']['Row']
-type DocumentoAprobacion = Database['public']['Tables']['documento_aprobaciones']['Row']
+// Tipos locales para documento_cargas (tabla no incluida en types generados)
+export interface DocumentoCarga {
+  id: string
+  cliente_id: string
+  nombre_archivo: string
+  tipo_documento: string
+  ruta_storage: string
+  tamaño_bytes: number
+  hash_archivo: string
+  estado: string
+  folio_documento?: string | null
+  fecha_documento?: string | null
+  monto_total?: number | null
+  nubox_documento_id?: string | null
+  nubox_estado?: string | null
+  cargado_en?: string | null
+  cargado_por?: string | null
+  validado_en?: string | null
+  validado_por?: string | null
+  metadata?: Record<string, unknown> | null
+}
+
+export interface DocumentoWorkflow {
+  id: string
+  documento_id: string
+  etapa: string
+  estado: string
+  usuario_id?: string | null
+  comentario?: string | null
+  created_at?: string | null
+}
+
+export interface DocumentoAprobacion {
+  id: string
+  documento_id: string
+  aprobador_id: string
+  nivel: number
+  estado: string
+  comentario?: string | null
+  fecha_decision?: string | null
+  created_at?: string | null
+}
 
 export interface DocumentoCargaConWorkflow extends DocumentoCarga {
   workflow?: DocumentoWorkflow[]

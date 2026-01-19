@@ -7,24 +7,16 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DocumentWorkflowTimeline } from '@/components/dashboard/DocumentWorkflowTimeline'
-import { obtenerDocumentosCargados } from '../actions'
+import { obtenerDocumentosCargados, type DocumentoCargaConWorkflow } from '../actions'
 import { obtenerEstadoNubox } from '../nubox-actions'
 import { Loader2, ArrowLeft, Send, CheckCircle, Download } from 'lucide-react'
 import Link from 'next/link'
-import type { Database } from '@/types/database.types'
-
-type DocumentoCarga = Database['public']['Tables']['documento_cargas']['Row']
-type DocumentoWorkflow = Database['public']['Tables']['documento_workflow']['Row']
-
-interface DocumentoConWorkflow extends DocumentoCarga {
-  workflow?: DocumentoWorkflow[]
-}
 
 export default function DocumentDetailPage() {
   const params = useParams()
   const documentoId = params.id as string
 
-  const [documento, setDocumento] = useState<DocumentoConWorkflow | null>(null)
+  const [documento, setDocumento] = useState<DocumentoCargaConWorkflow | null>(null)
   const [loading, setLoading] = useState(true)
   const [checkingStatus, setCheckingStatus] = useState(false)
 
