@@ -10,7 +10,7 @@
  *   DELETE /api/alerts/rules/{id} - Delete alert rule
  */
 
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
@@ -72,7 +72,7 @@ function validateAlertRule(rule: any): { valid: boolean; error?: string } {
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const supabase = createRouteHandlerClient()
+    const supabase = createClient()
     const {
       data: { session },
     } = await supabase.auth.getSession()
@@ -159,7 +159,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const supabase = createRouteHandlerClient()
+    const supabase = createClient()
     const {
       data: { session },
     } = await supabase.auth.getSession()

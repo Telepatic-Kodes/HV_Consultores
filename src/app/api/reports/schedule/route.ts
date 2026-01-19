@@ -11,7 +11,7 @@
  *   POST /api/reports/schedule/{id}/send - Send report immediately
  */
 
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
@@ -76,7 +76,7 @@ function validateReportSchedule(schedule: any): { valid: boolean; error?: string
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const supabase = createRouteHandlerClient()
+    const supabase = createClient()
     const {
       data: { session },
     } = await supabase.auth.getSession()
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const supabase = createRouteHandlerClient()
+    const supabase = createClient()
     const {
       data: { session },
     } = await supabase.auth.getSession()

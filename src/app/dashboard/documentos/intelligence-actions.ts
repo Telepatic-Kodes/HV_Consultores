@@ -590,9 +590,11 @@ export async function obtenerTiposDocumentosTendencia(
 
     const tendencias = tipos
       .map((t) => {
-        const total = insights.reduce((sum, i) => sum + (i[t.key as keyof typeof i] || 0), 0)
-        const primero = insights[0]?.[t.key as keyof typeof insights[0]] || 0
-        const ultimo = insights[insights.length - 1]?.[t.key as keyof typeof insights[insights.length - 1]] || 0
+        const total = insights.reduce((sum, i) => sum + (Number((i as Record<string, unknown>)[t.key]) || 0), 0)
+        const primeroRecord = insights[0] as Record<string, unknown> | undefined
+        const ultimoRecord = insights[insights.length - 1] as Record<string, unknown> | undefined
+        const primero = Number(primeroRecord?.[t.key]) || 0
+        const ultimo = Number(ultimoRecord?.[t.key]) || 0
         const crecimiento = primero > 0 ? ((ultimo - primero) / primero) * 100 : 0
 
         return { tipo: t.tipo, count: total, crecimiento }

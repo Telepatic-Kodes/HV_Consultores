@@ -1,0 +1,110 @@
+# HV Consultores - SII RPA Server
+# Docker Compose configuration for deployment
+
+version: '3.8'
+
+services:
+  rpa-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hv-sii-rpa-server
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3001}:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - SERVER_NAME=${SERVER_NAME:-rpa-server-1}
+      - API_KEY=${API_KEY}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - CREDENTIALS_ENCRYPTION_KEY=${CREDENTIALS_ENCRYPTION_KEY}
+      - MAX_BROWSERS=${MAX_BROWSERS:-5}
+      - BROWSER_TIMEOUT_MS=${BROWSER_TIMEOUT_MS:-300000}
+      - HEADLESS=${HEADLESS:-true}
+      # Alertas
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
+      - SLACK_CHANNEL=${SLACK_CHANNEL:-}
+      - SLACK_MENTIONS=${SLACK_MENTIONS:-}
+      - ALERT_EMAIL_TO=${ALERT_EMAIL_TO:-}
+      - ALERT_EMAIL_FROM=${ALERT_EMAIL_FROM:-}
+      - ALERT_MIN_SEVERITY=${ALERT_MIN_SEVERITY:-warning}
+    volumes:
+      # Persistent storage for downloads and screenshots
+      - rpa-downloads:/tmp/downloads
+      - rpa-screenshots:/tmp/screenshots
+      - rpa-logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: Second RPA server for high availability
+  rpa-server-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hv-sii-rpa-server-2
+    restart: unless-stopped
+    profiles:
+      - ha  # Only start with: docker-compose --profile ha up
+    ports:
+      - "3002:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - SERVER_NAME=rpa-server-2
+      - API_KEY=${API_KEY}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - CREDENTIALS_ENCRYPTION_KEY=${CREDENTIALS_ENCRYPTION_KEY}
+      - MAX_BROWSERS=${MAX_BROWSERS:-5}
+      - BROWSER_TIMEOUT_MS=${BROWSER_TIMEOUT_MS:-300000}
+      - HEADLESS=${HEADLESS:-true}
+    volumes:
+      - rpa-downloads-2:/tmp/downloads
+      - rpa-screenshots-2:/tmp/screenshots
+      - rpa-logs-2:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+volumes:
+  rpa-downloads:
+  rpa-screenshots:
+  rpa-logs:
+  rpa-downloads-2:
+  rpa-screenshots-2:
+  rpa-logs-2:
+
+networks:
+  default:
+    name: hv-rpa-network

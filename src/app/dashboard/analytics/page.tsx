@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-react'
+import { createClient } from '@/lib/supabase-browser'
 import { DocumentAnalyticsDashboard } from '@/components/analytics/DocumentAnalyticsDashboard'
 import { AutomationAnalyticsDashboard } from '@/components/analytics/AutomationAnalyticsDashboard'
 import { TeamAnalyticsDashboard } from '@/components/analytics/TeamAnalyticsDashboard'
@@ -32,7 +32,7 @@ export default function AnalyticsDashboardPage({
   const [organizationId, setOrganizationId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   // Get user's organization
   useEffect(() => {

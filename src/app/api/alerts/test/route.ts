@@ -4,7 +4,7 @@
  * Created: 2026-01-11
  */
 
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
 import { AlertRuleEngine } from '@/lib/services/alertRuleEngine'
 
@@ -34,7 +34,7 @@ function checkRateLimit(userId: string): boolean {
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const supabase = createRouteHandlerClient()
+    const supabase = createClient()
     const {
       data: { session },
     } = await supabase.auth.getSession()
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const supabase = createRouteHandlerClient()
+    const supabase = createClient()
     const {
       data: { session },
     } = await supabase.auth.getSession()

@@ -123,7 +123,19 @@ stateDiagram-v2
 - Logs de auditoría completos
 - Rate limiting por portal
 
+## Sistema SII RPA Dedicado
+
+A partir de 2026-01, el portal SII cuenta con un sistema de automatización dedicado más robusto:
+
+- **Dashboard dedicado**: `/dashboard/sii`
+- **Servidor RPA separado**: Playwright con anti-detección
+- **Credenciales encriptadas**: AES-256-GCM
+- **Tareas implementadas**: Login, Situación, Libros Compras/Ventas
+
+Ver documentación completa en [[SII-RPA - Automatización Portal SII]].
+
 ## Ver también
 
+- [[SII-RPA - Automatización Portal SII]] ⭐ Nuevo
 - [[HV-F29 - Formularios Tributarios]]
 - [[Clientes]]

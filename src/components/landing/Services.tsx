@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Brain, FileSpreadsheet, Bot, MessageSquare, ArrowRight } from 'lucide-react'
+import { Brain, FileSpreadsheet, Bot, MessageSquare, CreditCard, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 const services = [
@@ -59,6 +59,20 @@ const services = [
     color: 'from-amber-500 to-amber-600',
     savings: '10 hrs/mes',
   },
+  {
+    title: 'HV-Bancos',
+    description: 'Gestión de Cartolas Bancarias',
+    longDescription: 'Sistema completo para obtención automática y manual de cartolas bancarias, con parametrización inteligente, categorización y conciliación automática con documentos SII.',
+    icon: CreditCard,
+    features: [
+      'Descarga RPA de 4 bancos chilenos',
+      'Parseo PDF, Excel, CSV, OFX',
+      'Categorización automática por reglas',
+      'Conciliación con libros SII',
+    ],
+    color: 'from-teal-500 to-teal-600',
+    savings: '40 hrs/mes',
+  },
 ]
 
 export function Services() {
@@ -71,7 +85,7 @@ export function Services() {
             Suite Completa de Automatización
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Cuatro módulos diseñados específicamente para estudios contables chilenos,
+            Cinco módulos diseñados específicamente para estudios contables chilenos,
             integrando IA, RPA y automatización para transformar tu operación.
           </p>
         </div>
@@ -131,7 +145,7 @@ export function Services() {
         {/* Bottom summary */}
         <div className="mt-12 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-secondary/10 px-6 py-3 text-secondary font-medium">
-            <span>Total: 170+ horas ahorradas por mes</span>
+            <span>Total: 210+ horas ahorradas por mes</span>
           </div>
         </div>
       </div>

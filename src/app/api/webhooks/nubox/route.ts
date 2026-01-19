@@ -74,7 +74,7 @@ export async function POST(request: Request) {
     const supabase = createClient()
 
     // Find document by Nubox ID
-    const { data: documento, error: findError } = await supabase
+    const { data: documentoData, error: findError } = await (supabase as any)
       .from('documento_cargas')
       .select('*')
       .eq('nubox_documento_id', payload.data.documento_id)
@@ -88,11 +88,18 @@ export async function POST(request: Request) {
       )
     }
 
-    if (!documento) {
+    if (!documentoData) {
       return new Response(
         JSON.stringify({ error: 'Document not found' }),
         { status: 404 }
       )
+    }
+
+    const documento = documentoData as {
+      id: string
+      estado: string
+      cargado_por: string
+      folio_documento?: string
     }
 
     // Determine new state based on webhook type
@@ -114,7 +121,7 @@ export async function POST(request: Request) {
     }
 
     // Update documento status
-    const { error: updateError } = await supabase
+    const { error: updateError } = await (supabase as any)
       .from('documento_cargas')
       .update({
         nubox_estado: payload.data.estado,
@@ -134,7 +141,7 @@ export async function POST(request: Request) {
 
     // Log workflow event
     if (accion) {
-      const { error: workflowError } = await supabase
+      const { error: workflowError } = await (supabase as any)
         .from('documento_workflow')
         .insert({
           documento_carga_id: documento.id,

@@ -192,7 +192,7 @@ async function enviarPorMailgun(
     html: mensaje.htmlBody,
     text: mensaje.textBody,
     'h:Reply-To': mensaje.replyTo,
-    o:tag: mensaje.tags || [],
+    'o:tag': mensaje.tags || [],
   }
 
   const result = await mg.messages.create(config.mailgunDomain || '', messageData)

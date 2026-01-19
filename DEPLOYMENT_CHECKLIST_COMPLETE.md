@@ -1,8 +1,8 @@
 # Complete System Deployment Checklist
 
 **Project**: HV-Consultores Document Management System
-**Version**: 5.0 (All 5 Phases)
-**Release Date**: 2026-01-11
+**Version**: 6.0 (All 5 Phases + HV-Bancos Module)
+**Release Date**: 2026-01-13
 **Deployment Status**: PRODUCTION READY
 
 ---
@@ -42,12 +42,18 @@
 src/migrations/add_document_templates.sql        ✓
 src/migrations/add_document_intelligence.sql     ✓
 src/migrations/add_compliance_reporting.sql      ✓
+src/migrations/add_bank_cartolas_tables.sql      ✓
 src/app/dashboard/documentos/template-actions.ts ✓
 src/app/dashboard/documentos/intelligence-actions.ts ✓
 src/app/dashboard/documentos/compliance-actions.ts ✓
 src/app/dashboard/documentos/templates/page.tsx  ✓
 src/app/dashboard/documentos/intelligence/page.tsx ✓
 src/app/dashboard/documentos/compliance/page.tsx ✓
+src/lib/bank-rpa/types.ts                        ✓
+src/lib/bank-rpa/parsers/                        ✓
+src/lib/bank-rpa/normalizer.ts                   ✓
+src/lib/bank-rpa/categorization/rules-engine.ts  ✓
+src/lib/bank-rpa/reconciliation/sii-matcher.ts   ✓
 ```
 
 ### 2. Backup Strategy
@@ -427,25 +433,35 @@ docker run --rm your-registry/hv-consultores:5.0 npm --version
 ### 3. Environment File Setup
 
 ```bash
-# Copy example env
-cp .env.example .env.production
+# Copy example env (use production template)
+cp .env.production.example .env.production
 
-# Update production values
-# CRITICAL: Update the following:
-SUPABASE_URL=https://your-prod-db.supabase.co
-SUPABASE_ANON_KEY=your-production-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-production-service-key
+# CRITICAL: Update the following values:
+
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=https://your-prod-db.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-production-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-production-service-key
 
-# Optional email configuration
-SMTP_HOST=smtp.yourdomain.com
-SMTP_PORT=587
-SMTP_USER=your-email@yourdomain.com
-SMTP_PASSWORD=your-app-password
-SMTP_FROM=noreply@yourdomain.com
+# OpenAI (for HV-Chat AI features)
+OPENAI_API_KEY=sk-your-production-key
 
-# Application configuration
+# Nubox Integration
+NUBOX_API_URL=https://api.nubox.com
+NUBOX_API_KEY=your-production-key
+NUBOX_API_SECRET=your-production-secret
+
+# Security
+ENCRYPTION_KEY=your-32-character-key  # openssl rand -hex 16
+
+# IMPORTANT: Disable demo mode in production
+NEXT_PUBLIC_SHOW_DEMO_CREDENTIALS=false
+
+# RPA Server (for HV-Bancos automation)
+RPA_SERVER_URL=https://rpa.your-domain.com
+RPA_WEBHOOK_SECRET=your-secure-secret
+
+# Application Settings
 NODE_ENV=production
 NEXT_PUBLIC_APP_URL=https://your-domain.com
 ```
@@ -459,7 +475,26 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 ### 4. Application Deployment
 
 ```bash
-# Option A: Vercel/Similar Platform
+# Option A: Vercel (Recommended)
+# The project includes vercel.json configuration
+
+# 1. Install Vercel CLI
+npm i -g vercel
+
+# 2. Login to Vercel
+vercel login
+
+# 3. Set environment variables in Vercel Dashboard:
+#    - NEXT_PUBLIC_SUPABASE_URL
+#    - NEXT_PUBLIC_SUPABASE_ANON_KEY
+#    - SUPABASE_SERVICE_ROLE_KEY
+#    - OPENAI_API_KEY
+#    - NUBOX_API_KEY, NUBOX_API_SECRET, NUBOX_API_URL
+#    - ENCRYPTION_KEY
+#    - RPA_SERVER_URL, RPA_WEBHOOK_SECRET
+#    - NEXT_PUBLIC_SHOW_DEMO_CREDENTIALS=false
+
+# 4. Deploy to production
 vercel deploy --prod
 
 # Option B: Self-hosted
@@ -563,7 +598,36 @@ Navigate to: /dashboard/documentos/compliance
 - [ ] Checklists functional
 ```
 
-### 5. Cross-Feature Integration
+### 5. HV-Bancos Features
+
+```bash
+# Test bank statement module
+Navigate to: /dashboard/bancos
+- [ ] Bank dashboard page loads
+- [ ] Account management visible
+- [ ] Can add bank account
+- [ ] Can configure credentials
+- [ ] Transaction list displays
+
+# Test parsing functionality
+- [ ] CSV upload works
+- [ ] PDF parsing extracts transactions
+- [ ] Excel import works
+- [ ] Transaction normalization applies
+
+# Test categorization
+- [ ] Auto-categorization rules apply
+- [ ] Manual categorization works
+- [ ] Confidence scores display
+- [ ] Category suggestions appear
+
+# Test SII reconciliation
+- [ ] Matching with SII documents works
+- [ ] Unmatched transactions identified
+- [ ] Reconciliation status updates
+```
+
+### 6. Cross-Feature Integration
 
 ```bash
 # Test workflows spanning multiple features
@@ -572,12 +636,15 @@ Navigate to: /dashboard/documentos/compliance
 - [ ] Approve document → Check in audit log
 - [ ] Create compliance report → See audit data
 - [ ] Check retention policy → See lifecycle tracking
+- [ ] Upload bank statement → Reconcile with SII documents
+- [ ] Bank transaction → Link to accounting entry
 ```
 
 - [ ] All Phase 1-2 features working
 - [ ] All Phase 3 features working
 - [ ] All Phase 4 features working
 - [ ] All Phase 5 features working
+- [ ] All HV-Bancos features working
 - [ ] Cross-feature integration verified
 - [ ] No feature conflicts
 
@@ -1160,6 +1227,10 @@ The deployment is considered **SUCCESSFUL** when:
 - Database migrations: `src/migrations/`
 - Server actions: `src/app/dashboard/documentos/*-actions.ts`
 - Pages: `src/app/dashboard/documentos/*/page.tsx`
+- Vercel config: `vercel.json`
+- Environment templates: `.env.example`, `.env.production.example`
+- Bank module: `src/lib/bank-rpa/`
+- Bank tests: `src/__tests__/bank-rpa/`
 
 ### External Resources
 - Supabase Docs: https://supabase.com/docs
@@ -1168,6 +1239,6 @@ The deployment is considered **SUCCESSFUL** when:
 
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2026-01-11
-**Status**: READY FOR DEPLOYMENT
+**Document Version**: 2.0
+**Last Updated**: 2026-01-13
+**Status**: READY FOR DEPLOYMENT (v6.0 with HV-Bancos)

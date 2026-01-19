@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Mail, Lock, AlertCircle, Loader2, Building2, ArrowRight } from 'lucide-react'
 
+// Demo mode - disabled in production
+const SHOW_DEMO_CREDENTIALS = process.env.NEXT_PUBLIC_SHOW_DEMO_CREDENTIALS === 'true'
+
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -213,25 +216,27 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Demo credentials */}
-          <div className="mt-8 p-4 rounded-lg bg-muted/50 border border-border">
-            <div className="flex items-start gap-3">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Credenciales de prueba</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  demo@hvconsultores.cl / demo123456
-                </p>
+          {/* Demo credentials - only shown in development/staging */}
+          {SHOW_DEMO_CREDENTIALS && (
+            <div className="mt-8 p-4 rounded-lg bg-muted/50 border border-border">
+              <div className="flex items-start gap-3">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">Credenciales de prueba</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    demo@hvconsultores.cl / demo123456
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={fillDemoCredentials}
+                >
+                  Usar demo
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={fillDemoCredentials}
-              >
-                Usar demo
-              </Button>
             </div>
-          </div>
+          )}
 
           {/* Register link */}
           <p className="mt-8 text-center text-sm text-muted-foreground">

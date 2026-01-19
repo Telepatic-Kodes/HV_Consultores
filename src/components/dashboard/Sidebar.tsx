@@ -17,6 +17,8 @@ import {
   Building2,
   Upload,
   Zap,
+  Landmark,
+  CreditCard,
 } from 'lucide-react'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase-browser'
@@ -29,6 +31,8 @@ const navigation = [
   { name: 'Clasificador', href: '/dashboard/clasificador', icon: Brain },
   { name: 'F29', href: '/dashboard/f29', icon: FileSpreadsheet },
   { name: 'Bots', href: '/dashboard/bots', icon: Bot },
+  { name: 'SII RPA', href: '/dashboard/sii', icon: Landmark },
+  { name: 'Bancos', href: '/dashboard/bancos', icon: CreditCard },
   { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare },
   { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart3 },
   { name: 'Automatización', href: '/dashboard/documentos/automation', icon: Zap },

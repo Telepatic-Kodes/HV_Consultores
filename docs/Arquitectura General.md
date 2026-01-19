@@ -78,8 +78,47 @@ src/app/dashboard/[modulo]/
 3. **useTransition**: Loading states en cliente
 4. **revalidatePath**: Refrescar datos después de mutación
 
+## Arquitectura SII RPA
+
+El sistema SII RPA utiliza una arquitectura híbrida con servidor dedicado:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Dashboard SII (/dashboard/sii)               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │  Selector   │  │  Historial  │  │ Credenciales│             │
+│  │  de Tareas  │  │  de Jobs    │  │   Manager   │             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     API Routes SII RPA                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │  /execute   │  │  /webhook   │  │   /status   │             │
+│  │  (iniciar)  │  │  (updates)  │  │  (consultar)│             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  RPA Server (Playwright)                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
+│  │  Browser    │  │    Task     │  │    Anti-    │             │
+│  │   Pool      │  │  Executor   │  │  Detection  │             │
+│  └─────────────┘  └─────────────┘  └─────────────┘             │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      Portal SII                                  │
+│     Login | F29 | Libros | Situación | Certificados             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ## Ver también
 
 - [[Stack Tecnológico]]
 - [[Estructura de Carpetas]]
 - [[Server Actions]]
+- [[SII-RPA - Automatización Portal SII]]
