@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { DM_Sans, Playfair_Display, JetBrains_Mono } from 'next/font/google'
+import { ConvexClientProvider } from '@/providers/convex-provider'
 import './globals.css'
 
 // Executive body font - clean, modern, professional
@@ -63,7 +64,9 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${dmSans.variable} ${playfair.variable} ${jetbrainsMono.variable} font-sans`}>
-        {children}
+        <ConvexClientProvider>
+          {children}
+        </ConvexClientProvider>
       </body>
     </html>
   )
