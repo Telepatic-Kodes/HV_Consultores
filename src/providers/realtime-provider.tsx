@@ -1,12 +1,9 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from 'react'
 import {
   useNotificacionesRealtime,
   useBotJobsRealtime,
-  useDocumentosRealtime,
-  useF29Realtime,
 } from '@/hooks/use-realtime'
 
 // Tipos
@@ -56,191 +53,73 @@ interface RealtimeProviderProps {
 }
 
 export function RealtimeProvider({ children }: RealtimeProviderProps) {
-  const [userId, setUserId] = useState<string | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
-  const [notificaciones, setNotificaciones] = useState<RealtimeNotificacion[]>([])
+  // Demo mode — no real auth needed
+  const userId = 'demo-user'
+
+  // Local UI state for toast management
+  const [displayedNotifications, setDisplayedNotifications] = useState<RealtimeNotificacion[]>([])
   const [eventosRecientes, setEventosRecientes] = useState<RealtimeEvent[]>([])
-  const [botsEnEjecucion, setBotsEnEjecucion] = useState(0)
+  const prevNotifCountRef = useRef(0)
 
-  // Obtener usuario actual
+  // Convex reactive queries — auto-update when data changes
+  const rawNotifications = useNotificacionesRealtime(userId)
+  const activeJobs = useBotJobsRealtime()
+
+  // Convex is always connected if the provider is mounted
+  const isConnected = true
+  const botsEnEjecucion = activeJobs.filter(
+    (j: any) => j.status === 'ejecutando'
+  ).length
+
+  // Detect new notifications from Convex and create toasts
   useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setUserId(user?.id || null)
+    if (rawNotifications.length > prevNotifCountRef.current) {
+      const newCount = rawNotifications.length - prevNotifCountRef.current
+      const newItems = rawNotifications.slice(0, newCount)
 
-      // Para modo demo, usar un ID ficticio
-      if (!user) {
-        setUserId('demo-user')
-      }
-    }
-    getUser()
-
-    // Escuchar cambios de auth
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUserId(session?.user?.id || 'demo-user')
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  // Verificar conexión realtime
-  useEffect(() => {
-    const checkConnection = () => {
-      const channels = supabase.getChannels()
-      setIsConnected(channels.length > 0)
-    }
-
-    // Verificar cada 5 segundos
-    const interval = setInterval(checkConnection, 5000)
-    checkConnection()
-
-    return () => clearInterval(interval)
-  }, [])
-
-  // Handler para nuevas notificaciones
-  const handleNuevaNotificacion = useCallback(
-    (notif: { id: string; tipo: string; titulo: string; mensaje: string; enlace?: string }) => {
-      const nuevaNotif: RealtimeNotificacion = {
-        id: notif.id,
-        tipo: notif.tipo as RealtimeNotificacion['tipo'],
-        titulo: notif.titulo,
-        mensaje: notif.mensaje,
-        enlace: notif.enlace,
+      const toasts: RealtimeNotificacion[] = newItems.map((n: any) => ({
+        id: n._id,
+        tipo: (n.tipo || 'info') as RealtimeNotificacion['tipo'],
+        titulo: n.titulo || 'Notificación',
+        mensaje: n.mensaje || '',
+        enlace: n.link,
         timestamp: new Date(),
-      }
+      }))
 
-      setNotificaciones((prev) => [nuevaNotif, ...prev].slice(0, 10))
+      setDisplayedNotifications((prev) => [...toasts, ...prev].slice(0, 10))
 
-      // Agregar a eventos recientes
-      setEventosRecientes((prev) =>
-        [
-          {
-            type: 'notificacion' as const,
-            data: notif,
-            timestamp: new Date(),
-          },
-          ...prev,
-        ].slice(0, 20)
-      )
+      // Add to recent events
+      toasts.forEach((t) => {
+        setEventosRecientes((prev) =>
+          [
+            { type: 'notificacion' as const, data: t, timestamp: new Date() },
+            ...prev,
+          ].slice(0, 20)
+        )
+      })
 
-      // Reproducir sonido de notificación (opcional)
       playNotificationSound()
-    },
-    []
-  )
-
-  // Handler para actualizaciones de bots
-  const handleBotJobUpdate = useCallback(
-    (job: { id: string; status: string; bot_id: string; mensaje_error?: string }) => {
-      setEventosRecientes((prev) =>
-        [
-          {
-            type: 'bot_job' as const,
-            data: job,
-            timestamp: new Date(),
-          },
-          ...prev,
-        ].slice(0, 20)
-      )
-
-      // Actualizar contador de bots en ejecución
-      if (job.status === 'ejecutando') {
-        setBotsEnEjecucion((prev) => prev + 1)
-      } else if (job.status === 'completado' || job.status === 'fallido') {
-        setBotsEnEjecucion((prev) => Math.max(0, prev - 1))
-
-        // Crear notificación interna para el resultado del bot
-        const notif: RealtimeNotificacion = {
-          id: `bot-${job.id}`,
-          tipo: job.status === 'completado' ? 'success' : 'error',
-          titulo: job.status === 'completado' ? 'Bot completado' : 'Bot fallido',
-          mensaje:
-            job.status === 'completado'
-              ? 'La tarea del bot ha finalizado exitosamente'
-              : job.mensaje_error || 'Error en la ejecución del bot',
-          enlace: '/dashboard/bots',
-          timestamp: new Date(),
-        }
-        setNotificaciones((prev) => [notif, ...prev].slice(0, 10))
-      }
-    },
-    []
-  )
-
-  // Handler para documentos clasificados
-  const handleDocumentoClasificado = useCallback(
-    (doc: { id: string; folio: string; cliente_id: string; status: string }) => {
-      setEventosRecientes((prev) =>
-        [
-          {
-            type: 'documento' as const,
-            data: doc,
-            timestamp: new Date(),
-          },
-          ...prev,
-        ].slice(0, 20)
-      )
-    },
-    []
-  )
-
-  // Handler para F29 actualizados
-  const handleF29Update = useCallback(
-    (f29: { id: string; cliente_id: string; periodo: string; status: string }) => {
-      setEventosRecientes((prev) =>
-        [
-          {
-            type: 'f29' as const,
-            data: f29,
-            timestamp: new Date(),
-          },
-          ...prev,
-        ].slice(0, 20)
-      )
-
-      // Notificar cambios importantes de F29
-      if (f29.status === 'validado' || f29.status === 'aprobado') {
-        const notif: RealtimeNotificacion = {
-          id: `f29-${f29.id}`,
-          tipo: 'success',
-          titulo: `F29 ${f29.status}`,
-          mensaje: `El formulario F29 del período ${f29.periodo} ha sido ${f29.status}`,
-          enlace: '/dashboard/f29',
-          timestamp: new Date(),
-        }
-        setNotificaciones((prev) => [notif, ...prev].slice(0, 10))
-      }
-    },
-    []
-  )
-
-  // Suscripciones Realtime
-  useNotificacionesRealtime(userId, handleNuevaNotificacion)
-  useBotJobsRealtime(handleBotJobUpdate)
-  useDocumentosRealtime(handleDocumentoClasificado)
-  useF29Realtime(handleF29Update)
+    }
+    prevNotifCountRef.current = rawNotifications.length
+  }, [rawNotifications.length])
 
   // Acciones
   const clearNotificacion = useCallback((id: string) => {
-    setNotificaciones((prev) => prev.filter((n) => n.id !== id))
+    setDisplayedNotifications((prev) => prev.filter((n) => n.id !== id))
   }, [])
 
   const clearAllNotificaciones = useCallback(() => {
-    setNotificaciones([])
+    setDisplayedNotifications([])
   }, [])
 
   const value: RealtimeContextType = {
     userId,
     isConnected,
-    notificaciones,
+    notificaciones: displayedNotifications,
     eventosRecientes,
     clearNotificacion,
     clearAllNotificaciones,
-    notificacionesNoLeidas: notificaciones.length,
+    notificacionesNoLeidas: displayedNotifications.length,
     botsEnEjecucion,
   }
 
@@ -249,7 +128,6 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
 
 // Función auxiliar para sonido de notificación
 function playNotificationSound() {
-  // Solo en cliente y si está permitido
   if (typeof window !== 'undefined' && 'AudioContext' in window) {
     try {
       const audioContext = new AudioContext()

@@ -1,5 +1,4 @@
 export {
-  useRealtime,
   useNotificacionesRealtime,
   useBotJobsRealtime,
   useDocumentosRealtime,
