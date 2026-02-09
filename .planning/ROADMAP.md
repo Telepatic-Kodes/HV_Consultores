@@ -31,10 +31,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Real-time updates work via Convex reactive queries (no Supabase realtime)
   4. Package.json contains zero Supabase dependencies
   5. Environment variables reference only Convex (no SUPABASE_URL or SUPABASE_KEY)
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 01-01-PLAN.md — Initialize Convex project and define complete schema
+- [ ] 01-02-PLAN.md — Create queries and mutations for all data models
+- [ ] 01-03-PLAN.md — Migrate Server Actions and components to Convex API
+- [ ] 01-04-PLAN.md — Replace Supabase Realtime with Convex reactive queries
+- [ ] 01-05-PLAN.md — Remove Supabase dependencies and verify clean build
 
 ### Phase 2: Code Quality
 **Goal**: Codebase builds cleanly with proper TypeScript types and zero dead code
@@ -118,7 +122,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Convex Migration | 0/TBD | Not started | - |
+| 1. Convex Migration | 0/5 | Ready to execute | - |
 | 2. Code Quality | 0/TBD | Not started | - |
 | 3. Landing Page Polish | 0/TBD | Not started | - |
 | 4. Dashboard Polish | 0/TBD | Not started | - |
