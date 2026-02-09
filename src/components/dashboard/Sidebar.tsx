@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -21,8 +21,6 @@ import {
   CreditCard,
 } from 'lucide-react'
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase-browser'
-import { useRouter } from 'next/navigation'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -48,8 +46,7 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
 
   const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    // Removed Supabase auth logout - demo mode
     router.push('/login')
     router.refresh()
   }
