@@ -112,16 +112,16 @@
 | UXDB-03 | Phase 4 | Pending |
 | UXDB-04 | Phase 4 | Pending |
 | UXDB-05 | Phase 4 | Pending |
-| DEPL-01 | Phase 5 | Pending |
-| DEPL-02 | Phase 5 | Pending |
-| DEPL-03 | Phase 5 | Pending |
-| DEPL-04 | Phase 5 | Pending |
-| DEPL-05 | Phase 5 | Pending |
-| DEPL-06 | Phase 5 | Pending |
-| PERF-01 | Phase 6 | Pending |
-| PERF-02 | Phase 6 | Pending |
-| PERF-03 | Phase 6 | Pending |
-| PERF-04 | Phase 6 | Pending |
+| PERF-01 | Phase 5 | Pending |
+| PERF-02 | Phase 5 | Pending |
+| PERF-03 | Phase 5 | Pending |
+| PERF-04 | Phase 5 | Pending |
+| DEPL-01 | Phase 6 | Pending |
+| DEPL-02 | Phase 6 | Pending |
+| DEPL-03 | Phase 6 | Pending |
+| DEPL-04 | Phase 6 | Pending |
+| DEPL-05 | Phase 6 | Pending |
+| DEPL-06 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 31 total
@@ -130,4 +130,4 @@
 
 ---
 *Requirements defined: 2026-02-09*
-*Last updated: 2026-02-09 after initial definition*
+*Last updated: 2026-02-09 after roadmap creation*
