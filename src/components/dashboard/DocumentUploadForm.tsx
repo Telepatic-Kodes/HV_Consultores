@@ -165,7 +165,10 @@ export function DocumentUploadForm({ clienteId, onSuccess }: DocumentUploadFormP
 
         <div>
           <label className="text-sm font-medium mb-2 block">Archivo (PDF, JPG, PNG, TIFF)</label>
-          <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition">
+          <div
+            className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition"
+            onClick={() => !loading && fileInputRef.current?.click()}
+          >
             <input
               ref={fileInputRef}
               type="file"
@@ -174,19 +177,14 @@ export function DocumentUploadForm({ clienteId, onSuccess }: DocumentUploadFormP
               disabled={loading}
               className="hidden"
             />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={loading}
-              className="w-full"
-              type="button"
-            >
+            <div>
               <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p className="font-medium">
                 {loading ? 'Cargando...' : 'Haz clic para seleccionar archivo'}
               </p>
               <p className="text-sm text-muted-foreground mt-1">o arrastra un archivo aquí</p>
               <p className="text-xs text-muted-foreground mt-2">Máximo 50MB</p>
-            </button>
+            </div>
           </div>
         </div>
 
