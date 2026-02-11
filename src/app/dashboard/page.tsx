@@ -123,7 +123,7 @@ export default async function DashboardPage() {
         subtitle={`Bienvenido de vuelta • ${new Date().toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`}
       />
 
-      <main className="p-8 space-y-8">
+      <main className="p-4 md:p-8 space-y-6 md:space-y-8">
         {/* Section Header - KPIs */}
         <div className="flex items-center gap-3 mb-2">
           <div className="h-1 w-8 bg-gradient-to-r from-primary to-secondary rounded-full" />

@@ -1,4 +1,5 @@
 export { Sidebar } from './Sidebar'
+export { SidebarProvider } from './SidebarContext'
 export { TopNav } from './TopNav'
 export { StatsCard } from './StatsCard'
 export { NotificationsDropdown } from './NotificationsDropdown'

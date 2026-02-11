@@ -80,7 +80,7 @@ export default function AnalyticsDashboardPage({
 
       {/* Navigation Tabs */}
       <Tabs value={activeTab} defaultValue='documents' className='space-y-6'>
-        <TabsList className='grid w-full grid-cols-7'>
+        <TabsList className='grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-7'>
           <TabsTrigger value='documents'>Documents</TabsTrigger>
           <TabsTrigger value='automation'>Automation</TabsTrigger>
           <TabsTrigger value='team'>Team</TabsTrigger>
