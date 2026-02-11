@@ -472,25 +472,40 @@ export default function BancosPage() {
         <TabsContent value="reconciliation">
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <CheckCircle className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Panel de Conciliación</h3>
-              <p className="text-sm text-muted-foreground text-center">
-                Próximamente: conciliación automática con documentos SII
+              <ArrowLeftRight className="h-12 w-12 text-primary mb-4" />
+              <h3 className="text-lg font-medium mb-2">Motor de Conciliación</h3>
+              <p className="text-sm text-muted-foreground text-center mb-4">
+                Concilia automáticamente transacciones bancarias con documentos SII
               </p>
+              <Button onClick={() => window.location.href = '/dashboard/conciliacion'}>
+                <ArrowLeftRight className="h-4 w-4 mr-2" />
+                Ir a Conciliación
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="settings">
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Settings className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Configuración</h3>
-              <p className="text-sm text-muted-foreground text-center">
-                Próximamente: configuración de reglas y categorías
-              </p>
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => window.location.href = '/dashboard/parametrizacion'}>
+              <CardContent className="flex flex-col items-center justify-center py-8">
+                <Settings className="h-10 w-10 text-primary mb-3" />
+                <h3 className="text-base font-semibold mb-1">Parametrización</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  Gestiona plantillas de plan de cuentas y reglas de categorización
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => window.location.href = '/dashboard/monedas'}>
+              <CardContent className="flex flex-col items-center justify-center py-8">
+                <TrendingUp className="h-10 w-10 text-primary mb-3" />
+                <h3 className="text-base font-semibold mb-1">Tipos de Cambio</h3>
+                <p className="text-xs text-muted-foreground text-center">
+                  Monitorea y gestiona UF, USD y EUR para conversión multimoneda
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

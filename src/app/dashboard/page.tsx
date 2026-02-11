@@ -23,6 +23,7 @@ import {
   Users,
   TrendingUp,
   Zap,
+  ArrowLeftRight,
 } from 'lucide-react'
 import {
   getDashboardStats,
@@ -132,7 +133,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* KPIs principales */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
           <KPICard
             title="Clientes Activos"
             value={kpis.clientesActivos}
@@ -173,6 +174,20 @@ export default async function DashboardPage() {
             value={kpis.botsEjecutadosMes}
             description="Tareas automatizadas"
             icon={<Zap className="h-5 w-5" />}
+            color="green"
+          />
+          <KPICard
+            title="Por Conciliar"
+            value={kpis.porConciliar ?? 0}
+            description="Transacciones pendientes"
+            icon={<ArrowLeftRight className="h-5 w-5" />}
+            color="amber"
+          />
+          <KPICard
+            title="Tasa Conciliación"
+            value={`${kpis.tasaConciliacion ?? 0}%`}
+            description="Conciliación automática"
+            icon={<CheckCircle className="h-5 w-5" />}
             color="green"
           />
         </div>

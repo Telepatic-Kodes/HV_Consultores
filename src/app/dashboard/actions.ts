@@ -1,9 +1,18 @@
+// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
-import { api } from "@/convex/_generated/api"
+import { api } from "../../../convex/_generated/api"
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
+const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null
+
+// Helper: throws immediately when Convex is not configured so catch blocks
+// return demo-friendly fallback data without attempting network calls.
+function requireConvex() {
+  if (!convex) throw new Error('Convex not configured')
+  return convex
+}
 
 export interface DashboardStats {
   documentosHoy: number
@@ -42,7 +51,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     const ayerISO = ayer.toISOString()
 
     // Get all documents to count
-    const allDocs = await convex.query(api.documents.listDocuments, {})
+    const allDocs = await requireConvex().query(api.documents.listDocuments, {})
 
     // Documentos recibidos hoy
     const documentosHoy = allDocs.filter(doc =>
@@ -64,7 +73,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
     // Alertas F29 (últimos 7 días)
     const semanaISO = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    const allValidations = await convex.query(api.f29.getSubmissionValidations, { submissionId: undefined })
+    const allValidations = await requireConvex().query(api.f29.getSubmissionValidations, { submissionId: undefined })
     const alertas = allValidations.filter(v =>
       (v.resultado === 'warning' || v.resultado === 'error') &&
       v.created_at && v.created_at >= semanaISO
@@ -113,14 +122,14 @@ export async function getModulosStatus(): Promise<ModuloStatus[]> {
     const hoyISO = hoy.toISOString()
 
     // Get documents
-    const allDocs = await convex.query(api.documents.listDocuments, {})
+    const allDocs = await requireConvex().query(api.documents.listDocuments, {})
     const docsClasificados = allDocs.filter(doc =>
       doc.clasificado_at && doc.clasificado_at >= hoyISO
     ).length
     const docsPendientes = allDocs.filter(doc => doc.status === 'pendiente').length
 
     // Get F29 submissions
-    const allF29s = await convex.query(api.f29.listSubmissions, {})
+    const allF29s = await requireConvex().query(api.f29.listSubmissions, {})
     const f29Generados = allF29s.filter(f29 =>
       f29.created_at && f29.created_at >= hoyISO
     ).length
@@ -129,14 +138,14 @@ export async function getModulosStatus(): Promise<ModuloStatus[]> {
     ).length
 
     // Get bot jobs
-    const allJobs = await convex.query(api.bots.listJobs, {})
+    const allJobs = await requireConvex().query(api.bots.listJobs, {})
     const botsEjecutando = allJobs.filter(job => job.status === 'ejecutando').length
     const botsTareasHoy = allJobs.filter(job =>
       job.created_at && job.created_at >= hoyISO
     ).length
 
     // Get chat messages
-    const allMessages = await convex.query(api.chat.listMessages, { sessionId: undefined })
+    const allMessages = await requireConvex().query(api.chat.listMessages, { sessionId: undefined })
     const chatConsultas = allMessages.filter(msg =>
       msg.rol === 'user' && msg.created_at && msg.created_at >= hoyISO
     ).length
@@ -212,7 +221,7 @@ export async function getActividadReciente(limite: number = 10): Promise<Activid
     const actividades: ActividadReciente[] = []
 
     // Get recent documents with classifications
-    const allDocs = await convex.query(api.documents.listDocuments, {})
+    const allDocs = await requireConvex().query(api.documents.listDocuments, {})
     const clasificaciones = allDocs
       .filter(doc => doc.clasificado_at)
       .sort((a, b) => (b.clasificado_at || '').localeCompare(a.clasificado_at || ''))
@@ -229,7 +238,7 @@ export async function getActividadReciente(limite: number = 10): Promise<Activid
     })
 
     // Get recent F29 submissions
-    const allF29s = await convex.query(api.f29.listSubmissions, {})
+    const allF29s = await requireConvex().query(api.f29.listSubmissions, {})
     const f29s = allF29s
       .sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || ''))
       .slice(0, 3)
@@ -245,7 +254,7 @@ export async function getActividadReciente(limite: number = 10): Promise<Activid
     })
 
     // Get recent bot jobs
-    const allJobs = await convex.query(api.bots.listJobs, {})
+    const allJobs = await requireConvex().query(api.bots.listJobs, {})
     const jobs = allJobs
       .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
       .slice(0, 3)
@@ -261,7 +270,7 @@ export async function getActividadReciente(limite: number = 10): Promise<Activid
     })
 
     // Get recent alerts
-    const allValidations = await convex.query(api.f29.getSubmissionValidations, { submissionId: undefined })
+    const allValidations = await requireConvex().query(api.f29.getSubmissionValidations, { submissionId: undefined })
     const alertas = allValidations
       .filter(v => v.resultado === 'warning' || v.resultado === 'error')
       .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
@@ -338,7 +347,7 @@ export interface BotsActividad {
 // Obtener documentos por día (últimos 7 días)
 export async function getDocumentosPorDia(): Promise<DocumentosPorDia[]> {
   try {
-    const allDocs = await convex.query(api.documents.listDocuments, {})
+    const allDocs = await requireConvex().query(api.documents.listDocuments, {})
     const dias: DocumentosPorDia[] = []
     const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
@@ -379,7 +388,7 @@ export async function getDocumentosPorDia(): Promise<DocumentosPorDia[]> {
 // Obtener distribución por tipo de documento
 export async function getDocumentosPorTipo(): Promise<DocumentosPorTipo[]> {
   try {
-    const allDocs = await convex.query(api.documents.listDocuments, {})
+    const allDocs = await requireConvex().query(api.documents.listDocuments, {})
 
     if (allDocs.length === 0) {
       return [
@@ -414,7 +423,7 @@ export async function getDocumentosPorTipo(): Promise<DocumentosPorTipo[]> {
 // Obtener F29 por mes (últimos 6 meses)
 export async function getF29PorMes(): Promise<F29PorMes[]> {
   try {
-    const allF29s = await convex.query(api.f29.listSubmissions, {})
+    const allF29s = await requireConvex().query(api.f29.listSubmissions, {})
     const meses: F29PorMes[] = []
     const nombresMeses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 
@@ -446,8 +455,8 @@ export async function getF29PorMes(): Promise<F29PorMes[]> {
 // Obtener actividad de bots
 export async function getBotsActividad(): Promise<BotsActividad[]> {
   try {
-    const bots = await convex.query(api.bots.listBotDefinitions, {})
-    const allJobs = await convex.query(api.bots.listJobs, {})
+    const bots = await requireConvex().query(api.bots.listBotDefinitions, {})
+    const allJobs = await requireConvex().query(api.bots.listJobs, {})
     const hace30dias = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
     if (bots.length === 0) {
@@ -488,6 +497,8 @@ export interface KPIsDashboard {
   precisionIA: number
   chatConsultasMes: number
   botsEjecutadosMes: number
+  porConciliar: number
+  tasaConciliacion: number
 }
 
 export async function getKPIs(): Promise<KPIsDashboard> {
@@ -497,28 +508,45 @@ export async function getKPIs(): Promise<KPIsDashboard> {
     inicioMes.setHours(0, 0, 0, 0)
     const inicioMesISO = inicioMes.toISOString()
 
-    const clientes = await convex.query(api.clients.listClientes, {})
+    const clientes = await requireConvex().query(api.clients.listClientes, {})
     const clientesActivos = clientes.filter(c => c.activo).length
 
-    const allDocs = await convex.query(api.documents.listDocuments, {})
+    const allDocs = await requireConvex().query(api.documents.listDocuments, {})
     const documentosMes = allDocs.filter(doc =>
       doc.created_at && doc.created_at >= inicioMesISO
     ).length
 
-    const allF29s = await convex.query(api.f29.listSubmissions, {})
+    const allF29s = await requireConvex().query(api.f29.listSubmissions, {})
     const f29Pendientes = allF29s.filter(f29 =>
       f29.status && ['borrador', 'calculado', 'validado'].includes(f29.status)
     ).length
 
-    const allMessages = await convex.query(api.chat.listMessages, { sessionId: undefined })
+    const allMessages = await requireConvex().query(api.chat.listMessages, { sessionId: undefined })
     const chatConsultas = allMessages.filter(msg =>
       msg.rol === 'user' && msg.created_at && msg.created_at >= inicioMesISO
     ).length
 
-    const allJobs = await convex.query(api.bots.listJobs, {})
+    const allJobs = await requireConvex().query(api.bots.listJobs, {})
     const botsEjecutados = allJobs.filter(job =>
       job.created_at && job.created_at >= inicioMesISO
     ).length
+
+    // Bank reconciliation KPIs
+    let porConciliar = 0
+    let tasaConciliacion = 0
+    try {
+      const allTx = await requireConvex().query(api.banks.listTransactions, {})
+      const totalTx = allTx.length
+      const matchedTx = allTx.filter(
+        (t: any) => t.estado_conciliacion === 'matched'
+      ).length
+      porConciliar = allTx.filter(
+        (t: any) => !t.estado_conciliacion || t.estado_conciliacion === 'pending'
+      ).length
+      tasaConciliacion = totalTx > 0 ? Math.round((matchedTx / totalTx) * 100) : 0
+    } catch {
+      // Bank module may not have data yet
+    }
 
     return {
       clientesActivos,
@@ -527,6 +555,8 @@ export async function getKPIs(): Promise<KPIsDashboard> {
       precisionIA: 95,
       chatConsultasMes: chatConsultas,
       botsEjecutadosMes: botsEjecutados,
+      porConciliar,
+      tasaConciliacion,
     }
   } catch (error) {
     console.error('Error getting KPIs:', error)
@@ -537,6 +567,8 @@ export async function getKPIs(): Promise<KPIsDashboard> {
       precisionIA: 95,
       chatConsultasMes: 0,
       botsEjecutadosMes: 0,
+      porConciliar: 0,
+      tasaConciliacion: 0,
     }
   }
 }

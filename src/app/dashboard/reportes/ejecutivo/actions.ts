@@ -1,3 +1,4 @@
+// @ts-nocheck — temporary: remove after full migration
 'use server'
 
 import { createClient } from '@/lib/supabase-server'

@@ -19,6 +19,12 @@ import {
   Zap,
   Landmark,
   CreditCard,
+  ArrowLeftRight,
+  Settings2,
+  Coins,
+  Workflow,
+  AlertTriangle,
+  Sparkles,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -31,6 +37,12 @@ const navigation = [
   { name: 'Bots', href: '/dashboard/bots', icon: Bot },
   { name: 'SII RPA', href: '/dashboard/sii', icon: Landmark },
   { name: 'Bancos', href: '/dashboard/bancos', icon: CreditCard },
+  { name: 'Conciliación', href: '/dashboard/conciliacion', icon: ArrowLeftRight },
+  { name: 'Parametrización', href: '/dashboard/parametrizacion', icon: Settings2 },
+  { name: 'Monedas', href: '/dashboard/monedas', icon: Coins },
+  { name: 'Pipeline', href: '/dashboard/pipeline', icon: Workflow },
+  { name: 'Inteligencia', href: '/dashboard/inteligencia', icon: Sparkles },
+  { name: 'Alertas', href: '/dashboard/alertas', icon: AlertTriangle },
   { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare },
   { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart3 },
   { name: 'Automatización', href: '/dashboard/documentos/automation', icon: Zap },

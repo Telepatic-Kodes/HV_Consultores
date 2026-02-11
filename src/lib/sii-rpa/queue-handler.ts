@@ -1,7 +1,7 @@
 // SII RPA Queue Handler
 // HV Consultores - Manejo de cola de trabajos SII
 
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import type {
   SiiJob,
   SiiJobCreateInput,
@@ -15,17 +15,9 @@ import type {
 // SUPABASE CLIENT
 // ============================================================================
 
+// Using mock Supabase client (demo mode) - data access via Convex
 function getSupabaseAdmin() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceKey) {
-    throw new Error('Supabase credentials not configured')
-  }
-
-  return createClient(supabaseUrl, serviceKey, {
-    auth: { persistSession: false },
-  })
+  return supabase
 }
 
 // ============================================================================

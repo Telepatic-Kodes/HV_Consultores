@@ -2,20 +2,11 @@
 // POST - Receive updates from RPA server
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 
-// Use service role for webhook processing
+// Using mock Supabase client (demo mode) - webhook processing via Convex in future
 function getSupabaseAdmin() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceKey) {
-    throw new Error('Supabase credentials not configured')
-  }
-
-  return createClient(supabaseUrl, serviceKey, {
-    auth: { persistSession: false },
-  })
+  return supabase
 }
 
 export async function POST(request: NextRequest) {

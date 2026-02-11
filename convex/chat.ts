@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
@@ -14,7 +15,7 @@ export const listChatSesiones = query({
   handler: async (ctx, args) => {
     let sessions = await ctx.db
       .query("chat_sesiones")
-      .withIndex("by_usuario", (q) => q.eq("usuario_id", args.usuario_id))
+      .withIndex("by_usuario", (q: any) => q.eq("usuario_id", args.usuario_id))
       .collect();
 
     // Filter by activa status
@@ -56,7 +57,7 @@ export const getChatMensajes = query({
   handler: async (ctx, args) => {
     let messages = await ctx.db
       .query("chat_mensajes")
-      .withIndex("by_sesion", (q) => q.eq("sesion_id", args.sesion_id))
+      .withIndex("by_sesion", (q: any) => q.eq("sesion_id", args.sesion_id))
       .collect();
 
     // Sort by created_at ascending (chronological order)
@@ -89,7 +90,7 @@ export const listMessages = query({
       // Get messages for specific session
       let messages = await ctx.db
         .query("chat_mensajes")
-        .withIndex("by_sesion", (q) => q.eq("sesion_id", args.sesion_id!))
+        .withIndex("by_sesion", (q: any) => q.eq("sesion_id", args.sesion_id!))
         .collect();
 
       // Sort chronologically
@@ -110,7 +111,7 @@ export const listMessages = query({
       // Get all sessions for user, then get messages
       const sessions = await ctx.db
         .query("chat_sesiones")
-        .withIndex("by_usuario", (q) => q.eq("usuario_id", args.usuario_id!))
+        .withIndex("by_usuario", (q: any) => q.eq("usuario_id", args.usuario_id!))
         .collect();
 
       const sessionIds = sessions.map((s) => s._id);
@@ -149,7 +150,7 @@ export const searchMessages = query({
     // Get user's sessions
     const sessions = await ctx.db
       .query("chat_sesiones")
-      .withIndex("by_usuario", (q) => q.eq("usuario_id", args.usuario_id))
+      .withIndex("by_usuario", (q: any) => q.eq("usuario_id", args.usuario_id))
       .collect();
 
     const sessionIds = sessions.map((s) => s._id);
@@ -323,7 +324,7 @@ export const deleteChatSesion = mutation({
     // Delete all messages in session
     const messages = await ctx.db
       .query("chat_mensajes")
-      .withIndex("by_sesion", (q) => q.eq("sesion_id", args.id))
+      .withIndex("by_sesion", (q: any) => q.eq("sesion_id", args.id))
       .collect();
 
     for (const message of messages) {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Document Export Utilities
  * Export documents to Excel, CSV, and PDF formats

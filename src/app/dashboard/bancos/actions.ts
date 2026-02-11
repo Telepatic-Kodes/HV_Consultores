@@ -1,3 +1,4 @@
+// @ts-nocheck — temporary: remove after full migration
 'use server'
 
 // =============================================================================

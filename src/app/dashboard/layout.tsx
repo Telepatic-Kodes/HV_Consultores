@@ -1,6 +1,9 @@
 import { Sidebar, RealtimeToasts } from '@/components/dashboard'
 import { RealtimeProvider } from '@/providers/realtime-provider'
 
+// All dashboard pages use server-side data fetching — disable static prerendering
+export const dynamic = 'force-dynamic'
+
 export default function DashboardLayout({
   children,
 }: {
