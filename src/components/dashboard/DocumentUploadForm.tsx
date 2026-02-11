@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -26,29 +26,16 @@ export function DocumentUploadForm({ clienteId, onSuccess }: DocumentUploadFormP
   const [folio, setFolio] = useState('')
   const [fecha, setFecha] = useState('')
   const [monto, setMonto] = useState('')
+  const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const tipos = [
-    { value: 'factura', label: 'Factura' },
-    { value: 'boleta', label: 'Boleta' },
-    { value: 'nota_credito', label: 'Nota de Crédito' },
-    { value: 'nota_debito', label: 'Nota de Débito' },
-    { value: 'guia_despacho', label: 'Guía de Despacho' },
-  ]
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  const processFile = useCallback(async (file: File) => {
     setError(null)
     setSuccess(null)
     setLoading(true)
 
     try {
-      // Convertir archivo a ArrayBuffer
       const arrayBuffer = await file.arrayBuffer()
-
-      // Llamar a la acción del servidor
       const resultado = await cargarDocumento(
         clienteId,
         tipoDocumento,
@@ -79,6 +66,37 @@ export function DocumentUploadForm({ clienteId, onSuccess }: DocumentUploadFormP
     } finally {
       setLoading(false)
     }
+  }, [clienteId, tipoDocumento, folio, fecha, monto, onSuccess])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setDragging(false)
+    if (loading) return
+    const file = e.dataTransfer.files?.[0]
+    if (file) processFile(file)
+  }, [loading, processFile])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    if (!loading) setDragging(true)
+  }, [loading])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setDragging(false)
+  }, [])
+
+  const tipos = [
+    { value: 'factura', label: 'Factura' },
+    { value: 'boleta', label: 'Boleta' },
+    { value: 'nota_credito', label: 'Nota de Crédito' },
+    { value: 'nota_debito', label: 'Nota de Débito' },
+    { value: 'guia_despacho', label: 'Guía de Despacho' },
+  ]
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) processFile(file)
   }
 
   return (
@@ -166,8 +184,11 @@ export function DocumentUploadForm({ clienteId, onSuccess }: DocumentUploadFormP
         <div>
           <label className="text-sm font-medium mb-2 block">Archivo (PDF, JPG, PNG, TIFF)</label>
           <div
-            className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition"
+            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition ${dragging ? 'border-primary bg-primary/5' : ''}`}
             onClick={() => !loading && fileInputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
           >
             <input
               ref={fileInputRef}
@@ -188,7 +209,7 @@ export function DocumentUploadForm({ clienteId, onSuccess }: DocumentUploadFormP
           </div>
         </div>
 
-        <Button disabled={loading} type="submit" className="w-full" variant="default">
+        <Button disabled={loading} type="button" className="w-full" variant="default" onClick={() => fileInputRef.current?.click()}>
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
