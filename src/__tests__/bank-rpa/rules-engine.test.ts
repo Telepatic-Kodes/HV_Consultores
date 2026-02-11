@@ -32,6 +32,7 @@ const createMockTransaction = (overrides: Partial<BankTransaction> = {}): BankTr
   estado_conciliacion: 'pending',
   hash_transaccion: 'hash123',
   metadata: { banco: 'bancochile' },
+  created_at: '2026-01-15T00:00:00Z',
   ...overrides,
 })
 
@@ -46,6 +47,8 @@ const createMockRule = (overrides: Partial<CategorizationRule> = {}): Categoriza
   prioridad: 100,
   activa: true,
   veces_aplicada: 5,
+  created_at: '2026-01-15T00:00:00Z',
+  updated_at: '2026-01-15T00:00:00Z',
   ...overrides,
 })
 
@@ -53,9 +56,10 @@ const createMockCategory = (overrides: Partial<TransactionCategory> = {}): Trans
   id: 'cat-001',
   codigo: 'TRF',
   nombre: 'Transferencias',
-  tipo: 'system',
   color: '#3B82F6',
+  orden: 1,
   activa: true,
+  created_at: '2026-01-15T00:00:00Z',
   ...overrides,
 })
 

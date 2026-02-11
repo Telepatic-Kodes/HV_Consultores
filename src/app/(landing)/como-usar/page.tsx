@@ -479,7 +479,7 @@ export default function ComoUsarPage() {
 
                 <Tip>
                   El sistema guarda un historial de todos los F29 generados.
-                  Puedes comparar períodos anteriores desde la pestaña "Historial".
+                  Puedes comparar períodos anteriores desde la pestaña &quot;Historial&quot;.
                 </Tip>
               </div>
             </GuideSection>

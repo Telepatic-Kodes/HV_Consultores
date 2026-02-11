@@ -440,8 +440,8 @@ describe('Analytics API Responses', () => {
 
 describe('Organization Data Isolation', () => {
   it('should only allow access to own organization', () => {
-    const userId = 'user-123'
-    const organizationId = 'org-456'
+    const userId: string = 'user-123'
+    const organizationId: string = 'org-456'
 
     // User can only access if organizationId matches their ID
     expect(organizationId === userId).toBe(false) // In this test, they don't match

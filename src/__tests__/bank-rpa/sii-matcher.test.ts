@@ -31,6 +31,7 @@ const createMockTransaction = (overrides: Partial<BankTransaction> = {}): BankTr
   estado_conciliacion: 'pending',
   hash_transaccion: 'hash123',
   metadata: { banco: 'bancochile' },
+  created_at: '2026-01-15T00:00:00Z',
   ...overrides,
 })
 

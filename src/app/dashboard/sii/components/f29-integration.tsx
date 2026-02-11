@@ -216,7 +216,7 @@ export function F29Integration({ clienteId }: F29IntegrationProps) {
               <FileText className="h-12 w-12 text-muted-foreground/50" />
               <h3 className="mt-4 text-lg font-medium">No hay F29 listos para enviar</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Los F29 deben estar en estado "Aprobado" para poder enviarlos al SII.
+                Los F29 deben estar en estado &quot;Aprobado&quot; para poder enviarlos al SII.
                 <br />
                 Ve a la sección de F29 para generar y aprobar declaraciones.
               </p>

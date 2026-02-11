@@ -74,12 +74,12 @@ describe('Slack Message Blocks', () => {
     expect(blocks.length).toBeGreaterThan(0)
 
     // Verify header block
-    expect(blocks[0].type).toBe('header')
-    expect(blocks[0].text.text).toBe('Test Title')
+    expect(blocks[0]!.type).toBe('header')
+    expect(blocks[0]!.text!.text).toBe('Test Title')
 
     // Verify section block
-    expect(blocks[1].type).toBe('section')
-    expect(blocks[1].text.text).toBe('Test Content')
+    expect(blocks[1]!.type).toBe('section')
+    expect(blocks[1]!.text!.text).toBe('Test Content')
   })
 
   it('should create blocks with specific color', () => {
@@ -94,8 +94,8 @@ describe('Slack Message Blocks', () => {
     const contextBlock = blocks.find((b: any) => b.type === 'context')
 
     expect(contextBlock).toBeDefined()
-    expect(contextBlock?.elements[0].type).toBe('mrkdwn')
-    expect(contextBlock?.elements[0].text).toContain('Generated at')
+    expect(contextBlock?.elements![0].type).toBe('mrkdwn')
+    expect(contextBlock?.elements![0].text).toContain('Generated at')
   })
 })
 
