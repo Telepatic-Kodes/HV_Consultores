@@ -4,28 +4,8 @@
  * Created: 2026-01-11
  */
 
-import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
-import { AlertRuleEngine } from '@/lib/services/alertRuleEngine'
-
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now()
-  const record = rateLimitMap.get(userId)
-
-  if (!record || record.resetTime < now) {
-    rateLimitMap.set(userId, { count: 1, resetTime: now + 60000 })
-    return true
-  }
-
-  if (record.count >= 30) {
-    return false
-  }
-
-  record.count += 1
-  return true
-}
+// TODO: Phase 2 - Implement via Convex (replace AlertRuleEngine and Supabase queries)
 
 /**
  * POST /api/alerts/test
@@ -33,28 +13,9 @@ function checkRateLimit(userId: string): boolean {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = createClient()
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Check rate limit
-    if (!checkRateLimit(session.user.id)) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Maximum 30 requests per minute.' },
-        { status: 429 }
-      )
-    }
-
     const body = await request.json()
     const { ruleId } = body
 
-    // Validate input
     if (!ruleId || typeof ruleId !== 'string') {
       return NextResponse.json(
         { error: 'ruleId is required and must be a string' },
@@ -62,31 +23,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fetch the rule
-    const { data: rule, error: fetchError } = await supabase
-      .from('alert_rules')
-      .select('*')
-      .eq('id', ruleId)
-      .eq('organization_id', session.user.id)
-      .single()
-
-    if (fetchError || !rule) {
-      return NextResponse.json(
-        { error: 'Alert rule not found' },
-        { status: 404 }
-      )
-    }
-
-    // Test the alert rule
-    const result = await AlertRuleEngine.testRule(rule)
-
+    // TODO: Phase 2 - Fetch rule from Convex and run AlertRuleEngine.testRule
     return NextResponse.json(
       {
         success: true,
-        data: result,
-        message: result.triggered
-          ? 'Alert condition met and notifications sent'
-          : 'Alert condition not met',
+        data: {
+          triggered: false,
+          ruleId,
+          conditionMet: false,
+          durationMet: false,
+        },
+        message: 'Pending Convex migration - test not executed',
         timestamp: new Date(),
       },
       { status: 200 }
@@ -109,56 +56,13 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = createClient()
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Check rate limit
-    if (!checkRateLimit(session.user.id)) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Maximum 30 requests per minute.' },
-        { status: 429 }
-      )
-    }
-
-    // Fetch recent alert executions
-    const { data: executions, error } = await supabase
-      .from('alert_execution_history')
-      .select(`
-        id,
-        alert_rule_id,
-        triggered_at,
-        metric_name,
-        metric_value,
-        threshold_value,
-        condition_met,
-        duration_met,
-        status,
-        notifications_sent
-      `)
-      .eq('organization_id', session.user.id)
-      .gte('triggered_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-      .order('triggered_at', { ascending: false })
-      .limit(100)
-
-    if (error) {
-      return NextResponse.json(
-        { error: 'Failed to fetch test results', message: error.message },
-        { status: 500 }
-      )
-    }
-
+    // TODO: Phase 2 - Query alert execution history from Convex
     return NextResponse.json(
       {
         success: true,
-        data: executions,
-        count: executions?.length || 0,
+        data: [],
+        count: 0,
+        message: 'Pending Convex migration',
         timestamp: new Date(),
       },
       {

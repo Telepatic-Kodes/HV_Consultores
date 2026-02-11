@@ -1,13 +1,12 @@
 // SII RPA Webhook API Route
 // POST - Receive updates from RPA server
+// Uses Convex bots module to persist job state updates
 
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { ConvexHttpClient } from 'convex/browser'
+import { api } from '../../../../../convex/_generated/api'
 
-// Using mock Supabase client (demo mode) - webhook processing via Convex in future
-function getSupabaseAdmin() {
-  return supabase
-}
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,24 +31,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = getSupabaseAdmin()
-
-    // Process based on event type
+    // Process based on event type using Convex bots module
     switch (event) {
       case 'started':
-        await handleStarted(supabase, job_id, server_name)
+        await handleStarted(job_id, server_name)
         break
 
       case 'step_completed':
-        await handleStepCompleted(supabase, job_id, data)
+        await handleStepCompleted(job_id, data)
         break
 
       case 'completed':
-        await handleCompleted(supabase, job_id, data)
+        await handleCompleted(job_id, data)
         break
 
       case 'failed':
-        await handleFailed(supabase, job_id, data)
+        await handleFailed(job_id, data)
         break
 
       default:
@@ -66,142 +63,78 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleStarted(
-  supabase: ReturnType<typeof getSupabaseAdmin>,
-  jobId: string,
-  serverName?: string
-) {
-  await supabase
-    .from('sii_jobs')
-    .update({
+async function handleStarted(jobId: string, serverName?: string) {
+  try {
+    await convex.mutation(api.bots.updateJobStatus, {
+      id: jobId as any,
       status: 'ejecutando',
-      execution_server: serverName,
-      started_at: new Date().toISOString(),
     })
-    .eq('id', jobId)
+  } catch (error) {
+    console.error('[SII RPA Webhook] Error updating job to started:', error)
+  }
 }
 
 async function handleStepCompleted(
-  supabase: ReturnType<typeof getSupabaseAdmin>,
   jobId: string,
   data?: Record<string, unknown>
 ) {
   if (!data?.step) return
 
-  // Get current step count
-  const { count } = await supabase
-    .from('sii_execution_steps')
-    .select('*', { count: 'exact', head: true })
-    .eq('sii_job_id', jobId)
-
-  // Add execution step
-  await supabase.from('sii_execution_steps').insert({
-    sii_job_id: jobId,
-    step_number: (count || 0) + 1,
-    step_name: data.step as string,
-    status: 'success',
-    output_data: data.data as Record<string, unknown> | undefined,
-    completed_at: new Date().toISOString(),
-    retry_count: 0,
-  })
+  try {
+    await convex.mutation(api.bots.addExecutionStep, {
+      job_id: jobId as any,
+      paso: data.step as string,
+      nivel: 'info',
+      mensaje: `Step completed: ${data.step}`,
+      metadata: data.data as any,
+    })
+  } catch (error) {
+    console.error('[SII RPA Webhook] Error adding step:', error)
+  }
 }
 
 async function handleCompleted(
-  supabase: ReturnType<typeof getSupabaseAdmin>,
   jobId: string,
   data?: Record<string, unknown>
 ) {
-  const updateData: Record<string, unknown> = {
-    status: 'completado',
-    completed_at: new Date().toISOString(),
-  }
+  try {
+    const resultado: Record<string, unknown> = {}
 
-  if (data?.result) {
-    updateData.datos_extraidos = data.result
-  }
+    if (data?.result) {
+      resultado.datos_extraidos = data.result
+    }
 
-  if (data?.files && Array.isArray(data.files)) {
-    updateData.archivos_descargados = data.files.map((f: { path?: string }) => f.path)
-  }
+    if (data?.files && Array.isArray(data.files)) {
+      resultado.archivos_descargados = data.files.map((f: { path?: string }) => f.path)
+    }
 
-  if (data?.screenshots) {
-    updateData.screenshots = data.screenshots
-  }
+    if (data?.screenshots) {
+      resultado.screenshots = data.screenshots
+    }
 
-  await supabase.from('sii_jobs').update(updateData).eq('id', jobId)
-
-  // Update credential validation status if this was a login test
-  const { data: job } = await supabase
-    .from('sii_jobs')
-    .select('task_type, cliente_id')
-    .eq('id', jobId)
-    .single()
-
-  if (job?.task_type === 'login_test') {
-    await supabase
-      .from('credenciales_portales')
-      .update({
-        validacion_exitosa: true,
-        ultimo_login_exitoso: new Date().toISOString(),
-        intentos_fallidos: 0,
-      })
-      .eq('cliente_id', job.cliente_id)
-      .eq('portal', 'sii')
+    await convex.mutation(api.bots.completeJob, {
+      id: jobId as any,
+      resultado: Object.keys(resultado).length > 0 ? resultado : undefined,
+    })
+  } catch (error) {
+    console.error('[SII RPA Webhook] Error completing job:', error)
   }
 }
 
 async function handleFailed(
-  supabase: ReturnType<typeof getSupabaseAdmin>,
   jobId: string,
   data?: Record<string, unknown>
 ) {
-  // Get current job to check retry count
-  const { data: job } = await supabase
-    .from('sii_jobs')
-    .select('retry_count, max_retries, cliente_id, task_type')
-    .eq('id', jobId)
-    .single()
+  try {
+    const errorData = data?.error as { code?: string; message?: string } | undefined
+    const errorMessage = errorData?.message || 'Error desconocido'
 
-  if (!job) return
-
-  const currentRetries = job.retry_count || 0
-  const maxRetries = job.max_retries || 3
-  const errorData = data?.error as { code?: string; message?: string } | undefined
-
-  if (currentRetries < maxRetries - 1) {
-    // Schedule retry
-    await supabase
-      .from('sii_jobs')
-      .update({
-        status: 'pendiente',
-        retry_count: currentRetries + 1,
-        error_message: errorData?.message || 'Error desconocido',
-      })
-      .eq('id', jobId)
-  } else {
-    // Mark as failed
-    await supabase
-      .from('sii_jobs')
-      .update({
-        status: 'fallido',
-        completed_at: new Date().toISOString(),
-        error_message: errorData?.message || 'Error desconocido',
-      })
-      .eq('id', jobId)
-
-    // Update credential status if login failed
-    if (job.task_type === 'login_test') {
-      await supabase
-        .from('credenciales_portales')
-        .update({
-          validacion_exitosa: false,
-          intentos_fallidos: supabase.rpc('increment_field', {
-            row_id: job.cliente_id,
-            field_name: 'intentos_fallidos',
-          }),
-        })
-        .eq('cliente_id', job.cliente_id)
-        .eq('portal', 'sii')
-    }
+    await convex.mutation(api.bots.failJob, {
+      id: jobId as any,
+      error_message: errorMessage,
+      shouldRetry: true,
+    })
+  } catch (error) {
+    console.error('[SII RPA Webhook] Error failing job:', error)
   }
 }

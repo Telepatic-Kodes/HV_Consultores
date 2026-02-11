@@ -1,19 +1,66 @@
 // @ts-nocheck — temporary: remove after full migration
 'use server'
 
-import { createClient } from '@/lib/supabase-server'
+import { ConvexHttpClient } from "convex/browser"
+import { api } from "../../../../convex/_generated/api"
 import { revalidatePath } from 'next/cache'
 import OpenAI from 'openai'
-import type { Database } from '@/types/database.types'
 
-type Documento = Database['public']['Tables']['documentos']['Row']
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+const DEMO_USER_ID = 'demo-user'
 
 // Cliente OpenAI
 const openai = process.env.OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   : null
-type CuentaContable = Database['public']['Tables']['cuentas_contables']['Row']
-type ClasificacionML = Database['public']['Tables']['clasificaciones_ml']['Row']
+
+type CuentaContable = {
+  id: string
+  codigo: string
+  nombre: string
+  tipo: string | null
+  activa: boolean | null
+  cuenta_padre_id: string | null
+  es_cuenta_mayor: boolean | null
+  nivel: number | null
+  plan_cuenta_id: string
+}
+
+type ClasificacionML = {
+  id: string
+  documento_id: string
+  modelo_version: string
+  cuenta_predicha_id: string
+  confidence: number
+  ranking: number
+  features_input?: any
+  cuenta?: CuentaContable | null
+}
+
+type Documento = {
+  id: string
+  cliente_id?: string
+  tipo_documento?: string
+  folio?: number
+  fecha_emision?: string
+  razon_social_emisor?: string
+  rut_emisor?: string
+  giro_emisor?: string
+  glosa?: string
+  monto_neto?: number
+  monto_iva?: number
+  monto_total?: number
+  es_compra?: boolean
+  es_activo_fijo?: boolean
+  status?: string
+  cuenta_sugerida_id?: string
+  cuenta_final_id?: string
+  confidence_score?: number
+  clasificado_por?: string
+  clasificado_at?: string
+  created_at?: string
+  updated_at?: string
+}
 
 export interface DocumentoConClasificacion extends Documento {
   cliente: { razon_social: string } | null
@@ -29,143 +76,105 @@ export interface ClasificadorStats {
   precision: number
 }
 
-// Obtener documentos pendientes de clasificación
+// Obtener documentos pendientes de clasificacion
 export async function getDocumentosPendientes(clienteId?: string): Promise<DocumentoConClasificacion[]> {
-  const supabase = createClient()
+  try {
+    const data = await convex.query(api.documents.listDocuments, {
+      clienteId: clienteId as any,
+      status: 'pendiente',
+      limit: 50,
+    })
 
-  let query = supabase
-    .from('documentos')
-    .select(`
-      *,
-      cliente:clientes(razon_social),
-      cuenta_sugerida:cuentas_contables!documentos_cuenta_sugerida_id_fkey(id, codigo, nombre),
-      cuenta_final:cuentas_contables!documentos_cuenta_final_id_fkey(id, codigo, nombre),
-      clasificaciones_ml(
-        id,
-        modelo_version,
-        cuenta_predicha_id,
-        confidence,
-        ranking,
-        cuenta:cuentas_contables(id, codigo, nombre)
-      )
-    `)
-    .in('status', ['pendiente', 'clasificado'])
-    .order('created_at', { ascending: false })
-    .limit(50)
+    if (!data || data.length === 0) return []
 
-  if (clienteId) {
-    query = query.eq('cliente_id', clienteId)
-  }
-
-  const { data, error } = await query
-
-  if (error) {
+    // Map Convex documents to the expected format
+    return (data || []).map((doc: any) => ({
+      id: doc._id ?? doc.id,
+      cliente_id: doc.clienteId ?? doc.cliente_id,
+      tipo_documento: doc.tipo_documento,
+      folio: doc.folio,
+      fecha_emision: doc.fecha_emision,
+      razon_social_emisor: doc.razon_social_emisor,
+      rut_emisor: doc.rut_emisor,
+      giro_emisor: doc.giro_emisor,
+      glosa: doc.glosa,
+      monto_neto: doc.monto_neto,
+      monto_iva: doc.monto_iva,
+      monto_total: doc.monto_total,
+      es_compra: doc.es_compra,
+      es_activo_fijo: doc.es_activo_fijo,
+      status: doc.status,
+      cuenta_sugerida_id: doc.cuenta_sugerida_id,
+      cuenta_final_id: doc.cuenta_final_id,
+      confidence_score: doc.confidence_score,
+      clasificado_por: doc.clasificado_por,
+      clasificado_at: doc.clasificado_at,
+      created_at: doc._creationTime ? new Date(doc._creationTime).toISOString() : doc.created_at,
+      updated_at: doc.updated_at,
+      cliente: doc.cliente ?? null,
+      cuenta_sugerida: doc.cuenta_sugerida ?? null,
+      cuenta_final: doc.cuenta_final ?? null,
+      // TODO: clasificaciones_ml not available in Convex yet
+      clasificaciones_ml: [],
+    })) as DocumentoConClasificacion[]
+  } catch (error) {
     console.error('Error fetching documentos:', error)
     return []
   }
-
-  return (data || []) as unknown as DocumentoConClasificacion[]
 }
 
-// Obtener estadísticas del clasificador
+// Obtener estadisticas del clasificador
 export async function getClasificadorStats(clienteId?: string): Promise<ClasificadorStats> {
-  const supabase = createClient()
-  const hoy = new Date().toISOString().split('T')[0]
+  try {
+    const stats = await convex.query(api.documents.getDocumentStats, {
+      clienteId: clienteId as any,
+    })
 
-  // Documentos de hoy
-  let queryHoy = supabase
-    .from('documentos')
-    .select('id', { count: 'exact', head: true })
-    .gte('created_at', `${hoy}T00:00:00`)
-
-  if (clienteId) queryHoy = queryHoy.eq('cliente_id', clienteId)
-  const { count: totalHoy } = await queryHoy
-
-  // Clasificados (revisados o aprobados)
-  let queryClasificados = supabase
-    .from('documentos')
-    .select('id', { count: 'exact', head: true })
-    .in('status', ['revisado', 'aprobado', 'exportado'])
-
-  if (clienteId) queryClasificados = queryClasificados.eq('cliente_id', clienteId)
-  const { count: clasificados } = await queryClasificados
-
-  // Pendientes
-  let queryPendientes = supabase
-    .from('documentos')
-    .select('id', { count: 'exact', head: true })
-    .in('status', ['pendiente', 'clasificado'])
-
-  if (clienteId) queryPendientes = queryPendientes.eq('cliente_id', clienteId)
-  const { count: pendientes } = await queryPendientes
-
-  // Calcular precisión (documentos donde cuenta_sugerida == cuenta_final)
-  let queryPrecision = supabase
-    .from('documentos')
-    .select('cuenta_sugerida_id, cuenta_final_id')
-    .not('cuenta_final_id', 'is', null)
-    .not('cuenta_sugerida_id', 'is', null)
-
-  if (clienteId) queryPrecision = queryPrecision.eq('cliente_id', clienteId)
-  const { data: docsConFinal } = await queryPrecision
-
-  let precision = 95.0 // Default
-  if (docsConFinal && docsConFinal.length > 0) {
-    const correctos = docsConFinal.filter(d => d.cuenta_sugerida_id === d.cuenta_final_id).length
-    precision = (correctos / docsConFinal.length) * 100
-  }
-
-  return {
-    totalHoy: totalHoy || 0,
-    clasificados: clasificados || 0,
-    pendientes: pendientes || 0,
-    precision: Math.round(precision * 10) / 10
+    return {
+      totalHoy: stats?.totalHoy ?? 0,
+      clasificados: stats?.clasificados ?? 0,
+      pendientes: stats?.pendientes ?? 0,
+      precision: stats?.precision ?? 95.0,
+    }
+  } catch (error) {
+    console.error('Error fetching clasificador stats:', error)
+    return {
+      totalHoy: 0,
+      clasificados: 0,
+      pendientes: 0,
+      precision: 95.0,
+    }
   }
 }
 
 // Obtener cuentas contables para un cliente
+// TODO: Migrate cuentas_contables table to Convex
 export async function getCuentasContables(clienteId: string): Promise<CuentaContable[]> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from('cuentas_contables')
-    .select('*')
-    .eq('activa', true)
-    .order('codigo')
-
-  if (error) {
-    console.error('Error fetching cuentas:', error)
-    return []
-  }
-
-  return data || []
+  // Stub - cuentas_contables table not yet in Convex
+  // Return empty array until the table is migrated
+  console.log('getCuentasContables (stub) for client:', clienteId)
+  return []
 }
 
-// Confirmar clasificación sugerida
+// Confirmar clasificacion sugerida
 export async function confirmarClasificacion(
   documentoId: string,
   cuentaId: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  const { error } = await supabase
-    .from('documentos')
-    .update({
+  try {
+    await convex.mutation(api.documents.classifyDocument, {
+      id: documentoId as any,
       cuenta_final_id: cuentaId,
-      status: 'revisado',
+      confidence_score: 1.0,
       clasificado_por: 'manual',
-      clasificado_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
     })
-    .eq('id', documentoId)
 
-  if (error) {
-    console.error('Error confirmando clasificación:', error)
-    return { success: false, error: error.message }
+    revalidatePath('/dashboard/clasificador')
+    return { success: true }
+  } catch (error) {
+    console.error('Error confirmando clasificacion:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Error confirmando clasificacion' }
   }
-
-  revalidatePath('/dashboard/clasificador')
-  return { success: true }
 }
 
 // Rechazar y reclasificar documento
@@ -174,111 +183,87 @@ export async function reclasificarDocumento(
   cuentaCorrectaId: string,
   comentario?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  // Obtener documento actual para el feedback
-  const { data: doc } = await supabase
-    .from('documentos')
-    .select('cuenta_sugerida_id')
-    .eq('id', documentoId)
-    .single()
-
-  // Actualizar documento
-  const { error: updateError } = await supabase
-    .from('documentos')
-    .update({
+  try {
+    await convex.mutation(api.documents.classifyDocument, {
+      id: documentoId as any,
       cuenta_final_id: cuentaCorrectaId,
-      status: 'revisado',
       clasificado_por: 'manual',
-      clasificado_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
     })
-    .eq('id', documentoId)
 
-  if (updateError) {
-    return { success: false, error: updateError.message }
-  }
-
-  // Registrar feedback si hubo cuenta sugerida diferente
-  if (doc?.cuenta_sugerida_id && doc.cuenta_sugerida_id !== cuentaCorrectaId) {
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (user) {
-      await supabase.from('feedback_clasificacion').insert({
-        documento_id: documentoId,
-        cuenta_predicha_id: doc.cuenta_sugerida_id,
-        cuenta_correcta_id: cuentaCorrectaId,
-        usuario_id: user.id,
-        comentario: comentario || null
-      })
+    // TODO: Register feedback when feedback_clasificacion table is in Convex
+    if (comentario) {
+      console.log('Feedback for reclassification (stub):', { documentoId, comentario })
     }
-  }
 
-  revalidatePath('/dashboard/clasificador')
-  return { success: true }
+    revalidatePath('/dashboard/clasificador')
+    return { success: true }
+  } catch (error) {
+    console.error('Error reclasificando documento:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Error reclasificando' }
+  }
 }
 
-// Clasificación por lotes - aprobar todos los documentos con alta confianza
+// Clasificacion por lotes - aprobar todos los documentos con alta confianza
 export async function aprobarLoteAltaConfianza(
   clienteId: string,
   umbralConfianza: number = 0.9
 ): Promise<{ success: boolean; aprobados: number; error?: string }> {
-  const supabase = createClient()
+  try {
+    // Get pending documents from Convex
+    const docs = await convex.query(api.documents.listDocuments, {
+      clienteId: clienteId as any,
+      status: 'pendiente',
+      limit: 100,
+    })
 
-  // Obtener documentos pendientes con alta confianza
-  const { data: docs, error: fetchError } = await supabase
-    .from('documentos')
-    .select('id, cuenta_sugerida_id, confidence_score')
-    .eq('cliente_id', clienteId)
-    .eq('status', 'pendiente')
-    .not('cuenta_sugerida_id', 'is', null)
-    .gte('confidence_score', umbralConfianza)
+    if (!docs || docs.length === 0) {
+      return { success: true, aprobados: 0 }
+    }
 
-  if (fetchError) {
-    return { success: false, aprobados: 0, error: fetchError.message }
+    // Filter for high confidence docs with suggested accounts
+    const highConfidenceDocs = docs.filter((doc: any) =>
+      doc.cuenta_sugerida_id &&
+      doc.confidence_score &&
+      doc.confidence_score >= umbralConfianza
+    )
+
+    if (highConfidenceDocs.length === 0) {
+      return { success: true, aprobados: 0 }
+    }
+
+    // Approve each document
+    let aprobados = 0
+    for (const doc of highConfidenceDocs) {
+      try {
+        await convex.mutation(api.documents.classifyDocument, {
+          id: (doc._id ?? doc.id) as any,
+          cuenta_final_id: doc.cuenta_sugerida_id,
+          clasificado_por: 'modelo',
+        })
+        aprobados++
+      } catch (e) {
+        console.error('Error approving doc:', doc._id ?? doc.id, e)
+      }
+    }
+
+    revalidatePath('/dashboard/clasificador')
+    return { success: true, aprobados }
+  } catch (error) {
+    console.error('Error in batch approval:', error)
+    return { success: false, aprobados: 0, error: error instanceof Error ? error.message : 'Error en aprobacion por lote' }
   }
-
-  if (!docs || docs.length === 0) {
-    return { success: true, aprobados: 0 }
-  }
-
-  // Actualizar cada documento con su cuenta sugerida
-  for (const doc of docs) {
-    await supabase
-      .from('documentos')
-      .update({
-        cuenta_final_id: doc.cuenta_sugerida_id,
-        status: 'revisado',
-        clasificado_por: 'modelo',
-        clasificado_at: new Date().toISOString()
-      })
-      .eq('id', doc.id)
-  }
-
-  revalidatePath('/dashboard/clasificador')
-  return { success: true, aprobados: docs.length }
 }
 
 // Obtener lista de clientes
+// TODO: Migrate clientes table to Convex
 export async function getClientes(): Promise<{ id: string; razon_social: string; rut: string }[]> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from('clientes')
-    .select('id, razon_social, rut')
-    .eq('activo', true)
-    .order('razon_social')
-
-  if (error) {
-    console.error('Error fetching clientes:', error)
-    return []
-  }
-
-  return data || []
+  // Stub - clientes table not yet directly in Convex for this module
+  console.log('getClientes (stub)')
+  return []
 }
 
 // ============================================
-// CLASIFICACIÓN CON INTELIGENCIA ARTIFICIAL
+// CLASIFICACION CON INTELIGENCIA ARTIFICIAL
 // ============================================
 
 export interface ClasificacionIA {
@@ -296,37 +281,37 @@ export interface ResultadoClasificacionIA {
 }
 
 // System prompt para el clasificador
-const CLASIFICADOR_SYSTEM_PROMPT = `Eres un experto contador chileno especializado en clasificación de documentos tributarios según el plan de cuentas.
+const CLASIFICADOR_SYSTEM_PROMPT = `Eres un experto contador chileno especializado en clasificacion de documentos tributarios segun el plan de cuentas.
 
-Tu tarea es analizar documentos (facturas, boletas, notas de crédito) y determinar la cuenta contable más apropiada basándote en:
-- Tipo de documento (compra/venta, factura/boleta/nota crédito)
-- Glosa o descripción del documento
-- Monto y características
+Tu tarea es analizar documentos (facturas, boletas, notas de credito) y determinar la cuenta contable mas apropiada basandote en:
+- Tipo de documento (compra/venta, factura/boleta/nota credito)
+- Glosa o descripcion del documento
+- Monto y caracteristicas
 - Emisor del documento
 
 IMPORTANTE:
 - Para COMPRAS (es_compra = true):
-  - Gastos operacionales → cuentas de GASTO (51xxxx - 54xxxx)
-  - Compra de activos → cuentas de ACTIVO (11xxxx - 19xxxx)
-  - Servicios profesionales → Honorarios (530xxx)
+  - Gastos operacionales -> cuentas de GASTO (51xxxx - 54xxxx)
+  - Compra de activos -> cuentas de ACTIVO (11xxxx - 19xxxx)
+  - Servicios profesionales -> Honorarios (530xxx)
 
 - Para VENTAS (es_compra = false):
-  - Ingresos por ventas → cuentas de INGRESO (41xxxx - 44xxxx)
+  - Ingresos por ventas -> cuentas de INGRESO (41xxxx - 44xxxx)
 
 Responde SIEMPRE en formato JSON con este esquema:
 {
   "clasificaciones": [
     {
       "cuenta_id": "uuid de la cuenta",
-      "cuenta_codigo": "código de la cuenta",
+      "cuenta_codigo": "codigo de la cuenta",
       "cuenta_nombre": "nombre de la cuenta",
       "confianza": 0.95, // entre 0 y 1
-      "razonamiento": "explicación breve de por qué esta cuenta"
+      "razonamiento": "explicacion breve de por que esta cuenta"
     }
   ]
 }
 
-Proporciona hasta 3 opciones ordenadas por confianza. Si no hay información suficiente, indica confianza baja.`
+Proporciona hasta 3 opciones ordenadas por confianza. Si no hay informacion suficiente, indica confianza baja.`
 
 // Clasificar un documento con IA
 export async function clasificarDocumentoConIA(
@@ -336,57 +321,50 @@ export async function clasificarDocumentoConIA(
     return {
       success: false,
       clasificaciones: [],
-      error: 'OpenAI no está configurado'
+      error: 'OpenAI no esta configurado'
     }
   }
 
-  const supabase = createClient()
+  try {
+    // Obtener documento from Convex via search
+    const docs = await convex.query(api.documents.searchDocuments, {
+      searchTerm: documentoId,
+    })
 
-  // Obtener documento
-  const { data: documento, error: docError } = await supabase
-    .from('documentos')
-    .select(`
-      *,
-      cliente:clientes(id, razon_social, rut)
-    `)
-    .eq('id', documentoId)
-    .single()
+    const documento = docs?.find((d: any) => (d._id ?? d.id) === documentoId)
 
-  if (docError || !documento) {
-    return {
-      success: false,
-      clasificaciones: [],
-      error: 'Documento no encontrado'
+    if (!documento) {
+      return {
+        success: false,
+        clasificaciones: [],
+        error: 'Documento no encontrado'
+      }
     }
-  }
 
-  // Obtener cuentas contables del cliente
-  const { data: cuentas } = await supabase
-    .from('cuentas_contables')
-    .select('id, codigo, nombre, tipo')
-    .eq('activa', true)
-    .order('codigo')
+    // Obtener cuentas contables - stub since not in Convex yet
+    // TODO: Replace with Convex query when cuentas_contables is migrated
+    const cuentas: CuentaContable[] = []
 
-  if (!cuentas || cuentas.length === 0) {
-    return {
-      success: false,
-      clasificaciones: [],
-      error: 'No hay cuentas contables disponibles'
+    if (cuentas.length === 0) {
+      return {
+        success: false,
+        clasificaciones: [],
+        error: 'No hay cuentas contables disponibles (pendiente migracion a Convex)'
+      }
     }
-  }
 
-  // Preparar prompt con información del documento
-  const tipoDocNombre = {
-    'FACTURA_ELECTRONICA': 'Factura Electrónica',
-    'FACTURA_EXENTA': 'Factura Exenta',
-    'BOLETA_ELECTRONICA': 'Boleta Electrónica',
-    'NOTA_CREDITO': 'Nota de Crédito',
-    'NOTA_DEBITO': 'Nota de Débito',
-    'FACTURA_COMPRA': 'Factura de Compra',
-    'GUIA_DESPACHO': 'Guía de Despacho',
-  }[documento.tipo_documento] || documento.tipo_documento
+    // Preparar prompt con informacion del documento
+    const tipoDocNombre = {
+      'FACTURA_ELECTRONICA': 'Factura Electronica',
+      'FACTURA_EXENTA': 'Factura Exenta',
+      'BOLETA_ELECTRONICA': 'Boleta Electronica',
+      'NOTA_CREDITO': 'Nota de Credito',
+      'NOTA_DEBITO': 'Nota de Debito',
+      'FACTURA_COMPRA': 'Factura de Compra',
+      'GUIA_DESPACHO': 'Guia de Despacho',
+    }[documento.tipo_documento] || documento.tipo_documento
 
-  const userPrompt = `Clasifica este documento:
+    const userPrompt = `Clasifica este documento:
 
 DOCUMENTO:
 - Tipo: ${tipoDocNombre}
@@ -398,15 +376,14 @@ DOCUMENTO:
 - Monto Neto: $${documento.monto_neto?.toLocaleString('es-CL') || 0}
 - IVA: $${documento.monto_iva?.toLocaleString('es-CL') || 0}
 - Total: $${documento.monto_total?.toLocaleString('es-CL') || 0}
-- Es Compra: ${documento.es_compra ? 'Sí' : 'No'}
-- Es Activo Fijo: ${documento.es_activo_fijo ? 'Sí' : 'No'}
+- Es Compra: ${documento.es_compra ? 'Si' : 'No'}
+- Es Activo Fijo: ${documento.es_activo_fijo ? 'Si' : 'No'}
 
 CUENTAS DISPONIBLES:
 ${cuentas.map(c => `- ${c.id} | ${c.codigo} | ${c.nombre} (${c.tipo})`).join('\n')}
 
-Analiza el documento y sugiere las cuentas más apropiadas.`
+Analiza el documento y sugiere las cuentas mas apropiadas.`
 
-  try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -435,39 +412,19 @@ Analiza el documento y sugiere las cuentas más apropiadas.`
       cuentas.some(cuenta => cuenta.id === c.cuenta_id)
     )
 
-    // Guardar la mejor clasificación en el documento
+    // Guardar la mejor clasificacion en el documento via Convex
     if (clasificacionesValidas.length > 0) {
       const mejorClasificacion = clasificacionesValidas[0]
 
-      await supabase
-        .from('documentos')
-        .update({
-          cuenta_sugerida_id: mejorClasificacion.cuenta_id,
-          confidence_score: mejorClasificacion.confianza,
-          status: 'clasificado',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', documentoId)
+      await convex.mutation(api.documents.classifyDocument, {
+        id: documentoId as any,
+        cuenta_final_id: mejorClasificacion.cuenta_id,
+        confidence_score: mejorClasificacion.confianza,
+        clasificado_por: 'gpt-4o-mini-v1',
+      })
 
-      // Guardar en clasificaciones_ml
-      await supabase
-        .from('clasificaciones_ml')
-        .insert(
-          clasificacionesValidas.map((c, index) => ({
-            documento_id: documentoId,
-            modelo_version: 'gpt-4o-mini-v1',
-            cuenta_predicha_id: c.cuenta_id,
-            confidence: c.confianza,
-            ranking: index + 1,
-            features_input: {
-              tipo_documento: documento.tipo_documento,
-              glosa: documento.glosa,
-              monto_total: documento.monto_total,
-              es_compra: documento.es_compra,
-              emisor: documento.razon_social_emisor
-            }
-          }))
-        )
+      // TODO: Save to clasificaciones_ml table when migrated to Convex
+      console.log('ML classifications (stub - not saved to Convex):', clasificacionesValidas.length)
 
       revalidatePath('/dashboard/clasificador')
     }
@@ -478,7 +435,7 @@ Analiza el documento y sugiere las cuentas más apropiadas.`
     }
 
   } catch (error) {
-    console.error('Error en clasificación IA:', error)
+    console.error('Error en clasificacion IA:', error)
     return {
       success: false,
       clasificaciones: [],
@@ -487,7 +444,7 @@ Analiza el documento y sugiere las cuentas más apropiadas.`
   }
 }
 
-// Clasificar múltiples documentos con IA
+// Clasificar multiples documentos con IA
 export async function clasificarLoteConIA(
   documentoIds: string[]
 ): Promise<{ success: boolean; procesados: number; errores: number }> {
@@ -511,23 +468,26 @@ export async function clasificarLoteConIA(
 export async function clasificarTodosPendientesConIA(
   clienteId: string
 ): Promise<{ success: boolean; procesados: number; errores: number; total: number }> {
-  const supabase = createClient()
+  try {
+    const documentos = await convex.query(api.documents.listDocuments, {
+      clienteId: clienteId as any,
+      status: 'pendiente',
+      limit: 50, // Limitar para evitar timeouts
+    })
 
-  const { data: documentos } = await supabase
-    .from('documentos')
-    .select('id')
-    .eq('cliente_id', clienteId)
-    .eq('status', 'pendiente')
-    .limit(50) // Limitar para evitar timeouts
+    if (!documentos || documentos.length === 0) {
+      return { success: true, procesados: 0, errores: 0, total: 0 }
+    }
 
-  if (!documentos || documentos.length === 0) {
-    return { success: true, procesados: 0, errores: 0, total: 0 }
-  }
+    const ids = documentos.map((d: any) => d._id ?? d.id)
+    const resultado = await clasificarLoteConIA(ids)
 
-  const resultado = await clasificarLoteConIA(documentos.map(d => d.id))
-
-  return {
-    ...resultado,
-    total: documentos.length
+    return {
+      ...resultado,
+      total: documentos.length
+    }
+  } catch (error) {
+    console.error('Error in clasificarTodosPendientesConIA:', error)
+    return { success: false, procesados: 0, errores: 0, total: 0 }
   }
 }

@@ -1,6 +1,13 @@
+// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
-import { createClient } from '@/lib/supabase-server'
+import { ConvexHttpClient } from "convex/browser"
+import { api } from "../../convex/_generated/api"
+
+const convex = process.env.NEXT_PUBLIC_CONVEX_URL
+  ? new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+  : null
+const DEMO_USER_ID = 'demo-user'
 
 export interface Notificacion {
   id: string
@@ -20,115 +27,113 @@ export interface NotificacionStats {
 
 // Obtener notificaciones del usuario
 export async function getNotificaciones(limite: number = 10): Promise<Notificacion[]> {
-  const supabase = createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  // Si no hay usuario, devolver notificaciones demo
-  if (!user) {
+  if (!convex) {
     return getNotificacionesDemo()
   }
 
-  const { data, error } = await supabase
-    .from('notificaciones')
-    .select('*')
-    .eq('usuario_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(limite)
+  try {
+    const data = await convex.query(api.notifications.listNotifications, {
+      usuario_id: DEMO_USER_ID,
+      limit: limite,
+    })
 
-  if (error || !data) {
-    console.error('Error fetching notifications:', error)
+    if (!data || data.length === 0) {
+      return getNotificacionesDemo()
+    }
+
+    return data.map((n: any) => ({
+      id: n._id ?? n.id,
+      usuario_id: n.usuario_id,
+      tipo: n.tipo,
+      titulo: n.titulo,
+      mensaje: n.mensaje,
+      leida: n.leida ?? false,
+      enlace: n.link ?? n.enlace,
+      created_at: n._creationTime ? new Date(n._creationTime).toISOString() : n.created_at,
+    })) as Notificacion[]
+  } catch (error) {
+    console.error('Error fetching notifications from Convex:', error)
     return getNotificacionesDemo()
   }
-
-  return data as Notificacion[]
 }
 
-// Obtener estadísticas de notificaciones
+// Obtener estadisticas de notificaciones
 export async function getNotificacionStats(): Promise<NotificacionStats> {
-  const supabase = createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
+  if (!convex) {
     return { total: 5, noLeidas: 3 }
   }
 
-  const { count: total } = await supabase
-    .from('notificaciones')
-    .select('*', { count: 'exact', head: true })
-    .eq('usuario_id', user.id)
+  try {
+    const result = await convex.query(api.notifications.getUnreadCount, {
+      usuario_id: DEMO_USER_ID,
+    })
 
-  const { count: noLeidas } = await supabase
-    .from('notificaciones')
-    .select('*', { count: 'exact', head: true })
-    .eq('usuario_id', user.id)
-    .eq('leida', false)
+    const allNotifications = await convex.query(api.notifications.listNotifications, {
+      usuario_id: DEMO_USER_ID,
+    })
 
-  return {
-    total: total || 0,
-    noLeidas: noLeidas || 0
+    return {
+      total: allNotifications?.length ?? 0,
+      noLeidas: result?.count ?? 0,
+    }
+  } catch (error) {
+    console.error('Error fetching notification stats from Convex:', error)
+    return { total: 5, noLeidas: 3 }
   }
 }
 
-// Marcar notificación como leída
+// Marcar notificacion como leida
 export async function marcarComoLeida(notificacionId: string): Promise<{ success: boolean }> {
-  const supabase = createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
+  if (!convex) {
     return { success: true } // Demo mode
   }
 
-  const { error } = await supabase
-    .from('notificaciones')
-    .update({ leida: true })
-    .eq('id', notificacionId)
-    .eq('usuario_id', user.id)
-
-  return { success: !error }
+  try {
+    await convex.mutation(api.notifications.markAsRead, {
+      id: notificacionId as any,
+    })
+    return { success: true }
+  } catch (error) {
+    console.error('Error marking notification as read:', error)
+    return { success: false }
+  }
 }
 
-// Marcar todas como leídas
+// Marcar todas como leidas
 export async function marcarTodasComoLeidas(): Promise<{ success: boolean }> {
-  const supabase = createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
+  if (!convex) {
     return { success: true }
   }
 
-  const { error } = await supabase
-    .from('notificaciones')
-    .update({ leida: true })
-    .eq('usuario_id', user.id)
-    .eq('leida', false)
-
-  return { success: !error }
+  try {
+    await convex.mutation(api.notifications.markAllAsRead, {
+      usuario_id: DEMO_USER_ID,
+    })
+    return { success: true }
+  } catch (error) {
+    console.error('Error marking all notifications as read:', error)
+    return { success: false }
+  }
 }
 
-// Eliminar notificación
+// Eliminar notificacion
 export async function eliminarNotificacion(notificacionId: string): Promise<{ success: boolean }> {
-  const supabase = createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
+  if (!convex) {
     return { success: true }
   }
 
-  const { error } = await supabase
-    .from('notificaciones')
-    .delete()
-    .eq('id', notificacionId)
-    .eq('usuario_id', user.id)
-
-  return { success: !error }
+  try {
+    await convex.mutation(api.notifications.deleteNotification, {
+      id: notificacionId as any,
+    })
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting notification:', error)
+    return { success: false }
+  }
 }
 
-// Crear notificación (para uso interno del sistema)
+// Crear notificacion (para uso interno del sistema)
 export async function crearNotificacion(
   usuarioId: string,
   datos: {
@@ -138,30 +143,39 @@ export async function crearNotificacion(
     enlace?: string
   }
 ): Promise<{ success: boolean; notificacion?: Notificacion }> {
-  const supabase = createClient()
+  if (!convex) {
+    return { success: false }
+  }
 
-  const { data, error } = await supabase
-    .from('notificaciones')
-    .insert({
+  try {
+    const id = await convex.mutation(api.notifications.createNotification, {
       usuario_id: usuarioId,
       tipo: datos.tipo,
       titulo: datos.titulo,
       mensaje: datos.mensaje,
-      enlace: datos.enlace,
-      leida: false
+      link: datos.enlace,
     })
-    .select()
-    .single()
 
-  if (error) {
+    return {
+      success: true,
+      notificacion: {
+        id: id as any,
+        usuario_id: usuarioId,
+        tipo: datos.tipo,
+        titulo: datos.titulo,
+        mensaje: datos.mensaje,
+        leida: false,
+        enlace: datos.enlace,
+        created_at: new Date().toISOString(),
+      },
+    }
+  } catch (error) {
     console.error('Error creating notification:', error)
     return { success: false }
   }
-
-  return { success: true, notificacion: data as Notificacion }
 }
 
-// Notificaciones demo para modo sin autenticación
+// Notificaciones demo para modo sin autenticacion
 function getNotificacionesDemo(): Notificacion[] {
   const now = new Date()
   return [
@@ -169,8 +183,8 @@ function getNotificacionesDemo(): Notificacion[] {
       id: 'demo-1',
       usuario_id: 'demo',
       tipo: 'success',
-      titulo: 'Clasificación completada',
-      mensaje: '45 documentos clasificados automáticamente con 98% de precisión.',
+      titulo: 'Clasificacion completada',
+      mensaje: '45 documentos clasificados automaticamente con 98% de precision.',
       leida: false,
       enlace: '/dashboard/clasificador',
       created_at: new Date(now.getTime() - 5 * 60 * 1000).toISOString()
@@ -179,7 +193,7 @@ function getNotificacionesDemo(): Notificacion[] {
       id: 'demo-2',
       usuario_id: 'demo',
       tipo: 'warning',
-      titulo: 'F29 pendiente de validación',
+      titulo: 'F29 pendiente de validacion',
       mensaje: 'El F29 de Empresa ABC SpA tiene diferencias en IVA.',
       leida: false,
       enlace: '/dashboard/f29',
@@ -209,7 +223,7 @@ function getNotificacionesDemo(): Notificacion[] {
       id: 'demo-5',
       usuario_id: 'demo',
       tipo: 'error',
-      titulo: 'Error de conexión SII',
+      titulo: 'Error de conexion SII',
       mensaje: 'No se pudo conectar al portal del SII. Reintentando...',
       leida: true,
       created_at: new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString()

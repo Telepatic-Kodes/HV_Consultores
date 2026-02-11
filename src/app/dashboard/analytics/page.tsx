@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase-browser'
+// TODO: Phase 2 - Replace demo user with Convex auth session
 import { DocumentAnalyticsDashboard } from '@/components/analytics/DocumentAnalyticsDashboard'
 import { AutomationAnalyticsDashboard } from '@/components/analytics/AutomationAnalyticsDashboard'
 import { TeamAnalyticsDashboard } from '@/components/analytics/TeamAnalyticsDashboard'
@@ -19,6 +19,13 @@ import { ReportScheduler } from '@/components/analytics/ReportScheduler'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+
+// Demo user constant - replaces Supabase auth session
+const DEMO_USER = {
+  id: 'demo-user-hv-consultores',
+  email: 'demo@hvconsultores.cl',
+  name: 'Usuario Demo',
+}
 
 interface AnalyticsDashboardPageProps {
   searchParams?: {
@@ -32,32 +39,13 @@ export default function AnalyticsDashboardPage({
   const [organizationId, setOrganizationId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const supabase = createClient()
 
-  // Get user's organization
+  // Use demo user instead of Supabase auth
   useEffect(() => {
-    const getUser = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession()
-
-        if (!session?.user?.id) {
-          router.push('/login')
-          return
-        }
-
-        setOrganizationId(session.user.id)
-      } catch (error) {
-        console.error('Error getting user:', error)
-        router.push('/login')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    getUser()
-  }, [supabase, router])
+    // TODO: Phase 2 - Replace with Convex auth session check
+    setOrganizationId(DEMO_USER.id)
+    setLoading(false)
+  }, [router])
 
   if (loading) {
     return <LoadingState />
@@ -93,13 +81,13 @@ export default function AnalyticsDashboardPage({
       {/* Navigation Tabs */}
       <Tabs value={activeTab} defaultValue='documents' className='space-y-6'>
         <TabsList className='grid w-full grid-cols-7'>
-          <TabsTrigger value='documents'>📄 Documents</TabsTrigger>
-          <TabsTrigger value='automation'>⚙️ Automation</TabsTrigger>
-          <TabsTrigger value='team'>👥 Team</TabsTrigger>
-          <TabsTrigger value='queue'>📋 Queue</TabsTrigger>
-          <TabsTrigger value='compliance'>✓ Compliance</TabsTrigger>
-          <TabsTrigger value='alerts'>🔔 Alerts</TabsTrigger>
-          <TabsTrigger value='reports'>📊 Reports</TabsTrigger>
+          <TabsTrigger value='documents'>Documents</TabsTrigger>
+          <TabsTrigger value='automation'>Automation</TabsTrigger>
+          <TabsTrigger value='team'>Team</TabsTrigger>
+          <TabsTrigger value='queue'>Queue</TabsTrigger>
+          <TabsTrigger value='compliance'>Compliance</TabsTrigger>
+          <TabsTrigger value='alerts'>Alerts</TabsTrigger>
+          <TabsTrigger value='reports'>Reports</TabsTrigger>
         </TabsList>
 
         {/* Documents Tab */}
@@ -153,7 +141,7 @@ export default function AnalyticsDashboardPage({
                   style={{ width: '100%' }}
                 />
               </div>
-              <p className='mt-1 text-xs text-muted-foreground'>✓ Complete</p>
+              <p className='mt-1 text-xs text-muted-foreground'>Complete</p>
             </div>
 
             <div>
@@ -166,7 +154,7 @@ export default function AnalyticsDashboardPage({
                   style={{ width: '100%' }}
                 />
               </div>
-              <p className='mt-1 text-xs text-muted-foreground'>✓ Complete</p>
+              <p className='mt-1 text-xs text-muted-foreground'>Complete</p>
             </div>
 
             <div>
@@ -177,7 +165,7 @@ export default function AnalyticsDashboardPage({
                   style={{ width: '20%' }}
                 />
               </div>
-              <p className='mt-1 text-xs text-muted-foreground'>In Progress (Compliance ✓)</p>
+              <p className='mt-1 text-xs text-muted-foreground'>In Progress (Compliance done)</p>
             </div>
 
             <div>
@@ -203,19 +191,19 @@ export default function AnalyticsDashboardPage({
               </li>
               <li className='flex items-center gap-2'>
                 <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Document analytics dashboard built ✓
+                Document analytics dashboard built
               </li>
               <li className='flex items-center gap-2'>
                 <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Automation analytics dashboard built ✓
+                Automation analytics dashboard built
               </li>
               <li className='flex items-center gap-2'>
                 <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Team analytics dashboard built ✓
+                Team analytics dashboard built
               </li>
               <li className='flex items-center gap-2'>
                 <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Queue performance dashboard built ✓
+                Queue performance dashboard built
               </li>
               <li className='flex items-center gap-2'>
                 <span className='h-2 w-2 rounded-full bg-green-500'></span>

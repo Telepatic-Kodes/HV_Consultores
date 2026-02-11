@@ -7,61 +7,8 @@
  * Returns: Document metrics summary with charts and trends
  */
 
-import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
-import { aggregateDocumentMetrics } from '@/lib/analytics/aggregation'
-import { AnalyticsFilter, AnalyticsApiResponse } from '@/types/analytics'
-
-// Rate limiting helper
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now()
-  const record = rateLimitMap.get(userId)
-
-  if (!record || record.resetTime < now) {
-    rateLimitMap.set(userId, { count: 1, resetTime: now + 60000 })
-    return true
-  }
-
-  if (record.count >= 30) {
-    return false
-  }
-
-  record.count += 1
-  return true
-}
-
-// Request validation
-function validateAnalyticsFilter(
-  filter: any
-): { valid: boolean; error?: string } {
-  if (!filter.organizationId) {
-    return { valid: false, error: 'organizationId is required' }
-  }
-
-  if (!filter.dateRange) {
-    return { valid: false, error: 'dateRange is required' }
-  }
-
-  if (!filter.dateRange.startDate || !filter.dateRange.endDate) {
-    return { valid: false, error: 'startDate and endDate are required' }
-  }
-
-  const startDate = new Date(filter.dateRange.startDate)
-  const endDate = new Date(filter.dateRange.endDate)
-
-  if (startDate > endDate) {
-    return { valid: false, error: 'startDate cannot be after endDate' }
-  }
-
-  const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-  if (daysDiff > 730) {
-    return { valid: false, error: 'Date range cannot exceed 2 years' }
-  }
-
-  return { valid: true }
-}
+// TODO: Phase 2 - Implement via Convex queries (replace aggregateDocumentMetrics)
 
 /**
  * POST /api/analytics/documents
@@ -69,83 +16,26 @@ function validateAnalyticsFilter(
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = createClient()
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    // Check rate limit
-    if (!checkRateLimit(session.user.id)) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Maximum 30 requests per minute.' },
-        { status: 429 }
-      )
-    }
-
-    // Parse request body
-    const body = await request.json()
-
-    // Validate filter
-    const validation = validateAnalyticsFilter(body)
-    if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      )
-    }
-
-    // Ensure user can only access their own organization metrics
-    if (body.organizationId !== session.user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden: Cannot access other organizations metrics' },
-        { status: 403 }
-      )
-    }
-
-    // Prepare filter
-    const filter: AnalyticsFilter = {
-      organizationId: body.organizationId,
-      dateRange: {
-        startDate: new Date(body.dateRange.startDate),
-        endDate: new Date(body.dateRange.endDate),
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          totalDocuments: 0,
+          processedToday: 0,
+          pendingReview: 0,
+          classifiedDocuments: 0,
+          documentsByType: [],
+          processingTrend: [],
+        },
+        message: 'Pending Convex migration',
+        timestamp: new Date(),
       },
-      groupBy: body.groupBy || 'day',
-      limit: Math.min(body.limit || 100, 1000),
-      offset: body.offset || 0,
-    }
-
-    // Aggregate metrics with caching
-    const cacheKey = `doc-analytics-${filter.organizationId}-${filter.dateRange.startDate.toISOString()}-${filter.dateRange.endDate.toISOString()}`
-
-    // TODO: Implement Redis caching for performance
-    // const cached = await redis.get(cacheKey)
-    // if (cached) return NextResponse.json(JSON.parse(cached))
-
-    const metrics = await aggregateDocumentMetrics(filter)
-
-    // Prepare response
-    const response: AnalyticsApiResponse<any> = {
-      success: true,
-      data: metrics,
-      timestamp: new Date(),
-    }
-
-    // Cache result for 5 minutes
-    // TODO: await redis.setex(cacheKey, 300, JSON.stringify(response))
-
-    return NextResponse.json(response, {
-      headers: {
-        'Cache-Control': 'private, max-age=300',
-      },
-    })
+      {
+        headers: {
+          'Cache-Control': 'private, max-age=300',
+        },
+      }
+    )
   } catch (error) {
     console.error('Error in document analytics endpoint:', error)
 

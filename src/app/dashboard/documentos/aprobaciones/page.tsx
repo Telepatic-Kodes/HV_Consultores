@@ -23,19 +23,26 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react'
-import { createClient } from '@/lib/supabase-browser'
+// TODO: Phase 2 - Replace with Convex useQuery for documento_aprobaciones
 import { aprobarDocumento, rechazarDocumento } from '../actions'
-import type { Database } from '@/types/database.types'
 
-type DocumentoCarga = Database['public']['Tables']['documento_cargas']['Row']
-type DocumentoAprobacion = Database['public']['Tables']['documento_aprobaciones']['Row']
+interface DocumentoCarga {
+  id: string
+  nombre_archivo: string | null
+  tipo_documento: string | null
+  folio_documento: string | null
+  monto_total: number | null
+}
 
-interface AprobacionConDocumento extends DocumentoAprobacion {
-  documento?: DocumentoCarga
+interface DocumentoAprobacion {
+  id: string
+  estado: string | null
+  creado_en: string | null
+  documento?: DocumentoCarga | null
 }
 
 export default function AprobacionesPage() {
-  const [aprobaciones, setAprobaciones] = useState<AprobacionConDocumento[]>([])
+  const [aprobaciones, setAprobaciones] = useState<DocumentoAprobacion[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [rejectReason, setRejectReason] = useState('')
@@ -45,24 +52,9 @@ export default function AprobacionesPage() {
   const cargarAprobaciones = async () => {
     setLoading(true)
     try {
-      const supabase = createClient()
-
-      const { data, error } = await supabase
-        .from('documento_aprobaciones')
-        .select(
-          `
-          *,
-          documento:documento_cargas(*)
-        `
-        )
-        .eq('estado', 'pendiente')
-        .order('creado_en', { ascending: false })
-
-      if (error) {
-        console.error('Error cargando aprobaciones:', error)
-      } else {
-        setAprobaciones(data || [])
-      }
+      // TODO: Phase 2 - Replace with Convex useQuery for pending approvals
+      // Stub with empty data until Convex documento_aprobaciones table is available
+      setAprobaciones([])
     } finally {
       setLoading(false)
     }
@@ -128,7 +120,7 @@ export default function AprobacionesPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Documentos Pendientes de Aprobación</CardTitle>
+          <CardTitle>Documentos Pendientes de Aprobacion</CardTitle>
           <CardDescription>
             Total: {aprobaciones.length} documento{aprobaciones.length !== 1 ? 's' : ''}
           </CardDescription>
@@ -136,7 +128,7 @@ export default function AprobacionesPage() {
         <CardContent>
           {aprobaciones.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              No hay documentos pendientes de aprobación
+              No hay documentos pendientes de aprobacion
             </div>
           ) : (
             <div className="border rounded-lg overflow-hidden">
@@ -213,12 +205,12 @@ export default function AprobacionesPage() {
           <DialogHeader>
             <DialogTitle>Rechazar Documento</DialogTitle>
             <DialogDescription>
-              Por favor proporciona una razón para rechazar este documento
+              Por favor proporciona una razon para rechazar este documento
             </DialogDescription>
           </DialogHeader>
 
           <Textarea
-            placeholder="Razón del rechazo..."
+            placeholder="Razon del rechazo..."
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
             rows={4}

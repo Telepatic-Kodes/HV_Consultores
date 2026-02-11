@@ -210,36 +210,15 @@ export interface DocumentoConSimilitud {
   similarity: number
 }
 
-// Buscar documentos similares usando Supabase
+// TODO: Phase 2 - Implement vector search in Convex
+// Was: Supabase RPC 'search_documentos_conocimiento' with pgvector
+// Buscar documentos similares (stub - returns empty until Convex vector search is implemented)
 export async function buscarDocumentosRelevantes(
-  supabase: any,
-  pregunta: string,
-  limite: number = 3,
-  umbralSimilitud: number = 0.5
+  _supabaseClient: any,
+  _pregunta: string,
+  _limite: number = 3,
+  _umbralSimilitud: number = 0.5
 ): Promise<DocumentoConSimilitud[]> {
-  if (!isOpenAIConfigured()) {
-    return []
-  }
-
-  try {
-    // Generar embedding de la pregunta
-    const queryEmbedding = await generarEmbedding(pregunta)
-
-    // Buscar documentos similares usando la función RPC
-    const { data, error } = await supabase.rpc('search_documentos_conocimiento', {
-      query_embedding: queryEmbedding,
-      match_threshold: umbralSimilitud,
-      match_count: limite,
-    })
-
-    if (error) {
-      console.error('Error en búsqueda semántica:', error)
-      return []
-    }
-
-    return (data || []) as DocumentoConSimilitud[]
-  } catch (error) {
-    console.error('Error buscando documentos:', error)
-    return []
-  }
+  // Stub: returns empty array until Convex vector search module is implemented
+  return []
 }

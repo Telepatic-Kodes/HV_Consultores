@@ -216,6 +216,27 @@ export const getBotStats = query({
 // ─── BOT MUTATIONS ─────────────────────────────────────────
 
 /**
+ * Create bot definition
+ */
+export const createBotDefinicion = mutation({
+  args: {
+    nombre: v.string(),
+    portal: v.string(),
+    descripcion: v.optional(v.string()),
+    frecuencia_default: v.optional(v.string()),
+    config_default: v.optional(v.any()),
+    activo: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("bot_definiciones", {
+      ...args,
+      activo: args.activo ?? true,
+      created_at: new Date().toISOString(),
+    });
+  },
+});
+
+/**
  * Create bot job
  */
 export const createJob = mutation({
@@ -391,3 +412,7 @@ export const cancelJob = mutation({
     return { success: true };
   },
 });
+
+// ─── ALIASES (Spanish ↔ English compatibility) ──────────
+export const listBotDefinitions = listBotDefiniciones;
+export const getBotDefinition = getBotDefinicion;

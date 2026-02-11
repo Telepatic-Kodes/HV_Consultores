@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase-browser'
+// TODO: Phase 2 - Replace demo registration with Convex auth (e.g. Clerk or ConvexAuth)
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Mail, Lock, User, AlertCircle, Loader2, CheckCircle, Building2, ArrowRight } from 'lucide-react'
@@ -37,22 +37,9 @@ export default function RegistroPage() {
     setLoading(true)
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName,
-          },
-        },
-      })
-
-      if (error) {
-        setError(error.message)
-        return
-      }
-
+      // Demo mode: simulate successful registration
+      // TODO: Phase 2 - Implement real signup with Convex auth
+      await new Promise((resolve) => setTimeout(resolve, 500))
       setSuccess(true)
     } catch (err) {
       setError('Error al crear la cuenta. Intenta nuevamente.')
@@ -70,8 +57,7 @@ export default function RegistroPage() {
           </div>
           <h2 className="text-2xl font-semibold text-foreground">Registro Exitoso</h2>
           <p className="mt-3 text-muted-foreground">
-            Hemos enviado un email de confirmacion a <strong className="text-foreground">{formData.email}</strong>.
-            Por favor, revisa tu bandeja de entrada y confirma tu cuenta.
+            Tu cuenta ha sido creada. Puedes iniciar sesion con tus credenciales.
           </p>
           <Button asChild className="mt-8 shadow-executive">
             <Link href="/login">

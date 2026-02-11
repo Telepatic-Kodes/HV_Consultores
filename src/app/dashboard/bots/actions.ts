@@ -8,10 +8,33 @@ import { revalidatePath } from 'next/cache'
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
 const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null
 
-// Get bots list
-export async function getBots() {
+// Get bots list with stats (mapped to BotConStats)
+export async function getBots(): Promise<BotConStats[]> {
   try {
-    return await convex.query(api.bots.listBotDefinitions, {})
+    const [bots, jobs] = await Promise.all([
+      convex!.query(api.bots.listBotDefiniciones, {}),
+      convex!.query(api.bots.listJobs, {}),
+    ])
+    const today = new Date().toISOString().slice(0, 10)
+    return (bots as any[]).map((b: any) => {
+      const botJobs = (jobs as any[]).filter((j: any) => j.bot_id === b._id)
+      const todayJobs = botJobs.filter((j: any) => j.created_at?.startsWith(today))
+      return {
+        _id: b._id,
+        id: b._id,
+        nombre: b.nombre,
+        tipo: b.portal || 'rpa',
+        descripcion: b.descripcion,
+        portal: b.portal,
+        activo: b.activo ?? true,
+        total_jobs: botJobs.length,
+        jobs_exitosos: botJobs.filter((j: any) => j.status === 'completado').length,
+        jobs_fallidos: botJobs.filter((j: any) => j.status === 'fallido').length,
+        exitos_hoy: todayJobs.filter((j: any) => j.status === 'completado').length,
+        fallos_hoy: todayJobs.filter((j: any) => j.status === 'fallido').length,
+        ultimo_job: botJobs[0] || null,
+      }
+    })
   } catch (error) {
     console.error('Error fetching bots:', error)
     return []
@@ -93,14 +116,19 @@ export async function getBotStats(): Promise<BotStats> {
       convex.query(api.bots.listBotDefinitions, {}),
       convex.query(api.bots.listJobs, {}),
     ])
+    const today = new Date().toISOString().slice(0, 10)
+    const todayJobs = jobs.filter((j: any) => j.created_at?.startsWith(today))
     return {
       total: bots.length,
+      totalBots: bots.length,
       activos: bots.filter((b: any) => b.activo).length,
       ejecutando: jobs.filter((j: any) => j.status === 'ejecutando').length,
       fallidos: jobs.filter((j: any) => j.status === 'fallido').length,
+      tareasHoy: todayJobs.length,
+      erroresHoy: todayJobs.filter((j: any) => j.status === 'fallido').length,
     }
   } catch {
-    return { total: 0, activos: 0, ejecutando: 0, fallidos: 0 }
+    return { total: 0, totalBots: 0, activos: 0, ejecutando: 0, fallidos: 0, tareasHoy: 0, erroresHoy: 0 }
   }
 }
 

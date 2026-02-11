@@ -4,9 +4,8 @@
  * Phase 7 Week 3: Real-time report generation and multi-channel delivery
  * Created: 2026-01-11
  */
-
-import { createClient } from '@/lib/supabase-server'
-// cookies import removed — using Convex backend (demo mode)
+// TODO: Phase 2 - Implement report generation in Convex
+// Tables needed: report_schedules, report_delivery_history
 
 // =============================================================================
 // TYPE DEFINITIONS
@@ -75,20 +74,14 @@ class MetricsAggregator {
    * Get document analytics data
    */
   static async getDocumentMetrics(organizationId: string): Promise<Record<string, unknown>> {
-    // In production, query analytics_document_daily table
     return {
-      totalDocuments: 2450,
-      activeDocuments: 2100,
-      archivedDocuments: 320,
-      avgDocumentAge: 145,
-      storageUsedGb: 125.5,
-      uploadCountToday: 42,
-      documentTypes: {
-        pdf: 1200,
-        docx: 800,
-        xlsx: 300,
-        other: 150,
-      },
+      totalDocuments: 0,
+      activeDocuments: 0,
+      archivedDocuments: 0,
+      avgDocumentAge: 0,
+      storageUsedGb: 0,
+      uploadCountToday: 0,
+      documentTypes: {},
     }
   }
 
@@ -97,16 +90,13 @@ class MetricsAggregator {
    */
   static async getAutomationMetrics(organizationId: string): Promise<Record<string, unknown>> {
     return {
-      activeRules: 45,
-      successRate: 98.5,
-      totalExecutions: 12450,
-      failedExecutions: 187,
-      avgExecutionTime: 2.3,
-      hoursPerMonthSaved: 156,
-      topRules: [
-        { name: 'Archive Old Documents', successRate: 99.8, executions: 4200 },
-        { name: 'Email Notifications', successRate: 98.2, executions: 3800 },
-      ],
+      activeRules: 0,
+      successRate: 0,
+      totalExecutions: 0,
+      failedExecutions: 0,
+      avgExecutionTime: 0,
+      hoursPerMonthSaved: 0,
+      topRules: [],
     }
   }
 
@@ -115,20 +105,13 @@ class MetricsAggregator {
    */
   static async getTeamMetrics(organizationId: string): Promise<Record<string, unknown>> {
     return {
-      totalUsers: 24,
-      activeUsers: 20,
-      peakActivityHour: 10,
-      avgSessionDuration: 45,
-      collaborationScore: 78,
-      topPerformers: [
-        { name: 'Alice Johnson', actions: 450 },
-        { name: 'Bob Smith', actions: 380 },
-      ],
-      departmentBreakdown: {
-        operations: { users: 12, activityScore: 85 },
-        management: { users: 8, activityScore: 72 },
-        support: { users: 4, activityScore: 68 },
-      },
+      totalUsers: 0,
+      activeUsers: 0,
+      peakActivityHour: 0,
+      avgSessionDuration: 0,
+      collaborationScore: 0,
+      topPerformers: [],
+      departmentBreakdown: {},
     }
   }
 
@@ -137,22 +120,17 @@ class MetricsAggregator {
    */
   static async getQueueMetrics(organizationId: string): Promise<Record<string, unknown>> {
     return {
-      currentQueueDepth: 42,
-      successRate: 99.2,
-      avgLatency: 245,
-      throughput: 1250,
-      p95Latency: 450,
-      p99Latency: 850,
-      jobsByType: {
-        email: { count: 450, successRate: 98.5 },
-        webhook: { count: 380, successRate: 99.2 },
-        archive: { count: 250, successRate: 99.8 },
-        notification: { count: 170, successRate: 97.5 },
-      },
+      currentQueueDepth: 0,
+      successRate: 0,
+      avgLatency: 0,
+      throughput: 0,
+      p95Latency: 0,
+      p99Latency: 0,
+      jobsByType: {},
       systemHealth: {
-        cpuUsage: 35,
-        memoryUsage: 48,
-        databaseConnections: 12,
+        cpuUsage: 0,
+        memoryUsage: 0,
+        databaseConnections: 0,
       },
     }
   }
@@ -162,18 +140,13 @@ class MetricsAggregator {
    */
   static async getComplianceMetrics(organizationId: string): Promise<Record<string, unknown>> {
     return {
-      overallScore: 84,
-      gdrpScore: 85,
-      hipaaScore: 88,
-      soc2Score: 80,
-      iso27001Score: 82,
-      frameworks: [
-        { name: 'GDPR', score: 85, status: 'compliant', issuesCount: 2 },
-        { name: 'HIPAA', score: 88, status: 'compliant', issuesCount: 1 },
-        { name: 'SOC2', score: 80, status: 'in-progress', issuesCount: 4 },
-        { name: 'ISO27001', score: 82, status: 'compliant', issuesCount: 3 },
-      ],
-      recentViolations: 2,
+      overallScore: 0,
+      gdrpScore: 0,
+      hipaaScore: 0,
+      soc2Score: 0,
+      iso27001Score: 0,
+      frameworks: [],
+      recentViolations: 0,
       violationTrend: 'stable',
     }
   }
@@ -318,29 +291,8 @@ class ReportDeliveryService {
     fileBuffer: Buffer,
     fileName: string
   ): Promise<{ status: 'sent' | 'failed'; error?: string }> {
-    try {
-      const formData = new FormData()
-      formData.append('recipients', JSON.stringify(recipients))
-      formData.append('subject', `Report: ${reportName}`)
-      formData.append('message', `Please find attached your requested report.`)
-      formData.append('file', new Blob([fileBuffer]), fileName)
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notifications/email`, {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        return { status: 'failed', error: `HTTP ${response.status}` }
-      }
-
-      return { status: 'sent' }
-    } catch (error) {
-      return {
-        status: 'failed',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }
-    }
+    // Stub: returns failed since no delivery mechanism available
+    return { status: 'failed', error: 'Email delivery not configured in demo mode' }
   }
 
   /**
@@ -351,45 +303,8 @@ class ReportDeliveryService {
     reportName: string,
     downloadUrl: string
   ): Promise<{ status: 'sent' | 'failed'; error?: string }> {
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: `📊 ${reportName} Report`,
-          blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `*${reportName} Report*\n_Generated: ${new Date().toLocaleString()}_`,
-              },
-            },
-            {
-              type: 'actions',
-              elements: [
-                {
-                  type: 'button',
-                  text: { type: 'plain_text', text: 'View Report' },
-                  url: downloadUrl,
-                },
-              ],
-            },
-          ],
-        }),
-      })
-
-      if (!response.ok) {
-        return { status: 'failed', error: `HTTP ${response.status}` }
-      }
-
-      return { status: 'sent' }
-    } catch (error) {
-      return {
-        status: 'failed',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }
-    }
+    // Stub: returns failed since no delivery mechanism available
+    return { status: 'failed', error: 'Slack delivery not configured in demo mode' }
   }
 
   /**
@@ -400,29 +315,8 @@ class ReportDeliveryService {
     reportName: string,
     data: ReportData
   ): Promise<{ status: 'sent' | 'failed'; error?: string }> {
-    try {
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'report',
-          reportName,
-          generatedAt: data.generatedAt,
-          data: data.dashboards,
-        }),
-      })
-
-      if (!response.ok) {
-        return { status: 'failed', error: `HTTP ${response.status}` }
-      }
-
-      return { status: 'sent' }
-    } catch (error) {
-      return {
-        status: 'failed',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }
-    }
+    // Stub: returns failed since no delivery mechanism available
+    return { status: 'failed', error: 'Webhook delivery not configured in demo mode' }
   }
 }
 
@@ -443,9 +337,7 @@ export class ReportGenerator {
     const nextScheduled = new Date(now)
     nextScheduled.setHours(scheduleHour, scheduleMinute, 0, 0)
 
-    // If time has passed today, schedule is due
     if (now >= nextScheduled && (!schedule.last_sent_at || new Date(schedule.last_sent_at) < nextScheduled)) {
-      // Check frequency requirements
       switch (schedule.schedule_type) {
         case 'daily':
           return true
@@ -549,9 +441,6 @@ export class ReportGenerator {
         }
       }
 
-      // Store delivery history
-      await this.storeDeliveryHistory(schedule, reportData, deliveryDetails, generationTimeMs, fileBuffer.length)
-
       return {
         scheduleId: schedule.id,
         reportId: `report-${Date.now()}`,
@@ -571,38 +460,8 @@ export class ReportGenerator {
    * Generate all due reports for an organization
    */
   static async generateDueReports(organizationId: string): Promise<ReportDeliveryResult[]> {
-    const supabase = createClient()
-
-    try {
-      // Fetch all enabled schedules
-      const { data: schedules, error } = await supabase
-        .from('report_schedules')
-        .select('*')
-        .eq('organization_id', organizationId)
-        .eq('enabled', true)
-
-      if (error) {
-        console.error('Error fetching report schedules:', error)
-        return []
-      }
-
-      // Filter schedules that are due
-      const dueSchedules = (schedules || []).filter((schedule) => this.isScheduleDue(schedule as ReportSchedule))
-
-      // Generate reports
-      const results: ReportDeliveryResult[] = []
-      for (const schedule of dueSchedules) {
-        const result = await this.generateReport(schedule as ReportSchedule)
-        if (result) {
-          results.push(result)
-        }
-      }
-
-      return results
-    } catch (error) {
-      console.error('Error generating due reports:', error)
-      return []
-    }
+    // Stub: returns empty results until Convex module is implemented
+    return []
   }
 
   /**
@@ -615,60 +474,15 @@ export class ReportGenerator {
     generationTimeMs: number,
     fileSizeBytes: number
   ): Promise<void> {
-    const supabase = createClient()
-
-    try {
-      await supabase.from('report_delivery_history').insert({
-        organization_id: schedule.organization_id,
-        report_schedule_id: schedule.id,
-        generated_at: reportData.generatedAt,
-        generation_time_ms: generationTimeMs,
-        file_size_bytes: fileSizeBytes,
-        metrics: reportData.dashboards,
-        status: 'delivered',
-        delivery_details: deliveryDetails,
-        successful_deliveries: Object.values(deliveryDetails).filter((d) => d?.status === 'sent').length,
-        failed_deliveries: Object.values(deliveryDetails).filter((d) => d?.status === 'failed').length,
-        total_recipients: (schedule.recipients.email?.length || 0) + (schedule.recipients.slack ? 1 : 0),
-      })
-
-      // Update schedule's last_sent_at
-      await supabase
-        .from('report_schedules')
-        .update({
-          last_generated_at: reportData.generatedAt,
-          last_sent_at: new Date(),
-        })
-        .eq('id', schedule.id)
-    } catch (error) {
-      console.error('Error storing delivery history:', error)
-    }
+    // Stub: no-op until Convex module is implemented
   }
 
   /**
    * Manually generate a report immediately
    */
   static async generateNow(scheduleId: string, organizationId: string): Promise<ReportDeliveryResult | null> {
-    const supabase = createClient()
-
-    try {
-      const { data: schedule, error } = await supabase
-        .from('report_schedules')
-        .select('*')
-        .eq('id', scheduleId)
-        .eq('organization_id', organizationId)
-        .single()
-
-      if (error || !schedule) {
-        console.error('Schedule not found:', error)
-        return null
-      }
-
-      return this.generateReport(schedule as ReportSchedule)
-    } catch (error) {
-      console.error('Error generating report:', error)
-      return null
-    }
+    // Stub: returns null until Convex module is implemented
+    return null
   }
 }
 

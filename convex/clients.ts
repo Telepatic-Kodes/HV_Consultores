@@ -251,3 +251,9 @@ export const assignContador = mutation({
     return { success: true };
   },
 });
+
+// ─── ALIASES (Spanish ↔ English compatibility) ──────────
+export const listClientes = listClients;
+export const createCliente = createClient;
+export const updateCliente = updateClient;
+export const deleteCliente = deleteClient;

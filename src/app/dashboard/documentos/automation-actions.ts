@@ -1,35 +1,19 @@
 // @ts-nocheck — temporary: remove after full migration
 'use server'
+// TODO: Phase 2 - Implement automation module in Convex
+// Tables needed: automation_rules, automation_executions, notifications,
+// notification_preferences, email_templates, email_logs, slack_integrations,
+// slack_messages, webhooks, webhook_deliveries, batch_jobs
 
-import { createClient } from '@/lib/supabase-server'
-import type { Database } from '@/types/database.types'
-
-async function getCurrentUser() {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
-}
-
-function getSupabase() {
-  return createClient()
-}
+const DEMO_USER_ID = 'demo-user'
 
 // =============================================================================
 // AUTOMATION RULES - CRUD Operations
 // =============================================================================
 
 export async function obtenerReglas(clienteId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('automation_rules')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('nombre')
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 export async function crearRegla(
@@ -46,22 +30,8 @@ export async function crearRegla(
     hora?: string
   }
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('automation_rules')
-    .insert([
-      {
-        cliente_id: clienteId,
-        creada_por: user.id,
-        ...datos,
-      },
-    ])
-    .select()
-
-  if (error) throw error
-  return { id: data?.[0]?.id }
+  // Stub: returns success until Convex module is implemented
+  return { id: 'stub-rule-id' }
 }
 
 export async function actualizarRegla(
@@ -79,61 +49,19 @@ export async function actualizarRegla(
     activa: boolean
   }>
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('automation_rules')
-    .update(datos)
-    .eq('id', reglaId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 export async function eliminarRegla(reglaId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('automation_rules')
-    .delete()
-    .eq('id', reglaId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 export async function alternarRegla(reglaId: string, activa: boolean) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('automation_rules')
-    .update({ activa })
-    .eq('id', reglaId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 export async function toggleRegla(reglaId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  // Obtener el estado actual
-  const { data: regla, error: fetchError } = await getSupabase()
-    .from('automation_rules')
-    .select('activa')
-    .eq('id', reglaId)
-    .single()
-
-  if (fetchError) throw fetchError
-
-  // Alternar el estado
-  const { error } = await getSupabase()
-    .from('automation_rules')
-    .update({ activa: !regla.activa })
-    .eq('id', reglaId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 // =============================================================================
@@ -141,179 +69,24 @@ export async function toggleRegla(reglaId: string) {
 // =============================================================================
 
 export async function ejecutarReglaManualmente(reglaId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const inicio = new Date()
-
-  try {
-    // Get rule details
-    const { data: rule, error: ruleError } = await getSupabase()
-      .from('automation_rules')
-      .select('*')
-      .eq('id', reglaId)
-      .single()
-
-    if (ruleError) throw ruleError
-    if (!rule) throw new Error('Rule not found')
-
-    // Get documents to process
-    const { data: documentos, error: docError } = await getSupabase()
-      .rpc('obtener_acciones_automatizacion', {
-        p_cliente_id: rule.cliente_id,
-      })
-
-    if (docError) throw docError
-
-    // Execute actions
-    let exitosos = 0
-    let fallidos = 0
-    const errores: string[] = []
-
-    for (const accion of rule.acciones) {
-      try {
-        if (accion === 'ARCHIVE') {
-          // Archive documents
-          for (const doc of documentos || []) {
-            try {
-              await getSupabase()
-                .from('document_lifecycle')
-                .update({
-                  estado_actual: 'ARCHIVADO',
-                  fecha_archivado: new Date(),
-                })
-                .eq('documento_carga_id', doc.documento_id)
-              exitosos++
-            } catch (e) {
-              fallidos++
-              errores.push(`Error archiving ${doc.documento_id}: ${String(e)}`)
-            }
-          }
-        } else if (accion === 'DELETE') {
-          // Delete documents
-          for (const doc of documentos || []) {
-            try {
-              await getSupabase()
-                .from('document_lifecycle')
-                .update({
-                  estado_actual: 'ELIMINADO',
-                  fecha_destruido: new Date(),
-                })
-                .eq('documento_carga_id', doc.documento_id)
-              exitosos++
-            } catch (e) {
-              fallidos++
-              errores.push(`Error deleting ${doc.documento_id}: ${String(e)}`)
-            }
-          }
-        } else if (accion === 'NOTIFY') {
-          // Send notifications
-          const usuarios = await getSupabase()
-            .from('auth.users')
-            .select('id, email')
-            .eq('cliente_id', rule.cliente_id)
-
-          for (const usuario of usuarios.data || []) {
-            try {
-              await getSupabase()
-                .from('notifications')
-                .insert([
-                  {
-                    cliente_id: rule.cliente_id,
-                    usuario_id: usuario.id,
-                    tipo: 'EXPIRATION',
-                    titulo: 'Document Expiration Notice',
-                    mensaje: `${documentos?.length || 0} documents are due for retention action`,
-                    referencia_tipo: 'politica',
-                    estado: 'PENDING',
-                  },
-                ])
-              exitosos++
-            } catch (e) {
-              fallidos++
-              errores.push(`Error notifying ${usuario.id}: ${String(e)}`)
-            }
-          }
-        }
-      } catch (e) {
-        errores.push(`Error executing ${accion}: ${String(e)}`)
-      }
-    }
-
-    const fin = new Date()
-    const duracion = Math.round((fin.getTime() - inicio.getTime()) / 1000)
-
-    // Log execution
-    const { data: execution, error: execError } = await getSupabase()
-      .from('automation_executions')
-      .insert([
-        {
-          cliente_id: rule.cliente_id,
-          tipo_accion: rule.acciones.join(','),
-          cantidad_documentos: documentos?.length || 0,
-          documentos_id: documentos?.map((d) => d.documento_id),
-          estado: fallidos === 0 ? 'SUCCESS' : 'FAILED',
-          inicio,
-          fin,
-          duracion_segundos: duracion,
-          exitosos,
-          fallidos,
-          errores: errores.length > 0 ? errores.join('\n') : undefined,
-          activado_por: user.id,
-        },
-      ])
-      .select()
-
-    if (execError) throw execError
-
-    // Update rule last execution
-    await getSupabase()
-      .from('automation_rules')
-      .update({
-        ultima_ejecucion: inicio,
-        proxima_ejecucion: calculateNextExecution(rule),
-      })
-      .eq('id', reglaId)
-
-    return {
-      success: fallidos === 0,
-      exitosos,
-      fallidos,
-      duracion_segundos: duracion,
-      errores,
-    }
-  } catch (error) {
-    console.error('Error executing rule:', error)
-    throw error
+  // Stub: returns success until Convex module is implemented
+  return {
+    success: true,
+    exitosos: 0,
+    fallidos: 0,
+    duracion_segundos: 0,
+    errores: [],
   }
 }
 
 export async function obtenerEjecuciones(clienteId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('automation_executions')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('creado_en', { ascending: false })
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 export async function obtenerDetalleEjecucion(ejecucionId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('automation_executions')
-    .select('*')
-    .eq('id', ejecucionId)
-    .single()
-
-  if (error) throw error
-  return data
+  // Stub: returns null until Convex module is implemented
+  return null
 }
 
 // =============================================================================
@@ -321,96 +94,41 @@ export async function obtenerDetalleEjecucion(ejecucionId: string) {
 // =============================================================================
 
 export async function obtenerNotificaciones(usuarioId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('notifications')
-    .select('*')
-    .eq('usuario_id', usuarioId)
-    .order('creado_en', { ascending: false })
-    .limit(50)
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 export async function marcarComoLeido(notificacionId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('notifications')
-    .update({
-      leido: true,
-      leido_en: new Date(),
-    })
-    .eq('id', notificacionId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 export async function marcarTodosComoLeidos(usuarioId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('notifications')
-    .update({
-      leido: true,
-      leido_en: new Date(),
-    })
-    .eq('usuario_id', usuarioId)
-    .eq('leido', false)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 export async function eliminarNotificacion(notificacionId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('notifications')
-    .delete()
-    .eq('id', notificacionId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 export async function obtenerResumenNotificaciones(
   usuarioId: string,
   clienteId: string
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .rpc('obtener_resumen_notificaciones', {
-      p_usuario_id: usuarioId,
-      p_cliente_id: clienteId,
-    })
-
-  if (error) throw error
-  return data?.[0]
+  // Stub: returns empty summary until Convex module is implemented
+  return {
+    total: 0,
+    sin_leer: 0,
+    por_tipo: {},
+  }
 }
 
 // =============================================================================
 // NOTIFICATION PREFERENCES
 // =============================================================================
 
-export async function obtenerPreferencias(usuarioId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('notification_preferences')
-    .select('*')
-    .eq('usuario_id', usuarioId)
-    .single()
-
-  if (error && error.code !== 'PGRST116') throw error
-  return data
+export async function obtenerPreferencias(usuarioId: string): Promise<Record<string, any> | null> {
+  // Stub: returns null until Convex module is implemented
+  return null
 }
 
 export async function actualizarPreferencias(
@@ -430,20 +148,7 @@ export async function actualizarPreferencias(
     alertas_cumplimiento: boolean
   }>
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('notification_preferences')
-    .upsert([
-      {
-        usuario_id: usuarioId,
-        cliente_id: clienteId,
-        ...datos,
-      },
-    ])
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 // =============================================================================
@@ -451,17 +156,8 @@ export async function actualizarPreferencias(
 // =============================================================================
 
 export async function obtenerTemplatesEmail(clienteId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('email_templates')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('nombre')
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 export async function crearTemplateEmail(
@@ -474,21 +170,8 @@ export async function crearTemplateEmail(
     es_default?: boolean
   }
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('email_templates')
-    .insert([
-      {
-        cliente_id: clienteId,
-        ...datos,
-      },
-    ])
-    .select()
-
-  if (error) throw error
-  return { id: data?.[0]?.id }
+  // Stub: returns success until Convex module is implemented
+  return { id: 'stub-email-template-id' }
 }
 
 export async function actualizarTemplateEmail(
@@ -502,15 +185,7 @@ export async function actualizarTemplateEmail(
     es_default: boolean
   }>
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('email_templates')
-    .update(datos)
-    .eq('id', templateId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 // =============================================================================
@@ -529,32 +204,8 @@ export async function enviarEmail(
     variables?: Record<string, string>
   }
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  // Log email in database
-  const { data, error } = await getSupabase()
-    .from('email_logs')
-    .insert([
-      {
-        cliente_id: clienteId,
-        para: datos.para,
-        cc: datos.cc,
-        bcc: datos.bcc,
-        asunto: datos.asunto,
-        template_id: datos.templateId,
-        variables: datos.variables,
-        estado: 'PENDING',
-      },
-    ])
-    .select()
-
-  if (error) throw error
-
-  // TODO: Integrate with actual SMTP service
-  // For now, just log it as pending
-
-  return { id: data?.[0]?.id, estado: 'PENDING' }
+  // Stub: returns success until Convex module is implemented
+  return { id: 'stub-email-id', estado: 'PENDING' }
 }
 
 export async function enviarEmailBatch(
@@ -566,43 +217,16 @@ export async function enviarEmailBatch(
     cuerpo: string
   }>
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const registros = emails.map((email) => ({
-    cliente_id: clienteId,
-    para: email.para,
-    cc: email.cc,
-    asunto: email.asunto,
-    estado: 'PENDING',
-  }))
-
-  const { data, error } = await getSupabase()
-    .from('email_logs')
-    .insert(registros)
-    .select()
-
-  if (error) throw error
-
+  // Stub: returns success until Convex module is implemented
   return {
-    enviados: data?.length || 0,
+    enviados: 0,
     estado: 'PENDING',
   }
 }
 
 export async function obtenerEmailLogs(clienteId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('email_logs')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('creado_en', { ascending: false })
-    .limit(100)
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 // =============================================================================
@@ -610,17 +234,8 @@ export async function obtenerEmailLogs(clienteId: string) {
 // =============================================================================
 
 export async function obtenerIntegracionesSlack(clienteId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('slack_integrations')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('nombre')
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 export async function crearIntegracionSlack(
@@ -633,22 +248,8 @@ export async function crearIntegracionSlack(
     eventos_habilitados?: string[]
   }
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('slack_integrations')
-    .insert([
-      {
-        cliente_id: clienteId,
-        creado_por: user.id,
-        ...datos,
-      },
-    ])
-    .select()
-
-  if (error) throw error
-  return { id: data?.[0]?.id }
+  // Stub: returns success until Convex module is implemented
+  return { id: 'stub-slack-integration-id' }
 }
 
 export async function actualizarIntegracionSlack(
@@ -661,38 +262,12 @@ export async function actualizarIntegracionSlack(
     activo: boolean
   }>
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('slack_integrations')
-    .update(datos)
-    .eq('id', integracionId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 export async function pruebaIntegracionSlack(integracionId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  try {
-    const { data: integracion, error: getError } = await getSupabase()
-      .from('slack_integrations')
-      .select('*')
-      .eq('id', integracionId)
-      .single()
-
-    if (getError) throw getError
-
-    // TODO: Test webhook by sending sample message
-    // For now, just return success
-
-    return { success: true, message: 'Webhook test message would be sent' }
-  } catch (error) {
-    console.error('Error testing Slack integration:', error)
-    throw error
-  }
+  // Stub: returns success until Convex module is implemented
+  return { success: true, message: 'Stub: Webhook test not available in demo mode' }
 }
 
 export async function enviarAlertaSlack(
@@ -703,48 +278,10 @@ export async function enviarAlertaSlack(
     severidad?: 'info' | 'warning' | 'error'
   }
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  // Get Slack integrations for client
-  const { data: integraciones, error: intError } = await getSupabase()
-    .from('slack_integrations')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .eq('activo', true)
-
-  if (intError) throw intError
-
-  let enviados = 0
-  const errores: string[] = []
-
-  for (const integracion of integraciones || []) {
-    try {
-      // Log message
-      const { error: logError } = await getSupabase()
-        .from('slack_messages')
-        .insert([
-          {
-            cliente_id: clienteId,
-            slack_integration_id: integracion.id,
-            tipo: 'ALERT',
-            mensaje: `${datos.titulo}: ${datos.mensaje}`,
-            estado: 'PENDING',
-          },
-        ])
-
-      if (logError) throw logError
-
-      // TODO: Actually send to Slack via webhook
-      enviados++
-    } catch (e) {
-      errores.push(`Error with ${integracion.nombre}: ${String(e)}`)
-    }
-  }
-
+  // Stub: returns success until Convex module is implemented
   return {
-    enviados,
-    errores: errores.length > 0 ? errores : undefined,
+    enviados: 0,
+    errores: undefined,
   }
 }
 
@@ -753,17 +290,8 @@ export async function enviarAlertaSlack(
 // =============================================================================
 
 export async function obtenerWebhooks(clienteId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('webhooks')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('nombre')
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 export async function crearWebhook(
@@ -778,22 +306,8 @@ export async function crearWebhook(
     timeout_segundos?: number
   }
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('webhooks')
-    .insert([
-      {
-        cliente_id: clienteId,
-        creado_por: user.id,
-        ...datos,
-      },
-    ])
-    .select()
-
-  if (error) throw error
-  return { id: data?.[0]?.id }
+  // Stub: returns success until Convex module is implemented
+  return { id: 'stub-webhook-id' }
 }
 
 export async function actualizarWebhook(
@@ -807,61 +321,17 @@ export async function actualizarWebhook(
     timeout_segundos: number
   }>
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('webhooks')
-    .update(datos)
-    .eq('id', webhookId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 export async function obtenerEntregasWebhook(webhookId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('webhook_deliveries')
-    .select('*')
-    .eq('webhook_id', webhookId)
-    .order('creado_en', { ascending: false })
-    .limit(50)
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 export async function reintentarEntrega(entregaId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  // Get the delivery to retry
-  const { data: entrega, error: fetchError } = await getSupabase()
-    .from('webhook_deliveries')
-    .select('*, webhooks(*)')
-    .eq('id', entregaId)
-    .single()
-
-  if (fetchError) throw fetchError
-  if (!entrega) throw new Error('Entrega no encontrada')
-
-  // Update status to RETRY
-  const { error: updateError } = await getSupabase()
-    .from('webhook_deliveries')
-    .update({
-      estado: 'RETRY',
-      intento_numero: entrega.intento_numero + 1,
-      proxima_tentativa: new Date().toISOString(),
-    })
-    .eq('id', entregaId)
-
-  if (updateError) throw updateError
-
-  // In production, this would trigger the actual webhook delivery
-  // For now, we just mark it as queued for retry
-  return { success: true, message: 'Entrega programada para reintento' }
+  // Stub: returns success until Convex module is implemented
+  return { success: true, message: 'Stub: Retry not available in demo mode' }
 }
 
 // =============================================================================
@@ -872,99 +342,34 @@ export async function iniciarBatchArchivo(
   clienteId: string,
   documentoIds: string[]
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('batch_jobs')
-    .insert([
-      {
-        cliente_id: clienteId,
-        tipo_operacion: 'ARCHIVE',
-        descripcion: `Archive ${documentoIds.length} documents`,
-        cantidad_total: documentoIds.length,
-        parametros: { documentos_id: documentoIds },
-        creado_por: user.id,
-        estado: 'PENDING',
-      },
-    ])
-    .select()
-
-  if (error) throw error
-
-  // TODO: Queue for background processing
-  return { jobId: data?.[0]?.id, estado: 'PENDING' }
+  // Stub: returns success until Convex module is implemented
+  return { jobId: 'stub-batch-job-id', estado: 'PENDING' }
 }
 
 export async function iniciarBatchEliminacion(
   clienteId: string,
   documentoIds: string[]
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('batch_jobs')
-    .insert([
-      {
-        cliente_id: clienteId,
-        tipo_operacion: 'DELETE',
-        descripcion: `Delete ${documentoIds.length} documents`,
-        cantidad_total: documentoIds.length,
-        parametros: { documentos_id: documentoIds },
-        creado_por: user.id,
-        estado: 'PENDING',
-      },
-    ])
-    .select()
-
-  if (error) throw error
-
-  return { jobId: data?.[0]?.id, estado: 'PENDING' }
+  // Stub: returns success until Convex module is implemented
+  return { jobId: 'stub-batch-job-id', estado: 'PENDING' }
 }
 
 export async function obtenerBatchJob(jobId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('batch_jobs')
-    .select('*')
-    .eq('id', jobId)
-    .single()
-
-  if (error) throw error
-  return data
+  // Stub: returns null until Convex module is implemented
+  return null
 }
 
 export async function obtenerBatchJobs(clienteId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { data, error } = await getSupabase()
-    .from('batch_jobs')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('creado_en', { ascending: false })
-
-  if (error) throw error
-  return data
+  // Stub: returns empty data until Convex module is implemented
+  return []
 }
 
 export async function cancelarBatchJob(jobId: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error('No authenticated user')
-
-  const { error } = await getSupabase()
-    .from('batch_jobs')
-    .update({ estado: 'CANCELLED' })
-    .eq('id', jobId)
-
-  if (error) throw error
+  // Stub: no-op until Convex module is implemented
 }
 
 // =============================================================================
-// HELPER FUNCTIONS
+// HELPER FUNCTIONS (pure logic, no Supabase dependency)
 // =============================================================================
 
 function calculateNextExecution(rule: any): Date {

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase-browser'
+// TODO: Phase 2 - Replace demo login with Convex auth (e.g. Clerk or ConvexAuth)
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Mail, Lock, AlertCircle, Loader2, Building2, ArrowRight } from 'lucide-react'
@@ -27,21 +27,9 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        if (error.message === 'Invalid login credentials') {
-          setError('Email o contrasena incorrectos')
-        } else {
-          setError(error.message)
-        }
-        return
-      }
-
+      // Demo mode: accept any credentials and redirect to dashboard
+      // TODO: Phase 2 - Implement real auth with Convex
+      await new Promise((resolve) => setTimeout(resolve, 500))
       router.push(redirect)
       router.refresh()
     } catch (err) {

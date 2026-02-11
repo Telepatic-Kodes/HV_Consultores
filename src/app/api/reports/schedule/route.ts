@@ -8,66 +8,10 @@
  *   POST /api/reports/schedule - Create new report schedule
  *   PUT /api/reports/schedule/{id} - Update report schedule
  *   DELETE /api/reports/schedule/{id} - Delete report schedule
- *   POST /api/reports/schedule/{id}/send - Send report immediately
  */
 
-import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
-
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now()
-  const record = rateLimitMap.get(userId)
-
-  if (!record || record.resetTime < now) {
-    rateLimitMap.set(userId, { count: 1, resetTime: now + 60000 })
-    return true
-  }
-
-  if (record.count >= 30) {
-    return false
-  }
-
-  record.count += 1
-  return true
-}
-
-function validateReportSchedule(schedule: any): { valid: boolean; error?: string } {
-  if (!schedule.name || !schedule.name.trim()) {
-    return { valid: false, error: 'Schedule name is required' }
-  }
-
-  if (!schedule.type || !['daily', 'weekly', 'monthly'].includes(schedule.type)) {
-    return { valid: false, error: 'Valid schedule type is required (daily, weekly, monthly)' }
-  }
-
-  if (!schedule.schedule || !schedule.schedule.time) {
-    return { valid: false, error: 'Schedule time is required' }
-  }
-
-  if (!schedule.recipients) {
-    return { valid: false, error: 'At least one recipient is required' }
-  }
-
-  if (
-    !schedule.recipients.email?.length &&
-    !schedule.recipients.slack &&
-    !schedule.recipients.webhook
-  ) {
-    return { valid: false, error: 'At least one recipient method is required' }
-  }
-
-  if (!schedule.dashboards || schedule.dashboards.length === 0) {
-    return { valid: false, error: 'At least one dashboard must be selected' }
-  }
-
-  if (!schedule.format || !['pdf', 'excel', 'html'].includes(schedule.format)) {
-    return { valid: false, error: 'Valid format is required (pdf, excel, html)' }
-  }
-
-  return { valid: true }
-}
+// TODO: Phase 2 - Implement via Convex queries/mutations
 
 /**
  * GET /api/reports/schedule
@@ -75,68 +19,12 @@ function validateReportSchedule(schedule: any): { valid: boolean; error?: string
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = createClient()
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Check rate limit
-    if (!checkRateLimit(session.user.id)) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Maximum 30 requests per minute.' },
-        { status: 429 }
-      )
-    }
-
-    // Mock response - in production, would query database
-    const mockSchedules = [
-      {
-        id: 'report-1',
-        name: 'Daily Operations Summary',
-        enabled: true,
-        type: 'daily',
-        schedule: {
-          time: '08:00',
-        },
-        recipients: {
-          email: ['ops@example.com', 'manager@example.com'],
-        },
-        dashboards: ['documents', 'queue'],
-        format: 'pdf',
-        includeCharts: true,
-        createdAt: new Date('2026-01-01'),
-        lastSent: new Date('2026-01-11'),
-      },
-      {
-        id: 'report-2',
-        name: 'Weekly Analytics Report',
-        enabled: true,
-        type: 'weekly',
-        schedule: {
-          time: '09:00',
-          dayOfWeek: 1,
-        },
-        recipients: {
-          email: ['analytics@example.com'],
-          slack: 'https://hooks.slack.com/services/...',
-        },
-        dashboards: ['documents', 'automation', 'team', 'queue'],
-        format: 'excel',
-        includeCharts: true,
-        createdAt: new Date('2025-12-15'),
-        lastSent: new Date('2026-01-06'),
-      },
-    ]
-
+    // TODO: Phase 2 - Query report schedules from Convex
     return NextResponse.json(
       {
         success: true,
-        data: mockSchedules,
+        data: [],
+        message: 'Pending Convex migration',
         timestamp: new Date(),
       },
       {
@@ -163,44 +51,20 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = createClient()
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Check rate limit
-    if (!checkRateLimit(session.user.id)) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Maximum 30 requests per minute.' },
-        { status: 429 }
-      )
-    }
-
     const body = await request.json()
 
-    // Validate schedule
-    const validation = validateReportSchedule(body)
-    if (!validation.valid) {
-      return NextResponse.json({ error: validation.error }, { status: 400 })
-    }
-
-    // Create schedule (mock)
+    // TODO: Phase 2 - Create report schedule in Convex
     const newSchedule = {
       id: `report-${Date.now()}`,
       ...body,
       createdAt: new Date(),
-      organizationId: session.user.id,
     }
 
     return NextResponse.json(
       {
         success: true,
         data: newSchedule,
+        message: 'Pending Convex migration',
         timestamp: new Date(),
       },
       { status: 201 }
@@ -210,6 +74,81 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Failed to create report schedule',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * PUT /api/reports/schedule
+ * Update report schedule
+ */
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { id, ...updates } = body
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Schedule id is required' },
+        { status: 400 }
+      )
+    }
+
+    // TODO: Phase 2 - Update report schedule in Convex
+    return NextResponse.json(
+      {
+        success: true,
+        data: { id, ...updates, updatedAt: new Date() },
+        message: 'Pending Convex migration',
+        timestamp: new Date(),
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error('Error in PUT /api/reports/schedule:', error)
+    return NextResponse.json(
+      {
+        error: 'Failed to update report schedule',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * DELETE /api/reports/schedule
+ * Delete report schedule
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Schedule id is required' },
+        { status: 400 }
+      )
+    }
+
+    // TODO: Phase 2 - Delete report schedule in Convex
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Pending Convex migration',
+        timestamp: new Date(),
+      },
+      { status: 200 }
+    )
+  } catch (error) {
+    console.error('Error in DELETE /api/reports/schedule:', error)
+    return NextResponse.json(
+      {
+        error: 'Failed to delete report schedule',
         message: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }

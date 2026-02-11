@@ -1,8 +1,9 @@
 // @ts-nocheck — temporary: remove after full migration
 'use server'
+// TODO: Phase 2 - Implement intelligence/analytics module in Convex
+// Tables needed: template_analytics, smart_suggestions, document_insights, document_classifications
 
-import { createClient } from '@/lib/supabase-server'
-import { revalidatePath } from 'next/cache'
+const DEMO_USER_ID = 'demo-user'
 
 // ============================================================================
 // TYPES
@@ -73,23 +74,8 @@ export interface DocumentClassification {
 export async function obtenerAnalisisPlantilla(
   plantillaId: string
 ): Promise<{ success: boolean; analytics?: TemplateAnalytics; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { data: analytics, error } = await supabase
-      .from('template_analytics')
-      .select('*')
-      .eq('plantilla_id', plantillaId)
-      .single()
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, analytics: analytics as TemplateAnalytics }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener análisis de plantilla' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, analytics: undefined }
 }
 
 /**
@@ -98,23 +84,8 @@ export async function obtenerAnalisisPlantilla(
 export async function obtenerAnalisisPlantillasCliente(
   clienteId: string
 ): Promise<{ success: boolean; analytics?: TemplateAnalytics[]; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { data: analytics, error } = await supabase
-      .from('template_analytics')
-      .select('*')
-      .eq('cliente_id', clienteId)
-      .order('uso_total', { ascending: false })
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, analytics: (analytics || []) as TemplateAnalytics[] }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener análisis' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, analytics: [] }
 }
 
 /**
@@ -123,36 +94,8 @@ export async function obtenerAnalisisPlantillasCliente(
 export async function recalcularAnalisisPlantilla(
   plantillaId: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { data, error } = await supabase.rpc('calcular_analisis_plantilla', {
-      p_plantilla_id: plantillaId,
-    })
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    // Update the analytics record
-    if (data && data.length > 0) {
-      const result = data[0]
-      await supabase
-        .from('template_analytics')
-        .update({
-          uso_total: result.uso_total,
-          uso_mes_actual: result.uso_mes_actual,
-          tasa_exito: result.tasa_exito,
-          monto_promedio: result.monto_promedio,
-          dias_sin_usar: result.dias_sin_usar,
-        })
-        .eq('plantilla_id', plantillaId)
-    }
-
-    return { success: true }
-  } catch (error) {
-    return { success: false, error: 'Error al recalcular análisis' }
-  }
+  // Stub: returns success until Convex module is implemented
+  return { success: true }
 }
 
 // ============================================================================
@@ -166,22 +109,8 @@ export async function obtenerPlantillasRecomendadas(
   clienteId: string,
   limite: number = 5
 ): Promise<{ success: boolean; recomendaciones?: any[]; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { data, error } = await supabase.rpc('obtener_plantillas_recomendadas', {
-      p_cliente_id: clienteId,
-      p_limite: limite,
-    })
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, recomendaciones: data || [] }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener recomendaciones' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, recomendaciones: [] }
 }
 
 /**
@@ -191,30 +120,8 @@ export async function obtenerSugerenciasInteligentes(
   clienteId: string,
   tipoSugerencia?: string
 ): Promise<{ success: boolean; sugerencias?: SmartSuggestion[]; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    let query = supabase
-      .from('smart_suggestions')
-      .select('*')
-      .eq('cliente_id', clienteId)
-      .is('aceptada', null)
-      .order('confianza', { ascending: false })
-
-    if (tipoSugerencia) {
-      query = query.eq('tipo_sugerencia', tipoSugerencia)
-    }
-
-    const { data: sugerencias, error } = await query
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, sugerencias: (sugerencias || []) as SmartSuggestion[] }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener sugerencias' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, sugerencias: [] }
 }
 
 /**
@@ -232,32 +139,8 @@ export async function crearSugerenciaInteligente(
     contexto?: Record<string, any>
   }
 ): Promise<{ success: boolean; sugerenciaId?: string; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { data: sugerencia, error } = await supabase
-      .from('smart_suggestions')
-      .insert({
-        cliente_id: clienteId,
-        tipo_sugerencia: datos.tipo_sugerencia,
-        sugerencia_id: datos.sugerencia_id,
-        sugerencia_texto: datos.sugerencia_texto,
-        confianza: datos.confianza,
-        razon: datos.razon,
-        basado_en: datos.basado_en,
-        contexto: datos.contexto,
-      })
-      .select('id')
-      .single()
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, sugerenciaId: sugerencia.id }
-  } catch (error) {
-    return { success: false, error: 'Error al crear sugerencia' }
-  }
+  // Stub: returns success until Convex module is implemented
+  return { success: true, sugerenciaId: 'stub-suggestion-id' }
 }
 
 /**
@@ -268,26 +151,8 @@ export async function responderSugerencia(
   aceptada: boolean,
   retroalimentacion?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { error } = await supabase
-      .from('smart_suggestions')
-      .update({
-        aceptada,
-        retroalimentacion_usuario: retroalimentacion,
-        aceptada_en: aceptada ? new Date().toISOString() : null,
-      })
-      .eq('id', sugerenciaId)
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true }
-  } catch (error) {
-    return { success: false, error: 'Error al responder sugerencia' }
-  }
+  // Stub: returns success until Convex module is implemented
+  return { success: true }
 }
 
 // ============================================================================
@@ -302,23 +167,8 @@ export async function obtenerInsightsRango(
   fechaInicio: string,
   fechaFin: string
 ): Promise<{ success: boolean; insights?: DocumentInsight[]; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { data, error } = await supabase.rpc('obtener_insights_rango', {
-      p_cliente_id: clienteId,
-      p_fecha_inicio: fechaInicio,
-      p_fecha_fin: fechaFin,
-    })
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, insights: data || [] }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener insights' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, insights: [] }
 }
 
 /**
@@ -327,27 +177,8 @@ export async function obtenerInsightsRango(
 export async function obtenerInsightsMes(
   clienteId: string
 ): Promise<{ success: boolean; insight?: DocumentInsight; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const today = new Date()
-    const mesActual = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
-
-    const { data: insight, error } = await supabase
-      .from('document_insights')
-      .select('*')
-      .eq('cliente_id', clienteId)
-      .eq('mes', mesActual)
-      .single()
-
-    if (error && error.code !== 'PGRST116') {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, insight: insight as DocumentInsight }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener insights del mes' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, insight: undefined }
 }
 
 /**
@@ -356,27 +187,8 @@ export async function obtenerInsightsMes(
 export async function obtenerInsights30Dias(
   clienteId: string
 ): Promise<{ success: boolean; insights?: DocumentInsight[]; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const hoy = new Date()
-    const hace30Dias = new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000)
-
-    const { data: insights, error } = await supabase
-      .from('document_insights')
-      .select('*')
-      .eq('cliente_id', clienteId)
-      .gte('fecha', hace30Dias.toISOString().split('T')[0])
-      .order('fecha', { ascending: true })
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, insights: (insights || []) as DocumentInsight[] }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener insights' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, insights: [] }
 }
 
 // ============================================================================
@@ -389,23 +201,8 @@ export async function obtenerInsights30Dias(
 export async function obtenerClasificacionDocumento(
   documentoId: string
 ): Promise<{ success: boolean; clasificacion?: DocumentClassification; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { data: clasificacion, error } = await supabase
-      .from('document_classifications')
-      .select('*')
-      .eq('documento_carga_id', documentoId)
-      .single()
-
-    if (error && error.code !== 'PGRST116') {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, clasificacion: clasificacion as DocumentClassification }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener clasificación' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, clasificacion: undefined }
 }
 
 /**
@@ -426,35 +223,8 @@ export async function crearClasificacionDocumento(
     probabilidades?: Record<string, any>
   }
 ): Promise<{ success: boolean; clasificacionId?: string; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { data: clasificacion, error } = await supabase
-      .from('document_classifications')
-      .insert({
-        documento_carga_id: documentoId,
-        cliente_id: clienteId,
-        tipo_predicho: datos.tipo_predicho,
-        tipo_real: datos.tipo_real,
-        confianza: datos.confianza,
-        folio_sugerido: datos.folio_sugerido,
-        plantilla_sugerida_id: datos.plantilla_sugerida_id,
-        monto_sugerido: datos.monto_sugerido,
-        modelo_version: datos.modelo_version,
-        features_usados: datos.features_usados,
-        probabilidades: datos.probabilidades,
-      })
-      .select('id')
-      .single()
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true, clasificacionId: clasificacion.id }
-  } catch (error) {
-    return { success: false, error: 'Error al crear clasificación' }
-  }
+  // Stub: returns success until Convex module is implemented
+  return { success: true, clasificacionId: 'stub-classification-id' }
 }
 
 /**
@@ -465,26 +235,8 @@ export async function actualizarClasificacionConFeedback(
   tipo_real: string,
   retroalimentacion?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = createClient()
-
-  try {
-    const { error } = await supabase
-      .from('document_classifications')
-      .update({
-        tipo_real,
-        retroalimentacion_usada: true,
-        feedback_usuario: retroalimentacion,
-      })
-      .eq('id', clasificacionId)
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    return { success: true }
-  } catch (error) {
-    return { success: false, error: 'Error al actualizar clasificación' }
-  }
+  // Stub: returns success until Convex module is implemented
+  return { success: true }
 }
 
 // ============================================================================
@@ -508,44 +260,17 @@ export async function obtenerResumenEstadisticas(
   }
   error?: string
 }> {
-  const supabase = createClient()
-
-  try {
-    const { data: stats } = await supabase
-      .from('document_insights')
-      .select('*')
-      .eq('cliente_id', clienteId)
-      .order('fecha', { ascending: false })
-      .limit(1)
-      .single()
-
-    if (!stats) {
-      return {
-        success: true,
-        estadisticas: {
-          total_documentos: 0,
-          documentos_mes: 0,
-          tasa_aprobacion: 0,
-          plantilla_mas_usada: null,
-          monto_promedio: 0,
-          tasa_crecimiento: 0,
-        },
-      }
-    }
-
-    return {
-      success: true,
-      estadisticas: {
-        total_documentos: stats.documentos_cargados || 0,
-        documentos_mes: stats.documentos_cargados || 0,
-        tasa_aprobacion: stats.tasa_aprobacion || 0,
-        plantilla_mas_usada: stats.plantilla_mas_usada_id || null,
-        monto_promedio: Number(stats.monto_promedio) || 0,
-        tasa_crecimiento: Number(stats.indice_crecimiento) || 0,
-      },
-    }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener estadísticas' }
+  // Stub: returns empty data until Convex module is implemented
+  return {
+    success: true,
+    estadisticas: {
+      total_documentos: 0,
+      documentos_mes: 0,
+      tasa_aprobacion: 0,
+      plantilla_mas_usada: null,
+      monto_promedio: 0,
+      tasa_crecimiento: 0,
+    },
   }
 }
 
@@ -560,50 +285,6 @@ export async function obtenerTiposDocumentosTendencia(
   tendencias?: Array<{ tipo: string; count: number; crecimiento: number }>
   error?: string
 }> {
-  const supabase = createClient()
-
-  try {
-    const hace30Dias = new Date()
-    hace30Dias.setDate(hace30Dias.getDate() - dias)
-
-    const { data: insights, error } = await supabase
-      .from('document_insights')
-      .select('*')
-      .eq('cliente_id', clienteId)
-      .gte('fecha', hace30Dias.toISOString().split('T')[0])
-      .order('fecha')
-
-    if (error) {
-      return { success: false, error: error.message }
-    }
-
-    if (!insights || insights.length === 0) {
-      return { success: true, tendencias: [] }
-    }
-
-    // Calculate totals and trends
-    const tipos = [
-      { tipo: 'facturas', key: 'facturas_count' },
-      { tipo: 'boletas', key: 'boletas_count' },
-      { tipo: 'notas_credito', key: 'notas_credito_count' },
-      { tipo: 'notas_debito', key: 'notas_debito_count' },
-    ]
-
-    const tendencias = tipos
-      .map((t) => {
-        const total = insights.reduce((sum, i) => sum + (Number((i as Record<string, unknown>)[t.key]) || 0), 0)
-        const primeroRecord = insights[0] as Record<string, unknown> | undefined
-        const ultimoRecord = insights[insights.length - 1] as Record<string, unknown> | undefined
-        const primero = Number(primeroRecord?.[t.key]) || 0
-        const ultimo = Number(ultimoRecord?.[t.key]) || 0
-        const crecimiento = primero > 0 ? ((ultimo - primero) / primero) * 100 : 0
-
-        return { tipo: t.tipo, count: total, crecimiento }
-      })
-      .filter((t) => t.count > 0)
-
-    return { success: true, tendencias }
-  } catch (error) {
-    return { success: false, error: 'Error al obtener tendencias' }
-  }
+  // Stub: returns empty data until Convex module is implemented
+  return { success: true, tendencias: [] }
 }

@@ -4,28 +4,8 @@
  * Created: 2026-01-11
  */
 
-import { createClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
-import { ReportGenerator } from '@/lib/services/reportGenerator'
-
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now()
-  const record = rateLimitMap.get(userId)
-
-  if (!record || record.resetTime < now) {
-    rateLimitMap.set(userId, { count: 1, resetTime: now + 60000 })
-    return true
-  }
-
-  if (record.count >= 30) {
-    return false
-  }
-
-  record.count += 1
-  return true
-}
+// TODO: Phase 2 - Implement via Convex (replace ReportGenerator)
 
 /**
  * POST /api/reports/send-now
@@ -33,28 +13,9 @@ function checkRateLimit(userId: string): boolean {
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const supabase = createClient()
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Check rate limit
-    if (!checkRateLimit(session.user.id)) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Maximum 30 requests per minute.' },
-        { status: 429 }
-      )
-    }
-
     const body = await request.json()
     const { scheduleId } = body
 
-    // Validate input
     if (!scheduleId || typeof scheduleId !== 'string') {
       return NextResponse.json(
         { error: 'scheduleId is required and must be a string' },
@@ -62,21 +23,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate report immediately
-    const result = await ReportGenerator.generateNow(scheduleId, session.user.id)
-
-    if (!result) {
-      return NextResponse.json(
-        { error: 'Failed to generate report. Schedule not found or generation failed.' },
-        { status: 404 }
-      )
-    }
-
+    // TODO: Phase 2 - Trigger report generation via Convex action
     return NextResponse.json(
       {
         success: true,
-        data: result,
-        message: 'Report generated and delivered successfully',
+        data: { scheduleId, status: 'queued' },
+        message: 'Pending Convex migration - report not generated',
         timestamp: new Date(),
       },
       { status: 200 }

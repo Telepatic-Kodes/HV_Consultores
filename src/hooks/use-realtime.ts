@@ -18,10 +18,11 @@ import { useConvexAvailable } from '@/providers/convex-provider'
 
 export function useNotificacionesRealtime(userId: string | null): any[] {
   const available = useConvexAvailable()
-  const shouldQuery = available && !!userId
+  // Skip notification query – no real auth user ID available yet.
+  // Once auth is wired, pass { usuario_id: validConvexId, leida: false }.
   const result = useQuery(
     api.notifications.listNotifications,
-    shouldQuery ? { user_id: userId!, leida: false } : 'skip'
+    'skip'
   )
   return result ?? []
 }
