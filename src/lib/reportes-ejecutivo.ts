@@ -1,5 +1,4 @@
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
+import type jsPDF from 'jspdf'
 import type {
   ExecutiveDashboardData,
   ExecutiveKPI,
@@ -42,7 +41,10 @@ export interface InformeEjecutivoPDFData {
   generadoEn: string
 }
 
-export function generarInformeEjecutivoPDF(data: InformeEjecutivoPDFData): void {
+export async function generarInformeEjecutivoPDF(data: InformeEjecutivoPDFData): Promise<void> {
+  const { default: jsPDF } = await import('jspdf')
+  await import('jspdf-autotable')
+
   const doc = new jsPDF('p', 'mm', 'a4')
   const pageWidth = doc.internal.pageSize.getWidth()
   const pageHeight = doc.internal.pageSize.getHeight()
@@ -293,7 +295,7 @@ function generarResumenEjecutivo(
     ]
   })
 
-  autoTable(doc, {
+  ;(doc as any).autoTable({
     startY: y,
     head: [['Métrica', 'Anterior', 'Actual', 'Variación']],
     body: tableData,
@@ -318,7 +320,7 @@ function generarResumenEjecutivo(
       2: { halign: 'right', fontStyle: 'bold' },
       3: { halign: 'right' },
     },
-    didParseCell: (data) => {
+    didParseCell: (data: any) => {
       if (data.column.index === 3 && data.section === 'body') {
         const value = parseFloat(data.cell.raw as string)
         if (value > 0) {
@@ -413,7 +415,7 @@ function generarAnalisisDetallado(
     })
 
   if (metricasRendimiento.length > 0) {
-    autoTable(doc, {
+    ;(doc as any).autoTable({
       startY: y,
       head: [['Indicador', 'Actual', 'Meta', 'Cumplimiento', 'Estado']],
       body: metricasRendimiento,
@@ -436,7 +438,7 @@ function generarAnalisisDetallado(
         3: { halign: 'right' },
         4: { halign: 'center' },
       },
-      didParseCell: (data) => {
+      didParseCell: (data: any) => {
         if (data.column.index === 4 && data.section === 'body') {
           const estado = data.cell.raw as string
           if (estado === 'Excelente' || estado === 'En meta') {

@@ -1,30 +1,59 @@
-/**
- * Analytics Dashboard Page
- * Phase 7: Advanced Analytics & Business Intelligence
- * Created: 2026-01-11
- */
-
 'use client'
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-// TODO: Phase 2 - Replace demo user with Convex auth session
-import { DocumentAnalyticsDashboard } from '@/components/analytics/DocumentAnalyticsDashboard'
-import { AutomationAnalyticsDashboard } from '@/components/analytics/AutomationAnalyticsDashboard'
-import { TeamAnalyticsDashboard } from '@/components/analytics/TeamAnalyticsDashboard'
-import { QueuePerformanceDashboard } from '@/components/analytics/QueuePerformanceDashboard'
-import { ComplianceAnalyticsDashboard } from '@/components/analytics/ComplianceAnalyticsDashboard'
-import { AlertRulesManager } from '@/components/analytics/AlertRulesManager'
-import { ReportScheduler } from '@/components/analytics/ReportScheduler'
+import dynamic from 'next/dynamic'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+
+const DocumentAnalyticsDashboard = dynamic(
+  () => import('@/components/analytics/DocumentAnalyticsDashboard').then(m => m.DocumentAnalyticsDashboard),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const AutomationAnalyticsDashboard = dynamic(
+  () => import('@/components/analytics/AutomationAnalyticsDashboard').then(m => m.AutomationAnalyticsDashboard),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const TeamAnalyticsDashboard = dynamic(
+  () => import('@/components/analytics/TeamAnalyticsDashboard').then(m => m.TeamAnalyticsDashboard),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const QueuePerformanceDashboard = dynamic(
+  () => import('@/components/analytics/QueuePerformanceDashboard').then(m => m.QueuePerformanceDashboard),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const ComplianceAnalyticsDashboard = dynamic(
+  () => import('@/components/analytics/ComplianceAnalyticsDashboard').then(m => m.ComplianceAnalyticsDashboard),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const AlertRulesManager = dynamic(
+  () => import('@/components/analytics/AlertRulesManager').then(m => m.AlertRulesManager),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const ReportScheduler = dynamic(
+  () => import('@/components/analytics/ReportScheduler').then(m => m.ReportScheduler),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
 
 // Demo user constant - replaces Supabase auth session
 const DEMO_USER = {
   id: 'demo-user-hv-consultores',
   email: 'demo@hvconsultores.cl',
   name: 'Usuario Demo',
+}
+
+function TabSkeleton() {
+  return (
+    <div className='space-y-4'>
+      <div className='grid gap-4 md:grid-cols-4'>
+        {[...Array(4)].map((_, i) => (
+          <Skeleton key={i} className='h-24 w-full' />
+        ))}
+      </div>
+      <Skeleton className='h-64 w-full' />
+    </div>
+  )
 }
 
 interface AnalyticsDashboardPageProps {
@@ -40,9 +69,7 @@ export default function AnalyticsDashboardPage({
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  // Use demo user instead of Supabase auth
   useEffect(() => {
-    // TODO: Phase 2 - Replace with Convex auth session check
     setOrganizationId(DEMO_USER.id)
     setLoading(false)
   }, [router])
@@ -70,7 +97,6 @@ export default function AnalyticsDashboardPage({
 
   return (
     <div className='space-y-6'>
-      {/* Page Header */}
       <div className='flex flex-col gap-2'>
         <h1 className='text-3xl font-bold tracking-tight'>Analytics</h1>
         <p className='text-muted-foreground'>
@@ -78,7 +104,6 @@ export default function AnalyticsDashboardPage({
         </p>
       </div>
 
-      {/* Navigation Tabs */}
       <Tabs value={activeTab} defaultValue='documents' className='space-y-6'>
         <TabsList className='grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-7'>
           <TabsTrigger value='documents'>Documents</TabsTrigger>
@@ -90,137 +115,34 @@ export default function AnalyticsDashboardPage({
           <TabsTrigger value='reports'>Reports</TabsTrigger>
         </TabsList>
 
-        {/* Documents Tab */}
         <TabsContent value='documents'>
           <DocumentAnalyticsDashboard organizationId={organizationId} />
         </TabsContent>
 
-        {/* Automation Tab */}
         <TabsContent value='automation'>
           <AutomationAnalyticsDashboard organizationId={organizationId} />
         </TabsContent>
 
-        {/* Team Tab */}
         <TabsContent value='team'>
           <TeamAnalyticsDashboard organizationId={organizationId} />
         </TabsContent>
 
-        {/* Queue Tab */}
         <TabsContent value='queue'>
           <QueuePerformanceDashboard organizationId={organizationId} />
         </TabsContent>
 
-        {/* Compliance Tab */}
         <TabsContent value='compliance'>
           <ComplianceAnalyticsDashboard organizationId={organizationId} />
         </TabsContent>
 
-        {/* Alerts Tab */}
         <TabsContent value='alerts'>
           <AlertRulesManager organizationId={organizationId} />
         </TabsContent>
 
-        {/* Reports Tab */}
         <TabsContent value='reports'>
           <ReportScheduler organizationId={organizationId} />
         </TabsContent>
       </Tabs>
-
-      {/* Quick Stats */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Phase 7 Implementation Status</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className='space-y-4'>
-            <div>
-              <p className='text-sm font-medium'>Week 1: Foundation & Document Analytics</p>
-              <div className='mt-2 h-2 w-full overflow-hidden rounded-full bg-muted'>
-                <div
-                  className='h-full bg-primary transition-all'
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <p className='mt-1 text-xs text-muted-foreground'>Complete</p>
-            </div>
-
-            <div>
-              <p className='text-sm font-medium'>
-                Week 2: Automation & Team Analytics
-              </p>
-              <div className='mt-2 h-2 w-full overflow-hidden rounded-full bg-muted'>
-                <div
-                  className='h-full bg-primary transition-all'
-                  style={{ width: '100%' }}
-                />
-              </div>
-              <p className='mt-1 text-xs text-muted-foreground'>Complete</p>
-            </div>
-
-            <div>
-              <p className='text-sm font-medium'>Week 3: Compliance & Alerts</p>
-              <div className='mt-2 h-2 w-full overflow-hidden rounded-full bg-muted'>
-                <div
-                  className='h-full bg-primary transition-all'
-                  style={{ width: '20%' }}
-                />
-              </div>
-              <p className='mt-1 text-xs text-muted-foreground'>In Progress (Compliance done)</p>
-            </div>
-
-            <div>
-              <p className='text-sm font-medium'>
-                Week 4: Optimization & Deployment
-              </p>
-              <div className='mt-2 h-2 w-full overflow-hidden rounded-full bg-muted'>
-                <div
-                  className='h-full bg-primary transition-all'
-                  style={{ width: '0%' }}
-                />
-              </div>
-              <p className='mt-1 text-xs text-muted-foreground'>Upcoming</p>
-            </div>
-          </div>
-
-          <div className='mt-6 space-y-2 border-t pt-4'>
-            <p className='text-sm font-medium'>Component Status (Week 1-2)</p>
-            <ul className='space-y-2 text-sm text-muted-foreground'>
-              <li className='flex items-center gap-2'>
-                <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Database schema created and optimized
-              </li>
-              <li className='flex items-center gap-2'>
-                <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Document analytics dashboard built
-              </li>
-              <li className='flex items-center gap-2'>
-                <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Automation analytics dashboard built
-              </li>
-              <li className='flex items-center gap-2'>
-                <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Team analytics dashboard built
-              </li>
-              <li className='flex items-center gap-2'>
-                <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Queue performance dashboard built
-              </li>
-              <li className='flex items-center gap-2'>
-                <span className='h-2 w-2 rounded-full bg-green-500'></span>
-                Analytics API endpoints implemented (4/4)
-              </li>
-              <li className='flex items-center gap-2'>
-                <span className='h-2 w-2 rounded-full bg-blue-500'></span>
-                Real-time subscriptions (next)
-              </li>
-              <li className='flex items-center gap-2'>
-                <span className='h-2 w-2 rounded-full bg-blue-500'></span>
-                Integration testing (in progress)
-              </li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

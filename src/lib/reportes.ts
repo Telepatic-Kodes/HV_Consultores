@@ -1,8 +1,3 @@
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
-import * as XLSX from 'xlsx'
-import { saveAs } from 'file-saver'
-
 // ============================================
 // TIPOS DE DATOS PARA REPORTES
 // ============================================
@@ -80,7 +75,7 @@ export interface DatosResumenMensual {
 }
 
 // ============================================
-// GENERACIÓN DE PDF
+// GENERACIÓN DE PDF (lazy-loaded)
 // ============================================
 
 // Colores del tema
@@ -94,7 +89,10 @@ const COLORS = {
 }
 
 // Generar PDF de F29
-export function generarPDFF29(datos: DatosF29): void {
+export async function generarPDFF29(datos: DatosF29): Promise<void> {
+  const { default: jsPDF } = await import('jspdf')
+  const { default: autoTable } = await import('jspdf-autotable')
+
   const doc = new jsPDF()
   const pageWidth = doc.internal.pageSize.getWidth()
 
@@ -271,7 +269,10 @@ export function generarPDFF29(datos: DatosF29): void {
 }
 
 // Generar PDF de resumen mensual
-export function generarPDFResumenMensual(datos: DatosResumenMensual): void {
+export async function generarPDFResumenMensual(datos: DatosResumenMensual): Promise<void> {
+  const { default: jsPDF } = await import('jspdf')
+  const { default: autoTable } = await import('jspdf-autotable')
+
   const doc = new jsPDF()
   const pageWidth = doc.internal.pageSize.getWidth()
 
@@ -357,11 +358,14 @@ export function generarPDFResumenMensual(datos: DatosResumenMensual): void {
 }
 
 // ============================================
-// GENERACIÓN DE EXCEL
+// GENERACIÓN DE EXCEL (lazy-loaded)
 // ============================================
 
 // Generar Excel de documentos
-export function generarExcelDocumentos(datos: DatosDocumentos): void {
+export async function generarExcelDocumentos(datos: DatosDocumentos): Promise<void> {
+  const XLSX = await import('xlsx')
+  const { saveAs } = await import('file-saver')
+
   // Crear workbook
   const wb = XLSX.utils.book_new()
 
@@ -441,7 +445,10 @@ export function generarExcelDocumentos(datos: DatosDocumentos): void {
 }
 
 // Generar Excel de F29
-export function generarExcelF29(datos: DatosF29): void {
+export async function generarExcelF29(datos: DatosF29): Promise<void> {
+  const XLSX = await import('xlsx')
+  const { saveAs } = await import('file-saver')
+
   const wb = XLSX.utils.book_new()
 
   // Hoja principal
@@ -501,11 +508,14 @@ export function generarExcelF29(datos: DatosF29): void {
 }
 
 // Generar Excel de estadísticas generales
-export function generarExcelEstadisticas(datos: {
+export async function generarExcelEstadisticas(datos: {
   periodo: string
   clientes: { rut: string; razon_social: string; documentos: number; f29_status: string }[]
   totales: { documentos: number; clientes: number; f29_enviados: number }
-}): void {
+}): Promise<void> {
+  const XLSX = await import('xlsx')
+  const { saveAs } = await import('file-saver')
+
   const wb = XLSX.utils.book_new()
 
   const wsData = [

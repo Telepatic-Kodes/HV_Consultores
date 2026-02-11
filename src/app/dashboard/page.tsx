@@ -1,15 +1,29 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import {
   TopNav,
   StatsCard,
   StatsGridSkeleton,
-  DocumentosPorDiaChart,
-  DocumentosPorTipoChart,
-  F29PorMesChart,
-  BotsActividadChart,
   KPICard,
 } from '@/components/dashboard'
+
+const DocumentosPorDiaChart = dynamic(
+  () => import('@/components/dashboard/charts').then(m => m.DocumentosPorDiaChart),
+  { ssr: true }
+)
+const DocumentosPorTipoChart = dynamic(
+  () => import('@/components/dashboard/charts').then(m => m.DocumentosPorTipoChart),
+  { ssr: true }
+)
+const F29PorMesChart = dynamic(
+  () => import('@/components/dashboard/charts').then(m => m.F29PorMesChart),
+  { ssr: true }
+)
+const BotsActividadChart = dynamic(
+  () => import('@/components/dashboard/charts').then(m => m.BotsActividadChart),
+  { ssr: true }
+)
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   FileText,

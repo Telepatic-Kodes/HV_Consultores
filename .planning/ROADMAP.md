@@ -14,9 +14,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Convex Migration** - Replace Supabase backend with Convex data layer
 - [x] **Phase 2: Code Quality** - Fix TypeScript types, remove dead code, upgrade dependencies
-- [ ] **Phase 3: Landing Page Polish** - Responsive design, fix assets, improve animations
-- [ ] **Phase 4: Dashboard Polish** - Fix rendering issues, improve loading states, consistent styling
-- [ ] **Phase 5: Performance Optimization** - Add caching, lazy loading, reduce bundle size
+- [x] **Phase 3: Landing Page Polish** - Responsive design, fix assets, improve animations
+- [x] **Phase 4: Dashboard Polish** - Fix rendering issues, improve loading states, consistent styling
+- [x] **Phase 5: Performance Optimization** - Add caching, lazy loading, reduce bundle size
 - [ ] **Phase 6: Production Deployment** - Clean builds, security headers, monitoring endpoints
 
 ## Phase Details
@@ -67,10 +67,10 @@ Plans:
   3. All images load (favicon displays, no broken image icons)
   4. Animations and transitions feel professional (smooth, not janky)
   5. All navigation links navigate to valid pages (no 404s from header/footer)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD during planning
+- [x] 03-01-PLAN.md — Fix responsive hero, add favicon, fix footer dead links
 
 ### Phase 4: Dashboard Polish
 **Goal**: Dashboard provides consistent, error-free experience with professional UI
@@ -82,10 +82,10 @@ Plans:
   3. Loading skeletons appear during data fetch, empty states show when no data exists
   4. Consistent spacing, typography, and color palette across all pages
   5. All buttons, forms, and modals respond to user interaction correctly
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD during planning
+- [x] 04-01-PLAN.md — Responsive sidebar with mobile drawer, layout fixes across pages
 
 ### Phase 5: Performance Optimization
 **Goal**: Application loads quickly with optimized bundles and smart caching
@@ -96,10 +96,10 @@ Plans:
   2. Dashboard modules outside viewport lazy-load (not all loaded upfront)
   3. Images use next/image with proper sizing (no oversized downloads)
   4. Initial JavaScript bundle size under 300KB (measured via webpack-bundle-analyzer)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] TBD during planning
+- [x] 05-01-PLAN.md — Bundle optimization with dynamic imports, lazy loading, barrel cleanup
 
 ### Phase 6: Production Deployment
 **Goal**: Application deploys to Vercel with zero build errors and production-grade security
@@ -126,7 +126,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. Convex Migration | 5/5 | **COMPLETE** | 2026-02-11 |
 | 2. Code Quality | 3/3 | **COMPLETE** | 2026-02-11 |
-| 3. Landing Page Polish | 0/TBD | Not started | - |
-| 4. Dashboard Polish | 0/TBD | Not started | - |
-| 5. Performance Optimization | 0/TBD | Not started | - |
+| 3. Landing Page Polish | 1/1 | **COMPLETE** | 2026-02-11 |
+| 4. Dashboard Polish | 1/1 | **COMPLETE** | 2026-02-11 |
+| 5. Performance Optimization | 1/1 | **COMPLETE** | 2026-02-11 |
 | 6. Production Deployment | 0/TBD | Not started | - |

@@ -5,24 +5,24 @@
 See: .planning/PROJECT.md (updated 2026-02-09)
 
 **Core value:** Accounting team processes documents, tax forms, and government portal interactions with minimal manual effort — saving 200+ hours/month
-**Current focus:** Phase 2 COMPLETE — Ready for Phase 3 (Landing Page Polish)
+**Current focus:** Phase 4 COMPLETE — Working on Phase 5 (Performance Optimization)
 
 ## Current Position
 
-Phase: 2 of 6 (Code Quality) — **COMPLETE**
-Plan: 3 of 3 in current phase — ALL DONE
-Status: Phase complete, ready for Phase 3
-Last activity: 2026-02-11 — Completed 02-03-PLAN.md (remove all @ts-nocheck)
+Phase: 5 of 6 (Performance Optimization) — **IN PROGRESS**
+Plan: Analyzing build output and codebase for optimization targets
+Status: Starting Phase 5
+Last activity: 2026-02-11 — Completed 04-01-PLAN.md (dashboard responsive + sidebar)
 
-Progress: [██████████] 100% (Phase 2)
-Overall:  [████░░░░░░] 33% (2 of 6 phases)
+Progress: [██████████] 100% (Phase 4)
+Overall:  [████████░░] 67% (4 of 6 phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~45 min
-- Total execution time: ~6 hours
+- Total plans completed: 10
+- Average duration: ~38 min
+- Total execution time: ~7 hours
 
 **By Phase:**
 
@@ -30,10 +30,8 @@ Overall:  [████░░░░░░] 33% (2 of 6 phases)
 |-------|-------|-------|----------|
 | 01-convex-migration | 5 | ~275 min | ~55 min |
 | 02-code-quality | 3 | ~90 min | ~30 min |
-
-**Recent Trend:**
-- Phase 2 plans: 02-01 (~25min), 02-02 (~35min), 02-03 (~30min)
-- Trend: Accelerating with parallel agent strategy
+| 03-landing-page-polish | 1 | ~20 min | ~20 min |
+| 04-dashboard-polish | 1 | ~25 min | ~25 min |
 
 *Updated after each plan completion*
 
@@ -41,42 +39,31 @@ Overall:  [████░░░░░░] 33% (2 of 6 phases)
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
-
-- Migrate Supabase → Convex (user preference, Convex as primary backend) ✅ DONE
-- Keep demo mode (internal tool, no real auth needed) ✅ DONE
-- Preserve existing UI framework (avoid unnecessary rewrites) ✅ DONE
-- ESLint 8 with @typescript-eslint (Next.js 14 incompatible with ESLint 9) ✅ DONE
-- Use `as Id<"table">` casts for Convex branded types from React layer ✅ DONE
-- Default to soft delete pattern (preserve audit trail, allow data recovery)
-- Manually traverse relationships in queries (Convex doesn't support SQL joins)
-- Use ConvexHttpClient in Server Actions (server context requires HTTP client, not React hooks)
-- Stub advanced features (compliance, automation, intelligence) until Convex modules built
+- Migrate Supabase → Convex (user preference, Convex as primary backend) DONE
+- Keep demo mode (internal tool, no real auth needed) DONE
+- Preserve existing UI framework (avoid unnecessary rewrites) DONE
+- ESLint 8 with @typescript-eslint (Next.js 14 incompatible with ESLint 9) DONE
+- Use `as Id<"table">` casts for Convex branded types from React layer DONE
+- SVG favicon using HV initials in navy blue brand color DONE
+- Footer dead links → replaced with real section anchors DONE
+- Mobile hero shows simplified stat cards (no full chart) DONE
+- Responsive sidebar with SidebarContext + mobile drawer pattern DONE
 
 ### Pending Todos
 
 - Run `npx convex dev` to authenticate and generate real API types
 - Set `NEXT_PUBLIC_CONVEX_URL` environment variable for deployment
 - Build Convex modules for: compliance, automation, intelligence, document templates, queue
-- Add documento_aprobaciones and workflow tables to Convex schema
 
 ### Blockers/Concerns
 
-**Resolved from Phase 2:**
-- ✅ Zero @ts-nocheck directives in entire src/ directory
-- ✅ Zero TypeScript errors (npx tsc --noEmit returns 0)
-- ✅ ESLint configured with @typescript-eslint plugin
-- ✅ Clean production build (npm run build passes)
-- ✅ 136+ TS errors fixed across 67 files
-
-**Carried forward to Phase 3:**
+**Carried forward to Phase 5:**
 - Performance: In-memory aggregation works, watch if dataset grows >10k docs
 - Advanced features returning empty/stub data (compliance, intelligence, automation)
-- Next.js 14.2.29 has known security vulnerability — needs upgrade (Phase 5/6)
+- Next.js 14.2.29 has known security vulnerability — needs upgrade (Phase 6)
 
 ## Session Continuity
 
-Last session: 2026-02-11 (Phase 2 complete)
-Stopped at: Completed 02-03-PLAN.md — Phase 2 (Code Quality) COMPLETE
+Last session: 2026-02-11 (Phase 4 complete, Phase 5 starting)
+Stopped at: Starting Phase 5 (Performance Optimization)
 Resume file: None
