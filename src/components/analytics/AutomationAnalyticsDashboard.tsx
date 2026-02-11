@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,12 +14,8 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
-  ScatterChart,
-  Scatter,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -26,20 +24,9 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
-  PieChart,
-  Pie,
-  Cell,
   ComposedChart,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
+  Line,
 } from 'recharts'
-import {
-  AutomationMetricsSummary,
-  AnalyticsFilter,
-} from '@/types/analytics'
 import {
   TrendingUp,
   TrendingDown,
@@ -53,75 +40,14 @@ interface AutomationAnalyticsDashboardProps {
   organizationId: string
 }
 
-const COLORS = ['#10b981', '#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6']
-
 export const AutomationAnalyticsDashboard: React.FC<
   AutomationAnalyticsDashboardProps
 > = ({ organizationId }) => {
-  const [metrics, setMetrics] = useState<AutomationMetricsSummary | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [period, setPeriod] = useState('30d')
-
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        const endDate = new Date()
-        const startDate = new Date()
-        switch (period) {
-          case '7d':
-            startDate.setDate(endDate.getDate() - 7)
-            break
-          case '30d':
-            startDate.setMonth(endDate.getMonth() - 1)
-            break
-          case '90d':
-            startDate.setMonth(endDate.getMonth() - 3)
-            break
-          case '1y':
-            startDate.setFullYear(endDate.getFullYear() - 1)
-            break
-        }
-
-        const response = await fetch('/api/analytics/automation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            organizationId,
-            dateRange: { startDate, endDate },
-            groupBy: 'day',
-          } as AnalyticsFilter),
-        })
-
-        if (!response.ok) throw new Error('Failed to fetch automation metrics')
-
-        const data = await response.json()
-        setMetrics(data.data)
-      } catch (err) {
-        console.error('Error fetching metrics:', err)
-        setError('Failed to load automation analytics')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchMetrics()
-  }, [organizationId, period])
+  const metrics = useQuery(api.analytics.getAutomationMetrics, { period })
+  const loading = metrics === undefined
 
   if (loading) return <DashboardSkeleton />
-
-  if (error || !metrics) {
-    return (
-      <Card className='border-destructive'>
-        <CardContent className='pt-6'>
-          <p className='text-sm text-destructive'>{error || 'No data available'}</p>
-        </CardContent>
-      </Card>
-    )
-  }
 
   return (
     <div className='space-y-6'>
@@ -286,7 +212,7 @@ export const AutomationAnalyticsDashboard: React.FC<
           <CardContent>
             <div className='space-y-4'>
               {metrics.topPerformingRules.length > 0 ? (
-                metrics.topPerformingRules.map((rule, idx) => (
+                metrics.topPerformingRules.map((rule: any, idx: number) => (
                   <div key={rule.ruleId} className='flex items-center justify-between'>
                     <div className='flex-1'>
                       <div className='flex items-center gap-2'>
@@ -327,7 +253,7 @@ export const AutomationAnalyticsDashboard: React.FC<
           <CardContent>
             <div className='space-y-4'>
               {metrics.worstPerformingRules.length > 0 ? (
-                metrics.worstPerformingRules.map((rule, idx) => (
+                metrics.worstPerformingRules.map((rule: any, idx: number) => (
                   <div key={rule.ruleId} className='flex items-center justify-between'>
                     <div className='flex-1'>
                       <div className='flex items-center gap-2'>
@@ -361,9 +287,8 @@ export const AutomationAnalyticsDashboard: React.FC<
         </Card>
       </div>
 
-      {/* Job Type Distribution & ROI Metrics */}
+      {/* ROI Metrics */}
       <div className='grid gap-6 md:grid-cols-2'>
-        {/* Job Type Distribution */}
         <Card>
           <CardHeader>
             <CardTitle className='text-lg'>Execution by Job Type</CardTitle>
@@ -372,13 +297,11 @@ export const AutomationAnalyticsDashboard: React.FC<
             {metrics.topPerformingRules.length > 0 ? (
               <ResponsiveContainer width='100%' height={300}>
                 <BarChart
-                  data={[
-                    { type: 'Email', count: 450, success: 425 },
-                    { type: 'Archive', count: 320, success: 305 },
-                    { type: 'Notification', count: 280, success: 260 },
-                    { type: 'Delete', count: 150, success: 135 },
-                    { type: 'Webhook', count: 200, success: 175 },
-                  ]}
+                  data={metrics.topPerformingRules.map((r: any) => ({
+                    type: r.ruleName,
+                    count: r.executionCount,
+                    success: Math.round(r.executionCount * r.successRate / 100),
+                  }))}
                 >
                   <CartesianGrid strokeDasharray='3 3' />
                   <XAxis dataKey='type' />

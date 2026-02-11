@@ -613,6 +613,53 @@ export default defineSchema({
     .index("by_severidad", ["severidad"])
     .index("by_estado", ["estado"]),
 
+  // ─── Alert Rules (Analytics Phase 7) ────────────────────
+  alert_rules: defineTable({
+    name: v.string(),
+    enabled: v.boolean(),
+    metric: v.string(),
+    operator: v.string(),
+    threshold: v.number(),
+    duration: v.optional(v.number()),
+    email: v.optional(v.array(v.string())),
+    slack: v.optional(v.string()),
+    webhook: v.optional(v.string()),
+    in_app: v.optional(v.boolean()),
+    last_triggered: v.optional(v.string()),
+    created_at: v.optional(v.string()),
+    updated_at: v.optional(v.string()),
+  })
+    .index("by_enabled", ["enabled"]),
+
+  // ─── Scheduled Reports (Analytics Phase 7) ────────────
+  scheduled_reports: defineTable({
+    name: v.string(),
+    enabled: v.boolean(),
+    type: v.union(
+      v.literal("daily"),
+      v.literal("weekly"),
+      v.literal("monthly")
+    ),
+    schedule_time: v.string(),
+    schedule_day_of_week: v.optional(v.number()),
+    schedule_day_of_month: v.optional(v.number()),
+    email: v.optional(v.array(v.string())),
+    slack: v.optional(v.string()),
+    webhook: v.optional(v.string()),
+    dashboards: v.array(v.string()),
+    format: v.union(
+      v.literal("pdf"),
+      v.literal("excel"),
+      v.literal("html")
+    ),
+    include_charts: v.boolean(),
+    last_sent: v.optional(v.string()),
+    created_at: v.optional(v.string()),
+    updated_at: v.optional(v.string()),
+  })
+    .index("by_enabled", ["enabled"])
+    .index("by_type", ["type"]),
+
   // ─── Patrones de Conciliación (Learned Patterns) ───────
   patrones_conciliacion: defineTable({
     cliente_id: v.id("clientes"),

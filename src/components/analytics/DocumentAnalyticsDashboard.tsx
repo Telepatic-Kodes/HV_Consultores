@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useQuery } from 'convex/react'
+import { api } from '../../../convex/_generated/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,11 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { DateRange } from '@/types/analytics'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   PieChart,
@@ -24,102 +23,28 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Area,
   AreaChart,
 } from 'recharts'
-import {
-  DocumentMetricsSummary,
-  AnalyticsFilter,
-} from '@/types/analytics'
 import { FileText, Archive, Trash2, TrendingUp } from 'lucide-react'
 
 interface DocumentAnalyticsDashboardProps {
   organizationId: string;
-  dateRange?: DateRange;
+  dateRange?: any;
 }
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
 
 export const DocumentAnalyticsDashboard: React.FC<
   DocumentAnalyticsDashboardProps
-> = ({ organizationId, dateRange }) => {
-  const [metrics, setMetrics] = useState<DocumentMetricsSummary | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+> = ({ organizationId }) => {
   const [period, setPeriod] = useState('30d')
-
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        // Calculate date range
-        const endDate = new Date()
-        const startDate = new Date()
-        switch (period) {
-          case '7d':
-            startDate.setDate(endDate.getDate() - 7)
-            break
-          case '30d':
-            startDate.setMonth(endDate.getMonth() - 1)
-            break
-          case '90d':
-            startDate.setMonth(endDate.getMonth() - 3)
-            break
-          case '1y':
-            startDate.setFullYear(endDate.getFullYear() - 1)
-            break
-          default:
-            startDate.setMonth(endDate.getMonth() - 1)
-        }
-
-        const response = await fetch('/api/analytics/documents', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            organizationId,
-            dateRange: {
-              startDate,
-              endDate,
-            },
-            groupBy: 'day',
-          } as AnalyticsFilter),
-        })
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch document metrics')
-        }
-
-        const data = await response.json()
-        setMetrics(data.data)
-      } catch (err) {
-        console.error('Error fetching metrics:', err)
-        setError('Failed to load document analytics')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchMetrics()
-  }, [organizationId, period])
+  const metrics = useQuery(api.analytics.getDocumentMetrics, { period })
+  const loading = metrics === undefined
 
   if (loading) {
     return <DashboardSkeleton />
-  }
-
-  if (error || !metrics) {
-    return (
-      <Card className='border-destructive'>
-        <CardContent className='pt-6'>
-          <p className='text-sm text-destructive'>{error || 'No data available'}</p>
-        </CardContent>
-      </Card>
-    )
   }
 
   return (

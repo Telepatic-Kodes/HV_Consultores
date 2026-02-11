@@ -94,9 +94,10 @@ export default function DocumentosPage() {
   // Filter documents
   const documentosFiltrados = documentos.filter((doc) => {
     // Search filter
+    const searchTerm = filters.searchTerm.toLowerCase()
     const matchSearch =
-      doc.nombre_archivo.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-      doc.folio_documento?.toLowerCase().includes(filters.searchTerm.toLowerCase())
+      (doc.nombre_archivo ?? '').toLowerCase().includes(searchTerm) ||
+      (doc.folio_documento ?? '').toLowerCase().includes(searchTerm)
 
     // Status filter
     const matchEstado = filters.estado === 'all' || doc.estado === filters.estado

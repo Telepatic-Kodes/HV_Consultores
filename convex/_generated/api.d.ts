@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as alertRules from "../alertRules.js";
+import type * as analytics from "../analytics.js";
 import type * as anomalies from "../anomalies.js";
 import type * as audit from "../audit.js";
 import type * as banks from "../banks.js";
@@ -21,6 +23,8 @@ import type * as matching from "../matching.js";
 import type * as notifications from "../notifications.js";
 import type * as pipeline from "../pipeline.js";
 import type * as profiles from "../profiles.js";
+import type * as scheduledReports from "../scheduledReports.js";
+import type * as seed from "../seed.js";
 import type * as templates from "../templates.js";
 
 import type {
@@ -30,6 +34,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  alertRules: typeof alertRules;
+  analytics: typeof analytics;
   anomalies: typeof anomalies;
   audit: typeof audit;
   banks: typeof banks;
@@ -43,6 +49,8 @@ declare const fullApi: ApiFromModules<{
   notifications: typeof notifications;
   pipeline: typeof pipeline;
   profiles: typeof profiles;
+  scheduledReports: typeof scheduledReports;
+  seed: typeof seed;
   templates: typeof templates;
 }>;
 
