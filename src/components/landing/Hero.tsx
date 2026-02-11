@@ -143,7 +143,38 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Dashboard Preview */}
+          {/* Mobile Dashboard Preview (visible below lg) */}
+          <div className="lg:hidden mt-10 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-400">
+            <div className="rounded-xl border bg-white shadow-lg overflow-hidden">
+              <div className="border-b bg-muted/50 px-3 py-2 flex items-center gap-2">
+                <div className="flex gap-1">
+                  <div className="h-2 w-2 rounded-full bg-red-400" />
+                  <div className="h-2 w-2 rounded-full bg-yellow-400" />
+                  <div className="h-2 w-2 rounded-full bg-green-400" />
+                </div>
+                <div className="flex-1 text-center text-xs text-muted-foreground">
+                  dashboard.hv-consultores.cl
+                </div>
+              </div>
+              <div className="p-4">
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: 'Docs Hoy', value: '47', color: 'bg-primary', change: '+12%' },
+                    { label: 'Clasificados', value: '45', color: 'bg-secondary', change: '+8%' },
+                    { label: 'Pendientes', value: '2', color: 'bg-accent', change: '-23%' },
+                  ].map((stat) => (
+                    <div key={stat.label} className="rounded-lg border p-2.5 text-center">
+                      <div className={`h-1.5 w-6 rounded mx-auto mb-1.5 ${stat.color}`} />
+                      <p className="text-xl font-bold">{stat.value}</p>
+                      <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Dashboard Preview (visible lg+) */}
           <div className="relative hidden lg:block animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
             <div className="relative rounded-xl border bg-white shadow-2xl overflow-hidden">
               {/* Mock dashboard header */}
@@ -207,8 +238,8 @@ export function Hero() {
               </div>
             </div>
 
-            {/* Floating elements */}
-            <div className="absolute -left-8 top-1/4 rounded-lg border bg-white p-3 shadow-lg animate-in fade-in slide-in-from-left-4 duration-500 delay-500">
+            {/* Floating elements — contained within parent overflow */}
+            <div className="absolute left-0 top-1/4 rounded-lg border bg-white p-3 shadow-lg animate-in fade-in slide-in-from-left-4 duration-500 delay-500 -translate-x-4">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
                   <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -220,7 +251,7 @@ export function Hero() {
               </div>
             </div>
 
-            <div className="absolute -right-4 bottom-1/4 rounded-lg border bg-white p-3 shadow-lg animate-in fade-in slide-in-from-right-4 duration-500 delay-700">
+            <div className="absolute right-0 bottom-1/4 rounded-lg border bg-white p-3 shadow-lg animate-in fade-in slide-in-from-right-4 duration-500 delay-700 translate-x-2">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <Bot className="h-4 w-4 text-primary" />
@@ -232,8 +263,7 @@ export function Hero() {
               </div>
             </div>
 
-            {/* New floating element */}
-            <div className="absolute -left-4 bottom-8 rounded-lg border bg-white p-3 shadow-lg animate-in fade-in slide-in-from-left-4 duration-500 delay-900">
+            <div className="absolute left-0 bottom-8 rounded-lg border bg-white p-3 shadow-lg animate-in fade-in slide-in-from-left-4 duration-500 delay-900 -translate-x-2">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-secondary/10 flex items-center justify-center">
                   <FileCheck className="h-4 w-4 text-secondary" />

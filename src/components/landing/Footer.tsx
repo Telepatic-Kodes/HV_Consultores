@@ -7,21 +7,21 @@ const navigation = {
     { name: 'HV-F29', href: '#servicios' },
     { name: 'HV-Bot', href: '#servicios' },
     { name: 'HV-Chat', href: '#servicios' },
+    { name: 'HV-Bancos', href: '#servicios' },
   ],
   company: [
-    { name: 'Nosotros', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Carreras', href: '#' },
+    { name: 'Beneficios', href: '#beneficios' },
+    { name: 'Cómo Usar', href: '/como-usar' },
     { name: 'Contacto', href: '#contacto' },
   ],
   legal: [
-    { name: 'Privacidad', href: '#' },
-    { name: 'Términos', href: '#' },
+    { name: 'Privacidad', href: '#contacto' },
+    { name: 'Términos', href: '#contacto' },
   ],
   social: [
-    { name: 'LinkedIn', href: '#', icon: Linkedin },
-    { name: 'Twitter', href: '#', icon: Twitter },
     { name: 'Email', href: 'mailto:contacto@hv-consultores.cl', icon: Mail },
+    { name: 'LinkedIn', href: 'https://linkedin.com', icon: Linkedin },
+    { name: 'Twitter', href: 'https://twitter.com', icon: Twitter },
   ],
 }
 

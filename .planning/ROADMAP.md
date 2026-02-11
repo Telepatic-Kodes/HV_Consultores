@@ -13,7 +13,7 @@ Transform the HV Consultores accounting platform from a Supabase-backed prototyp
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Convex Migration** - Replace Supabase backend with Convex data layer
-- [ ] **Phase 2: Code Quality** - Fix TypeScript types, remove dead code, upgrade dependencies
+- [x] **Phase 2: Code Quality** - Fix TypeScript types, remove dead code, upgrade dependencies
 - [ ] **Phase 3: Landing Page Polish** - Responsive design, fix assets, improve animations
 - [ ] **Phase 4: Dashboard Polish** - Fix rendering issues, improve loading states, consistent styling
 - [ ] **Phase 5: Performance Optimization** - Add caching, lazy loading, reduce bundle size
@@ -53,7 +53,9 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] TBD during planning
+- [x] 02-01-PLAN.md — Fix 9 TS errors, configure ESLint with @typescript-eslint
+- [x] 02-02-PLAN.md — Remove @ts-nocheck from all 17 Server Action files
+- [x] 02-03-PLAN.md — Remove @ts-nocheck from 67 remaining component/page/lib files
 
 ### Phase 3: Landing Page Polish
 **Goal**: Landing page renders perfectly on all viewports with working assets
@@ -123,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Convex Migration | 5/5 | **COMPLETE** | 2026-02-11 |
-| 2. Code Quality | 0/TBD | Not started | - |
+| 2. Code Quality | 3/3 | **COMPLETE** | 2026-02-11 |
 | 3. Landing Page Polish | 0/TBD | Not started | - |
 | 4. Dashboard Polish | 0/TBD | Not started | - |
 | 5. Performance Optimization | 0/TBD | Not started | - |
