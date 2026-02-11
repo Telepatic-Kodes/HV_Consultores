@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -11,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { DateRange } from '@/components/ui/calendar'
+import type { DateRange } from '@/types/analytics'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   LineChart,

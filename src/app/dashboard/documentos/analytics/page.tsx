@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -23,9 +22,18 @@ import { obtenerDocumentosCargados } from '../actions'
 import { Loader2, TrendingUp, Calendar, DollarSign, CheckCircle2 } from 'lucide-react'
 import { format, subDays, startOfDay } from 'date-fns'
 import { es } from 'date-fns/locale'
-import type { Database } from '@/types/database.types'
-
-type DocumentoCarga = Database['public']['Tables']['documento_cargas']['Row']
+interface DocumentoCarga {
+  id: string
+  nombre_archivo: string
+  tipo_documento: string
+  folio_documento?: string | null
+  fecha_documento?: string | null
+  monto_total?: number | null
+  estado: string
+  nubox_documento_id?: string | null
+  nubox_estado?: string | null
+  cargado_en?: string | null
+}
 
 export default function DocumentAnalyticsPage() {
   const [documentos, setDocumentos] = useState<DocumentoCarga[]>([])
@@ -357,7 +365,7 @@ export default function DocumentAnalyticsPage() {
                         borderRadius: '0.5rem',
                       }}
                       labelStyle={{ color: '#f3f4f6' }}
-                      formatter={(value: number) => `$${value.toLocaleString('es-CL')}`}
+                      formatter={(value) => `$${Number(value).toLocaleString('es-CL')}`}
                     />
                     <Bar dataKey="monto" fill="#10B981" radius={[8, 8, 0, 0]} />
                   </BarChart>

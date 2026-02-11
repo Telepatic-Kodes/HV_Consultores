@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
@@ -19,9 +18,23 @@ import {
   downloadSummaryReport,
   documentosToCSV,
 } from '@/lib/export-documents'
-import type { Database } from '@/types/database.types'
 
-type DocumentoCarga = Database['public']['Tables']['documento_cargas']['Row']
+interface DocumentoCarga {
+  id: string
+  cliente_id: string
+  nombre_archivo: string
+  tipo_documento: string
+  folio_documento: string | null
+  fecha_documento: string | null
+  monto_total: number | null
+  estado: string
+  nubox_documento_id: string | null
+  nubox_estado: string | null
+  cargado_por: string
+  cargado_en: string | null
+  validado_en: string | null
+  enviado_en: string | null
+}
 
 interface DocumentExportMenuProps {
   documentos: DocumentoCarga[]

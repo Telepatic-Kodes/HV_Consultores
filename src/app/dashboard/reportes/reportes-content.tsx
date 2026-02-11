@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { useState, useTransition, useEffect } from 'react'
@@ -180,15 +179,15 @@ export function ReportesContent({
     setDescargando(null)
   }
 
-  const maxDocs = Math.max(...datosEvolucion.map((d) => d.documentos), 1)
-  const maxHoras = Math.max(...datosEvolucion.map((d) => d.horasAhorradas), 1)
+  const maxDocs = Math.max(...datosEvolucion.map((d) => d.documentos || 0), 1)
+  const maxHoras = Math.max(...datosEvolucion.map((d) => d.horasAhorradas || 0), 1)
 
   const handleGenerarReporte = async (reporte: ReporteDisponible) => {
     setGenerando(reporte.id)
     startTransition(async () => {
       const result = await generarReporte(reporte.id)
       if (result.success && result.data) {
-        setReporteModal({ nombre: reporte.nombre, data: result.data })
+        setReporteModal({ nombre: reporte.nombre || reporte.titulo || reporte.id, data: result.data })
       }
       setGenerando(null)
     })
@@ -286,7 +285,7 @@ export function ReportesContent({
       {/* Metrics Overview */}
       <div className="grid gap-4 md:grid-cols-4">
         {metricas.map((metrica) => {
-          const isPositive = metrica.trend.startsWith('+') || metrica.trend.startsWith('-0')
+          const isPositive = (metrica.trend || '').startsWith('+') || (metrica.trend || '').startsWith('-0')
           return (
             <Card key={metrica.label} className="group hover:shadow-executive-md transition-all duration-200">
               <CardContent className="pt-5 pb-5">
@@ -349,21 +348,21 @@ export function ReportesContent({
                   <div className="w-full flex gap-1 justify-center h-48">
                     <div
                       className="flex-1 max-w-8 bg-gradient-to-t from-primary/30 to-primary/10 rounded-t transition-all hover:from-primary/50 hover:to-primary/30 relative group cursor-pointer"
-                      style={{ height: `${(dato.documentos / maxDocs) * 100}%`, minHeight: '4px' }}
+                      style={{ height: `${((dato.documentos || 0) / maxDocs) * 100}%`, minHeight: '4px' }}
                     >
                       <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-foreground text-background px-1.5 py-0.5 rounded">
-                        {dato.documentos}
+                        {dato.documentos || 0}
                       </span>
                     </div>
                     <div
                       className="flex-1 max-w-8 bg-gradient-to-t from-success/30 to-success/10 rounded-t transition-all hover:from-success/50 hover:to-success/30 relative group cursor-pointer"
                       style={{
-                        height: `${(dato.horasAhorradas / maxHoras) * 100}%`,
+                        height: `${((dato.horasAhorradas || 0) / maxHoras) * 100}%`,
                         minHeight: '4px',
                       }}
                     >
                       <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap bg-foreground text-background px-1.5 py-0.5 rounded">
-                        {dato.horasAhorradas}h
+                        {dato.horasAhorradas || 0}h
                       </span>
                     </div>
                   </div>

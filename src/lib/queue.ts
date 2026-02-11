@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Job Queue System for Phase 6 Automation
 // TODO: Phase 2 - Implement job queue in Convex
 // Tables needed: queue_jobs, document_lifecycle, notifications, compliance_reports, audit_logs_extended
@@ -262,9 +261,9 @@ export class Scheduler {
    * Cancel all scheduled jobs
    */
   cancelAll(): void {
-    for (const [nombre, intervalo] of this.trabajosProgram) {
+    this.trabajosProgram.forEach((intervalo) => {
       clearInterval(intervalo)
-    }
+    })
     this.trabajosProgram.clear()
   }
 }

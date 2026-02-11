@@ -1,10 +1,8 @@
-// @ts-nocheck
 'use client'
 
 import { useQuery } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Loader2 } from 'lucide-react'
 import {
   LineChart,
@@ -14,7 +12,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -115,8 +112,8 @@ export function ExchangeRateChart({
                 }
               />
               <Tooltip
-                formatter={(val: number) => [
-                  `$${val.toLocaleString('es-CL', {
+                formatter={(val) => [
+                  `$${Number(val).toLocaleString('es-CL', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}`,

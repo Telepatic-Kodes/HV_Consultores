@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { useState, useTransition } from 'react'
@@ -352,14 +351,15 @@ function AddCredentialsDialog({
 
     setError(null)
     startTransition(async () => {
-      const result = await saveCredenciales(selectedCliente, {
+      const credData: Record<string, string> = {
         rut,
         password,
         metodo_autenticacion: authMethod,
-        rut_representante: rutRepresentante || undefined,
-        certificado_base64: certificadoBase64 || undefined,
-        certificado_password: certificadoPassword || undefined,
-      })
+      }
+      if (rutRepresentante) credData.rut_representante = rutRepresentante
+      if (certificadoBase64) credData.certificado_base64 = certificadoBase64
+      if (certificadoPassword) credData.certificado_password = certificadoPassword
+      const result = await saveCredenciales(selectedCliente, credData)
 
       if (result.success) {
         onOpenChange(false)

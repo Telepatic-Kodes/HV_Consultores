@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -95,8 +94,8 @@ export function CashFlowProjection({
               tickFormatter={(val) => formatCLP(val)}
             />
             <Tooltip
-              formatter={(val: number, name: string) => [
-                formatCLP(val),
+              formatter={(val, name) => [
+                formatCLP(Number(val)),
                 name === 'ingresos'
                   ? 'Ingresos'
                   : name === 'egresos'

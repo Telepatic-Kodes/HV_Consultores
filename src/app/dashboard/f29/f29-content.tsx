@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration (Phase 2)
 'use client'
 
 import { useState, useTransition } from 'react'

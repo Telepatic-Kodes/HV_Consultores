@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { useState, useTransition } from 'react'
@@ -49,8 +48,12 @@ import type { SiiJob, SiiTaskType, SiiJobStatus, SiiExecutionStep } from '@/lib/
 // TYPES
 // ============================================================================
 
+interface SiiJobWithCliente extends SiiJob {
+  cliente?: { nombre_razon_social?: string; rut?: string }
+}
+
 interface JobHistoryProps {
-  jobs: SiiJob[]
+  jobs: SiiJobWithCliente[]
 }
 
 // ============================================================================
@@ -236,7 +239,7 @@ function JobRow({
   job,
   onViewDetails,
 }: {
-  job: SiiJob
+  job: SiiJobWithCliente
   onViewDetails: () => void
 }) {
   const [isPending, startTransition] = useTransition()
@@ -255,7 +258,7 @@ function JobRow({
       ? 'En curso...'
       : '-'
 
-  const cliente = job.cliente as { nombre_razon_social?: string; rut?: string } | undefined
+  const cliente = job.cliente
 
   return (
     <TableRow>
@@ -317,15 +320,15 @@ function JobDetailsDialog({
   job,
   onClose,
 }: {
-  job: SiiJob | null
+  job: SiiJobWithCliente | null
   onClose: () => void
 }) {
   if (!job) return null
 
   const config = STATUS_CONFIG[job.status]
   const Icon = config.icon
-  const cliente = job.cliente as { nombre_razon_social?: string; rut?: string } | undefined
-  const steps = (job as SiiJob & { steps?: SiiExecutionStep[] }).steps || []
+  const cliente = job.cliente
+  const steps = (job as SiiJobWithCliente & { steps?: SiiExecutionStep[] }).steps || []
 
   return (
     <Dialog open={!!job} onOpenChange={() => onClose()}>

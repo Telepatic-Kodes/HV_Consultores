@@ -233,3 +233,33 @@ export async function validarCredenciales(
 ): Promise<{ success: boolean; valid?: boolean; error?: string }> {
   return { success: true, valid: true }
 }
+
+export async function createScheduledTask(
+  data: {
+    cliente_id: string
+    task_type: string
+    cron_expression: string
+    descripcion?: string
+  }
+): Promise<{ success: boolean; error?: string }> {
+  // Scheduled tasks not in current schema - placeholder
+  revalidatePath('/dashboard/sii')
+  return { success: true }
+}
+
+export async function toggleScheduledTask(
+  taskId: string,
+  active: boolean
+): Promise<{ success: boolean; error?: string }> {
+  // Scheduled tasks not in current schema - placeholder
+  revalidatePath('/dashboard/sii')
+  return { success: true }
+}
+
+export async function deleteScheduledTask(
+  taskId: string
+): Promise<{ success: boolean; error?: string }> {
+  // Scheduled tasks not in current schema - placeholder
+  revalidatePath('/dashboard/sii')
+  return { success: true }
+}

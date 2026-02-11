@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
@@ -29,9 +28,20 @@ import {
 import { MoreVertical, Send, CheckCircle, XCircle, Loader2 } from 'lucide-react'
 import { enviarDocumentoANubox, obtenerEstadoNubox } from '@/app/dashboard/documentos/nubox-actions'
 import { cambiarEstadoDocumento } from '@/app/dashboard/documentos/actions'
-import type { Database } from '@/types/database.types'
 
-type DocumentoCarga = Database['public']['Tables']['documento_cargas']['Row']
+interface DocumentoCarga {
+  id: string
+  nombre_archivo: string
+  tipo_documento: string
+  folio_documento?: string | null
+  fecha_documento?: string | null
+  monto_total?: number | null
+  estado: string
+  nubox_documento_id?: string | null
+  nubox_estado?: string | null
+  rut_emisor?: string | null
+  razon_social_emisor?: string | null
+}
 
 interface DocumentListViewProps {
   documentos: DocumentoCarga[]
@@ -67,6 +77,8 @@ export function DocumentListView({ documentos, onRefresh }: DocumentListViewProp
         folio: doc.folio_documento || '',
         fechaEmision: doc.fecha_documento || new Date().toISOString().split('T')[0],
         montoTotal: doc.monto_total || 0,
+        rutEmisor: doc.rut_emisor || '',
+        razonSocialEmisor: doc.razon_social_emisor || '',
       })
 
       if (result.success) {

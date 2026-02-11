@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
@@ -104,12 +103,12 @@ export function F29Integration({ clienteId }: F29IntegrationProps) {
     setResult(null)
     startTransition(async () => {
       try {
-        const res = await createF29SubmitJob(f29.id)
+        const res = await createF29SubmitJob(f29.cliente_id, f29.periodo)
 
         if (res.success) {
           setResult({
             type: 'success',
-            message: `Job de envío F29 creado exitosamente (ID: ${res.jobId?.slice(0, 8)}...)`,
+            message: `Job de envío F29 creado exitosamente`,
           })
           setSelectedF29(null)
           // Recargar datos

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 // SII RPA Alerts
 // Sistema de alertas para notificaciones Slack y Email
 
@@ -117,7 +116,7 @@ async function sendSlackAlert(
         text: `SII RPA | ${new Date(payload.timestamp).toLocaleString('es-CL')}`,
       },
     ],
-  } as typeof blocks[0])
+  } as unknown as typeof blocks[0])
 
   // Build Slack message
   const slackMessage: Record<string, unknown> = {

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { useState } from 'react'
@@ -160,7 +159,7 @@ export function DocumentAdvancedFilters({
       {/* Quick Filters */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4">
         <Select value={filters.estado} onValueChange={handleEstadoChange}>
-          <SelectTrigger size="sm" className="text-xs sm:text-sm">
+          <SelectTrigger className="h-9 text-xs sm:text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -173,7 +172,7 @@ export function DocumentAdvancedFilters({
         </Select>
 
         <Select value={filters.tipo} onValueChange={handleTipoChange}>
-          <SelectTrigger size="sm" className="text-xs sm:text-sm">
+          <SelectTrigger className="h-9 text-xs sm:text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

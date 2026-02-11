@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -13,7 +12,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { Loader2, ArrowRight, TemplateIcon } from 'lucide-react'
+import { Loader2, ArrowRight, LayoutTemplate } from 'lucide-react'
 import {
   obtenerPlantillasCliente,
   obtenerPlantilla,
@@ -115,7 +114,7 @@ export function DocumentTemplateSelector({
     <Card className="bg-blue-50 border-blue-200">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
-          <TemplateIcon className="h-4 w-4 text-blue-600" />
+          <LayoutTemplate className="h-4 w-4 text-blue-600" />
           <CardTitle className="text-base text-blue-900">Usar Plantilla</CardTitle>
         </div>
         <CardDescription>Carga rápida con valores predeterminados</CardDescription>

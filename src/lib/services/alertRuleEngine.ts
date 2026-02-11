@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 /**
  * Alert Rule Engine
  * Phase 7 Week 3: Real-time alert condition evaluation and notification dispatch

@@ -7,15 +7,38 @@ import { revalidatePath } from 'next/cache'
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
 const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null
 
+export interface F29Validacion {
+  id: string
+  descripcion: string
+  codigo_validacion: string
+  resultado: 'ok' | 'warning' | 'error'
+  mensaje?: string
+}
+
+export interface F29Codigo {
+  id: string
+  codigo: string
+  descripcion: string
+  monto_iva: number
+}
+
 export interface F29ConDetalles {
   _id: string
+  id: string
   cliente_id: string
   periodo: string
   status?: string
   total_a_pagar?: number
   total_debito_fiscal?: number
   total_credito_fiscal?: number
+  ppm_determinado?: number
   created_at?: string
+  cliente?: {
+    razon_social: string
+    rut: string
+  }
+  validaciones?: F29Validacion[]
+  codigos?: F29Codigo[]
 }
 
 export interface F29Stats {

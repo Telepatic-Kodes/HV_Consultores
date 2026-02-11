@@ -175,26 +175,34 @@ export async function exportarReporteCSV(
 // --- Backward-compatible exports for page components ---
 
 export interface MetricaGeneral {
-  id: string
-  titulo: string
-  valor: number | string
+  id?: string
+  titulo?: string
+  valor?: number | string
   cambio?: number
   icono?: string
+  label?: string
+  value?: string | number
+  trend?: string
+  subtitle?: string
 }
 
 export interface ReporteDisponible {
   id: string
-  titulo: string
+  titulo?: string
   descripcion: string
   tipo: string
-  disponible: boolean
+  disponible?: boolean
   ultimaGeneracion?: string
+  nombre?: string
 }
 
 export interface DatosGrafico {
-  label: string
-  valor: number
+  label?: string
+  valor?: number
   color?: string
+  documentos?: number
+  horasAhorradas?: number
+  mes?: string
 }
 
 export async function getMetricasGenerales(): Promise<MetricaGeneral[]> {
@@ -256,11 +264,11 @@ export async function generarReporte(
   tipo: string,
   clienteId?: string,
   periodo?: string
-): Promise<{ success: boolean; error?: string }> {
-  return { success: true }
+): Promise<{ success: boolean; data?: any; error?: string }> {
+  return { success: true, data: null }
 }
 
-export async function getPeriodosDisponibles(): Promise<string[]> {
+export async function getPeriodosDisponibles(_clienteId?: string): Promise<string[]> {
   const now = new Date()
   const periodos: string[] = []
   for (let i = 0; i < 12; i++) {
@@ -270,16 +278,16 @@ export async function getPeriodosDisponibles(): Promise<string[]> {
   return periodos
 }
 
-export async function getDocumentosParaReporte(clienteId?: string, periodo?: string): Promise<any[]> {
+export async function getDocumentosParaReporte(clienteId?: string, periodo?: string): Promise<any> {
   try {
     if (!convex) throw new Error('Convex client not initialized')
     const docs = await convex.query(api.documents.listDocuments, {
       clienteId: clienteId as any,
       periodo,
     })
-    return docs
+    return { documentos: docs }
   } catch {
-    return []
+    return { documentos: [] }
   }
 }
 
@@ -300,12 +308,17 @@ export async function getResumenMensualParaReporte(clienteId?: string, periodo?:
   }
 }
 
-export async function getDatosF29ParaReporte(f29Id?: string): Promise<any> {
-  if (!f29Id) return null
+export async function getDatosF29ParaReporte(clienteIdOrF29Id?: string, periodo?: string): Promise<any> {
+  if (!clienteIdOrF29Id) return null
   try {
     if (!convex) throw new Error('Convex client not initialized')
     const submissions = await convex.query(api.f29.listSubmissions, {})
-    return (submissions as any[]).find((s: any) => s._id === f29Id) || null
+    if (periodo) {
+      return (submissions as any[]).find(
+        (s: any) => s.cliente_id === clienteIdOrF29Id && s.periodo === periodo
+      ) || null
+    }
+    return (submissions as any[]).find((s: any) => s._id === clienteIdOrF29Id) || null
   } catch {
     return null
   }

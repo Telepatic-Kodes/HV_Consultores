@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from 'react'
@@ -93,7 +92,7 @@ export function RealtimeProvider({ children }: RealtimeProviderProps) {
       toasts.forEach((t) => {
         setEventosRecientes((prev) =>
           [
-            { type: 'notificacion' as const, data: t, timestamp: new Date() },
+            { type: 'notificacion' as const, data: t as unknown as Record<string, unknown>, timestamp: new Date() },
             ...prev,
           ].slice(0, 20)
         )

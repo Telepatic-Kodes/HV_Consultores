@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 // =============================================================================
 // HV Consultores - Bank Statement PDF Parser
 // Extrae transacciones de cartolas bancarias en formato PDF
@@ -138,7 +137,8 @@ export class BankPDFParser {
 
   async parse(buffer: Buffer): Promise<ParsedCartola> {
     // Dynamic import pdf-parse (it's a CommonJS module)
-    const pdfParse = (await import('pdf-parse')).default
+    const pdfParseModule = await import('pdf-parse')
+    const pdfParse = (pdfParseModule as any).default || pdfParseModule
 
     const pdfData: PDFParseResult = await pdfParse(buffer)
     const text = pdfData.text

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 /**
  * Report Generator Service
  * Phase 7 Week 3: Real-time report generation and multi-channel delivery

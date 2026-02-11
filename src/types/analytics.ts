@@ -270,6 +270,7 @@ export interface QueueMetricsSummary {
   currentQueueDepth: number;
   overallSuccessRate: number;
   averageLatencyMs: number;
+  p50LatencyMs: number;
   p95LatencyMs: number;
   p99LatencyMs: number;
   jobsPerHour: number;
@@ -368,6 +369,39 @@ export interface ComplianceMetricsSummary {
     usersWithProperPermissions: number;
     usersWithExcessivePermissions: number;
     permissionAuditDate: Date;
+  };
+
+  // Extended fields used by ComplianceAnalyticsDashboard
+  overallScore: number;
+  gdprScore?: number;
+  hipaaScore?: number;
+  soc2Score?: number;
+  iso27001Score?: number;
+  frameworks: Array<{
+    framework: string;
+    status: 'compliant' | 'non-compliant' | 'in-progress';
+    lastAudit: string;
+    nextAudit: string;
+    issues: number;
+    resolved: number;
+  }>;
+  recentViolations: Array<{
+    id: string;
+    framework: string;
+    severity: 'high' | 'medium' | 'low';
+    description: string;
+    detectedDate: string;
+    resolvedDate?: string;
+  }>;
+  violationTrendLast30Days?: Array<{
+    date: string;
+    count: number;
+  }>;
+  controlStatus: {
+    total: number;
+    implemented: number;
+    tested: number;
+    compliant: number;
   };
 }
 

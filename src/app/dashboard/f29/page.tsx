@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: function signatures updated during Convex migration
 import { Suspense } from 'react'
 import { TopNav } from '@/components/dashboard'
 import { F29Content } from './f29-content'
@@ -15,7 +14,7 @@ export default async function F29Page({
   const [f29List, stats, clientes] = await Promise.all([
     getF29List(periodoActual),
     getF29Stats(periodoActual),
-    getClientesConDocumentos(periodoActual),
+    getClientesConDocumentos(),
   ])
 
   return (

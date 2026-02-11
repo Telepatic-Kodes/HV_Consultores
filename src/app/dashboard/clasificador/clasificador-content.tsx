@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState, useTransition } from 'react'
@@ -349,14 +348,14 @@ export function ClasificadorContent({
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-[10px] font-bold uppercase tracking-wider bg-secondary/10 text-secondary px-2 py-0.5 rounded ring-1 ring-secondary/20">
-                              {tipoDocumentoLabels[doc.tipo_documento] || doc.tipo_documento}
+                              {(doc.tipo_documento && tipoDocumentoLabels[doc.tipo_documento]) || doc.tipo_documento}
                             </span>
                             <span className="text-xs text-muted-foreground/60 font-mono">#{doc.folio}</span>
                           </div>
                           <p className="font-semibold text-sm mt-1.5 text-foreground">{doc.razon_social_emisor || 'Sin razon social'}</p>
                           <p className="text-xs text-muted-foreground">{doc.cliente?.razon_social}</p>
                           <p className="text-[10px] text-muted-foreground/70 mt-1.5 font-mono">
-                            {new Date(doc.fecha_emision).toLocaleDateString('es-CL')} • <span className="font-semibold text-foreground">${doc.monto_total?.toLocaleString('es-CL')}</span>
+                            {doc.fecha_emision ? new Date(doc.fecha_emision).toLocaleDateString('es-CL') : '-'} • <span className="font-semibold text-foreground">${doc.monto_total?.toLocaleString('es-CL')}</span>
                           </p>
                         </div>
                       </div>
@@ -410,7 +409,7 @@ export function ClasificadorContent({
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tipo</p>
-                      <p className="font-semibold">{tipoDocumentoLabels[selectedDocumento.tipo_documento]}</p>
+                      <p className="font-semibold">{(selectedDocumento.tipo_documento && tipoDocumentoLabels[selectedDocumento.tipo_documento]) || selectedDocumento.tipo_documento}</p>
                     </div>
                     <div>
                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Folio</p>

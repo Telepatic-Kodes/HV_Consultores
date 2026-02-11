@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 /**
  * Analytics Data Aggregation Functions
  * Phase 7: Advanced Analytics & Business Intelligence
@@ -133,6 +132,7 @@ function getEmptyQueueMetricsSummary(): QueueMetricsSummary {
     currentQueueDepth: 0,
     overallSuccessRate: 0,
     averageLatencyMs: 0,
+    p50LatencyMs: 0,
     p95LatencyMs: 0,
     p99LatencyMs: 0,
     jobsPerHour: 0,
@@ -160,6 +160,15 @@ export async function aggregateComplianceMetrics(
   // Stub: returns default compliance data until Convex module is implemented
   return {
     overallComplianceStatus: 'compliant',
+    overallScore: 100,
+    frameworks: [],
+    recentViolations: [],
+    controlStatus: {
+      total: 0,
+      implemented: 0,
+      tested: 0,
+      compliant: 0,
+    },
     complianceByFramework: [
       {
         framework: 'GDPR',

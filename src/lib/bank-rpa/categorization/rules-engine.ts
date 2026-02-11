@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 // =============================================================================
 // HV Consultores - Categorization Rules Engine
 // Motor de reglas para categorización automática de transacciones
@@ -325,7 +324,7 @@ export class CategorizationRulesEngine {
 
     if (bestMatch) {
       // Find category ID by code
-      for (const [id, category] of this.categories) {
+      for (const [id, category] of Array.from(this.categories)) {
         if (category.codigo === bestMatch.codigo) {
           return {
             categoria_id: id,
@@ -409,7 +408,7 @@ export function createRuleFromTransaction(
       .filter((w) => !/^\d+$/.test(w)) // Excluir números
 
     // Tomar las primeras 3-4 palabras significativas
-    palabras_clave = [...new Set(words)].slice(0, 4)
+    palabras_clave = Array.from(new Set(words)).slice(0, 4)
   }
 
   return {

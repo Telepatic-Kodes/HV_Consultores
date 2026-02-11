@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 // SII RPA Scheduler
 // Sistema de scheduling con expresiones cron para tareas programadas
 
@@ -83,7 +82,7 @@ function parseField(field: string, min: number, max: number): number[] {
     }
   }
 
-  return [...new Set(values)].sort((a, b) => a - b)
+  return Array.from(new Set(values)).sort((a, b) => a - b)
 }
 
 // ============================================================================

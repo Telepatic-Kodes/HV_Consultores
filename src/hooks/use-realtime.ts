@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use client'
 
 import { useQuery } from 'convex/react'

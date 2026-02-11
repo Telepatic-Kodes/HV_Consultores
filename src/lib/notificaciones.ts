@@ -1,13 +1,13 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../convex/_generated/api"
+import type { Id } from "../../convex/_generated/dataModel"
 
 const convex = process.env.NEXT_PUBLIC_CONVEX_URL
   ? new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
   : null
-const DEMO_USER_ID = 'demo-user'
+const DEMO_USER_ID = 'demo-user' as Id<"profiles">
 
 export interface Notificacion {
   id: string
@@ -149,7 +149,7 @@ export async function crearNotificacion(
 
   try {
     const id = await convex.mutation(api.notifications.createNotification, {
-      usuario_id: usuarioId,
+      usuario_id: usuarioId as Id<"profiles">,
       tipo: datos.tipo,
       titulo: datos.titulo,
       mensaje: datos.mensaje,

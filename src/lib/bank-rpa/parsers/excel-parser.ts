@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 // =============================================================================
 // HV Consultores - Bank Statement Excel/CSV Parser
 // Extrae transacciones de cartolas bancarias en formato Excel o CSV
@@ -147,7 +146,6 @@ export class BankExcelParser {
       transacciones: transactions,
       metadata: {
         formato_detectado: 'excel',
-        columnas_detectadas: mapping,
         warnings: [],
       },
     }

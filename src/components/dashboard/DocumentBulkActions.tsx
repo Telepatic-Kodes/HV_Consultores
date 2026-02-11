@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
@@ -14,9 +13,15 @@ import {
 } from '@/components/ui/alert-dialog'
 import { CheckCircle2, XCircle, Loader2, Trash2 } from 'lucide-react'
 import { aprobarDocumento, rechazarDocumento } from '@/app/dashboard/documentos/actions'
-import type { Database } from '@/types/database.types'
 
-type DocumentoCarga = Database['public']['Tables']['documento_cargas']['Row']
+interface DocumentoCarga {
+  id: string
+  nombre_archivo: string
+  tipo_documento: string
+  folio_documento: string | null
+  monto_total: number | null
+  estado: string
+}
 
 interface DocumentBulkActionsProps {
   documentos: DocumentoCarga[]

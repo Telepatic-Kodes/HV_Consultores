@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 // =============================================================================
 // HV Consultores - Transaction Normalizer
 // Normaliza y limpia descripciones de transacciones bancarias
@@ -104,7 +103,6 @@ export class TransactionNormalizer {
       // Campos de parametrización (se llenan después)
       categoria_id: undefined,
       categoria_confianza: undefined,
-      categorizado_manual: false,
       cuenta_contable: undefined,
       centro_costo: undefined,
       // Conciliación SII

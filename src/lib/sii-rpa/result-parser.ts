@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 // SII RPA Result Parser
 // HV Consultores - Parseo de respuestas del portal SII
 
@@ -491,4 +490,4 @@ function parseNumber(value: unknown): number {
 // EXPORTS ADICIONALES
 // ============================================================================
 
-export { DocumentoLibro }
+// DocumentoLibro is already exported via its interface declaration above

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 'use client'
 
 import { useState, useTransition } from 'react'
@@ -146,12 +145,12 @@ export function TaskSelector({
           parametros.periodo = periodo
         }
 
-        const res = await ejecutarTareaRapida(selectedCliente, selectedTask, parametros)
+        const res = await ejecutarTareaRapida(selectedTask, selectedCliente)
 
         if (res.success) {
           setResult({
             type: 'success',
-            message: `Job creado exitosamente (ID: ${res.jobId?.slice(0, 8)}...)`,
+            message: `Job creado exitosamente`,
           })
           setSelectedTask(null)
           setPeriodo('')

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: types need update after Convex migration
 // SII RPA Encryption Module
 // HV Consultores - Encriptación AES-256-GCM para credenciales
 // IMPORTANTE: Las credenciales SOLO se desencriptan en el RPA server
@@ -390,7 +389,7 @@ export async function encryptInBrowser(
 
     return {
       success: true,
-      encrypted: btoa(String.fromCharCode(...combined)),
+      encrypted: btoa(String.fromCharCode.apply(null, Array.from(combined))),
     }
   } catch (error) {
     console.error('[encryptInBrowser] Error:', error)

@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { format } from 'date-fns'
@@ -12,9 +11,21 @@ import {
   User,
   Clock,
 } from 'lucide-react'
-import type { Database } from '@/types/database.types'
 
-type DocumentoWorkflow = Database['public']['Tables']['documento_workflow']['Row']
+interface DocumentoWorkflow {
+  id: string
+  accion?: string
+  etapa?: string
+  estado?: string
+  notas?: string | null
+  comentario?: string | null
+  estado_anterior?: string | null
+  estado_nuevo?: string | null
+  creado_en?: string | null
+  created_at?: string | null
+  documento_id?: string
+  usuario_id?: string | null
+}
 
 interface DocumentWorkflowTimelineProps {
   workflow: DocumentoWorkflow[]
@@ -58,8 +69,8 @@ export function DocumentWorkflowTimeline({ workflow }: DocumentWorkflowTimelineP
 
   // Sort by date descending (most recent first)
   const sorted = [...workflow].sort((a, b) => {
-    const dateA = a.creado_en ? new Date(a.creado_en).getTime() : 0
-    const dateB = b.creado_en ? new Date(b.creado_en).getTime() : 0
+    const dateA = (a.creado_en || a.created_at) ? new Date((a.creado_en || a.created_at)!).getTime() : 0
+    const dateB = (b.creado_en || b.created_at) ? new Date((b.creado_en || b.created_at)!).getTime() : 0
     return dateB - dateA
   })
 
@@ -69,8 +80,8 @@ export function DocumentWorkflowTimeline({ workflow }: DocumentWorkflowTimelineP
         <div key={item.id} className="flex gap-4">
           {/* Timeline line */}
           <div className="flex flex-col items-center">
-            <div className={`p-2 rounded-lg ${actionColors[item.accion] || 'bg-gray-100 text-gray-900'}`}>
-              {actionIcons[item.accion] || <Clock className="h-4 w-4" />}
+            <div className={`p-2 rounded-lg ${actionColors[item.accion || item.etapa || ''] || 'bg-gray-100 text-gray-900'}`}>
+              {actionIcons[item.accion || item.etapa || ''] || <Clock className="h-4 w-4" />}
             </div>
             {index !== sorted.length - 1 && (
               <div className="w-0.5 h-8 bg-gray-200 my-1" />
@@ -82,10 +93,10 @@ export function DocumentWorkflowTimeline({ workflow }: DocumentWorkflowTimelineP
             <div className="flex items-start justify-between">
               <div>
                 <h4 className="font-medium text-sm">
-                  {actionLabels[item.accion] || item.accion}
+                  {actionLabels[item.accion || item.etapa || ''] || item.accion || item.etapa}
                 </h4>
-                {item.notas && (
-                  <p className="text-sm text-muted-foreground mt-1">{item.notas}</p>
+                {(item.notas || item.comentario) && (
+                  <p className="text-sm text-muted-foreground mt-1">{item.notas || item.comentario}</p>
                 )}
                 {item.estado_anterior && item.estado_nuevo && (
                   <p className="text-xs text-muted-foreground mt-1">
@@ -95,9 +106,9 @@ export function DocumentWorkflowTimeline({ workflow }: DocumentWorkflowTimelineP
                   </p>
                 )}
               </div>
-              {item.creado_en && (
+              {(item.creado_en || item.created_at) && (
                 <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
-                  {format(new Date(item.creado_en), 'dd MMM yyyy HH:mm', { locale: es })}
+                  {format(new Date((item.creado_en || item.created_at)!), 'dd MMM yyyy HH:mm', { locale: es })}
                 </span>
               )}
             </div>
