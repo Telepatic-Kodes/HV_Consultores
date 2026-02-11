@@ -1,8 +1,8 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../../convex/_generated/api"
+import { Id } from "../../../convex/_generated/dataModel"
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
 const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null
@@ -73,7 +73,12 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
     // Alertas F29 (últimos 7 días)
     const semanaISO = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    const allValidations = await requireConvex().query(api.f29.getSubmissionValidations, { submissionId: undefined })
+    const allF29ForValidations = await requireConvex().query(api.f29.listSubmissions, {})
+    const allValidations: any[] = []
+    for (const sub of allF29ForValidations) {
+      const vals = await requireConvex().query(api.f29.getSubmissionValidations, { f29CalculoId: sub._id })
+      allValidations.push(...vals)
+    }
     const alertas = allValidations.filter(v =>
       (v.resultado === 'warning' || v.resultado === 'error') &&
       v.created_at && v.created_at >= semanaISO
@@ -145,7 +150,7 @@ export async function getModulosStatus(): Promise<ModuloStatus[]> {
     ).length
 
     // Get chat messages
-    const allMessages = await requireConvex().query(api.chat.listMessages, { sessionId: undefined })
+    const allMessages = await requireConvex().query(api.chat.listMessages, { sesion_id: undefined })
     const chatConsultas = allMessages.filter(msg =>
       msg.rol === 'user' && msg.created_at && msg.created_at >= hoyISO
     ).length
@@ -269,14 +274,19 @@ export async function getActividadReciente(limite: number = 10): Promise<Activid
       })
     })
 
-    // Get recent alerts
-    const allValidations = await requireConvex().query(api.f29.getSubmissionValidations, { submissionId: undefined })
-    const alertas = allValidations
+    // Get recent alerts - iterate over submissions to collect validations
+    const allF29Subs = await requireConvex().query(api.f29.listSubmissions, {})
+    const recentValidations: any[] = []
+    for (const sub of allF29Subs) {
+      const vals = await requireConvex().query(api.f29.getSubmissionValidations, { f29CalculoId: sub._id })
+      recentValidations.push(...vals)
+    }
+    const alertas = recentValidations
       .filter(v => v.resultado === 'warning' || v.resultado === 'error')
-      .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+      .sort((a: any, b: any) => (b.created_at || '').localeCompare(a.created_at || ''))
       .slice(0, 2)
 
-    alertas.forEach((alerta) => {
+    alertas.forEach((alerta: any) => {
       actividades.push({
         id: `alert-${alerta._id}`,
         tipo: 'alert',
@@ -521,7 +531,7 @@ export async function getKPIs(): Promise<KPIsDashboard> {
       f29.status && ['borrador', 'calculado', 'validado'].includes(f29.status)
     ).length
 
-    const allMessages = await requireConvex().query(api.chat.listMessages, { sessionId: undefined })
+    const allMessages = await requireConvex().query(api.chat.listMessages, { sesion_id: undefined })
     const chatConsultas = allMessages.filter(msg =>
       msg.rol === 'user' && msg.created_at && msg.created_at >= inicioMesISO
     ).length

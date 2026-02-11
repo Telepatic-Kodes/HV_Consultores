@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 // TODO: Phase 2 - Implement Nubox integration module in Convex
 // External API integration with Nubox for document processing

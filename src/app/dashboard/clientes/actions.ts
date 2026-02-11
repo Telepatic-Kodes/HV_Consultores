@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
@@ -38,6 +37,7 @@ export interface ClienteStats {
 // Obtener lista de clientes con estadísticas
 export async function getClientes(filtro?: string): Promise<ClienteConStats[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const [clientes, docs, f29s] = await Promise.all([
       convex.query(api.clients.listClientes, {}),
       convex.query(api.documents.listDocuments, {}),
@@ -60,12 +60,13 @@ export async function getClientes(filtro?: string): Promise<ClienteConStats[]> {
 
         return {
           _id: cliente._id,
+          id: cliente._id,
           razon_social: cliente.razon_social,
           rut: cliente.rut,
           activo: cliente.activo,
           documentos_pendientes: docsPendientes,
           estado_f29: estadoF29,
-        }
+        } as ClienteConStats
       })
 
     return filtro
@@ -112,6 +113,7 @@ export async function createCliente(data: {
   giro?: string
 }): Promise<{ success: boolean; clienteId?: string; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const clienteId = await convex.mutation(api.clients.createCliente, {
       razon_social: data.razon_social,
       rut: data.rut,
@@ -145,9 +147,20 @@ export async function updateCliente(
   }>
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     await convex.mutation(api.clients.updateCliente, {
       id: clienteId as any,
-      ...data,
+      razon_social: data.razon_social,
+      rut: data.rut,
+      nombre_fantasia: data.nombre_fantasia,
+      giro: data.giro,
+      direccion: data.direccion,
+      comuna: data.comuna,
+      region: data.region,
+      regimen_tributario: data.regimen_tributario as any,
+      tasa_ppm: data.tasa_ppm,
+      activo: data.activo,
+      contador_asignado_id: data.contador_asignado_id as any,
     })
 
     revalidatePath('/dashboard/clientes')
@@ -163,6 +176,7 @@ export async function deleteCliente(
   clienteId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     await convex.mutation(api.clients.deleteCliente, {
       id: clienteId as any,
     })

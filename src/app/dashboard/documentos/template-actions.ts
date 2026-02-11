@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 // TODO: Phase 2 - Implement documento_plantillas module in Convex
 // Note: This accesses `documento_plantillas` table (different from Convex's `plantillas_plan_cuenta`)

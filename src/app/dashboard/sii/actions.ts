@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
@@ -29,6 +28,7 @@ export interface SIIJobStats {
 // Obtener jobs del SII
 export async function getSIIJobs(clienteId?: string): Promise<SIIJob[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const jobs = await convex.query(api.bots.listJobs, {
       clienteId: clienteId as any,
     })
@@ -46,6 +46,7 @@ export async function createSIIJob(
   config?: Record<string, any>
 ): Promise<{ success: boolean; jobId?: string; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const jobId = await convex.mutation(api.bots.createJob, {
       bot_id: botId as any,
       cliente_id: clienteId as any,
@@ -63,6 +64,7 @@ export async function createSIIJob(
 // Obtener pasos de un job
 export async function getSIIJobSteps(jobId: string): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const steps = await convex.query(api.bots.getJobSteps, {
       jobId: jobId as any,
     })
@@ -76,6 +78,7 @@ export async function getSIIJobSteps(jobId: string): Promise<any[]> {
 // Obtener estadísticas de jobs SII
 export async function getSIIJobStats(): Promise<SIIJobStats> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const jobs = await convex.query(api.bots.listJobs, {})
 
     const stats = {
@@ -102,6 +105,7 @@ export async function cancelarSIIJob(
   jobId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     await convex.mutation(api.bots.updateJobStatus, {
       id: jobId as any,
       status: 'cancelado',
@@ -120,6 +124,7 @@ export async function reintentarSIIJob(
   jobId: string
 ): Promise<{ success: boolean; newJobId?: string; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     // Get original job
     const jobs = await convex.query(api.bots.listJobs, {})
     const originalJob = jobs.find(j => j._id === jobId)
@@ -155,6 +160,7 @@ export async function getJobsRecientes(): Promise<SIIJob[]> {
 
 export async function getClientesConCredenciales(): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const clientes = await convex.query(api.clients.listClientes, {})
     return clientes.filter((c: any) => c.activo)
   } catch {
@@ -164,6 +170,7 @@ export async function getClientesConCredenciales(): Promise<any[]> {
 
 export async function getClientesSinCredenciales(): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     return await convex.query(api.clients.listClientes, {})
   } catch {
     return []
@@ -184,6 +191,7 @@ export async function createF29SubmitJob(
 
 export async function getF29CalculosAprobados(clienteId?: string): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const submissions = await convex.query(api.f29.listSubmissions, {
       clienteId: clienteId as any,
     })

@@ -1,8 +1,8 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../../../convex/_generated/api"
+import { Id } from "../../../../convex/_generated/dataModel"
 import { revalidatePath } from 'next/cache'
 import { generarRespuestaOpenAI, isOpenAIConfigured, type ChatMessage } from '@/lib/openai'
 
@@ -44,7 +44,7 @@ export interface MensajeConFuentes extends ChatMensaje {
 export async function getSesiones(): Promise<SesionConMensajes[]> {
   try {
     const data = await convex.query(api.chat.listChatSesiones, {
-      usuario_id: DEMO_USER_ID,
+      usuario_id: DEMO_USER_ID as Id<"profiles">,
       activa: true,
     })
 
@@ -54,7 +54,7 @@ export async function getSesiones(): Promise<SesionConMensajes[]> {
     const sesiones: SesionConMensajes[] = []
     for (const s of data) {
       const mensajes = await convex.query(api.chat.getChatMensajes, {
-        sesion_id: s._id as any,
+        sesion_id: s._id,
       })
 
       const mappedMensajes: ChatMensaje[] = (mensajes || []).map((m: any) => ({
@@ -71,11 +71,11 @@ export async function getSesiones(): Promise<SesionConMensajes[]> {
       }))
 
       sesiones.push({
-        id: s._id ?? s.id,
-        usuario_id: s.usuario_id,
+        id: s._id,
+        usuario_id: s.usuario_id as string,
         titulo: s.titulo ?? 'Nueva conversacion',
         activa: s.activa ?? true,
-        created_at: s._creationTime ? new Date(s._creationTime).toISOString() : s.created_at,
+        created_at: s._creationTime ? new Date(s._creationTime).toISOString() : (s.created_at ?? new Date().toISOString()),
         updated_at: s.updated_at ?? new Date().toISOString(),
         mensajes: mappedMensajes,
         ultimo_mensaje: mappedMensajes.slice(-1)[0]?.contenido?.substring(0, 50) || '',
@@ -95,12 +95,12 @@ export async function getOrCreateSesion(sesionId?: string): Promise<SesionConMen
   if (sesionId && sesionId !== 'demo-session') {
     try {
       const data = await convex.query(api.chat.getChatSesion, {
-        id: sesionId as any,
+        id: sesionId as Id<"chat_sesiones">,
       })
 
       if (data) {
         const mensajes = await convex.query(api.chat.getChatMensajes, {
-          sesion_id: data._id as any,
+          sesion_id: data._id,
         })
 
         const mappedMensajes: ChatMensaje[] = (mensajes || []).map((m: any) => ({
@@ -117,11 +117,11 @@ export async function getOrCreateSesion(sesionId?: string): Promise<SesionConMen
         }))
 
         return {
-          id: data._id ?? data.id,
-          usuario_id: data.usuario_id,
+          id: data._id,
+          usuario_id: data.usuario_id as string,
           titulo: data.titulo ?? 'Nueva conversacion',
           activa: data.activa ?? true,
-          created_at: data._creationTime ? new Date(data._creationTime).toISOString() : data.created_at,
+          created_at: data._creationTime ? new Date(data._creationTime).toISOString() : (data.created_at ?? new Date().toISOString()),
           updated_at: data.updated_at ?? new Date().toISOString(),
           mensajes: mappedMensajes,
         }
@@ -158,19 +158,19 @@ export async function getOrCreateSesion(sesionId?: string): Promise<SesionConMen
   // Crear nueva sesion para usuario
   try {
     const nuevaSesionId = await convex.mutation(api.chat.createChatSesion, {
-      usuario_id: DEMO_USER_ID,
+      usuario_id: DEMO_USER_ID as Id<"profiles">,
       titulo: 'Nueva conversacion',
     })
 
     // Agregar mensaje de bienvenida
     await convex.mutation(api.chat.sendChatMensaje, {
-      sesion_id: nuevaSesionId as any,
+      sesion_id: nuevaSesionId,
       rol: 'assistant',
       contenido: '!Hola! Soy HV-Chat, tu asistente de inteligencia artificial para consultas contables y tributarias chilenas. Puedo ayudarte con:\n\n- Normativa del SII\n- Formularios F29 y F22\n- Regimen tributario (14A, 14D)\n- IVA, PPM y retenciones\n- Plazos y procedimientos\n\nEn que puedo ayudarte hoy?',
     })
 
     return {
-      id: nuevaSesionId as any,
+      id: nuevaSesionId as string,
       usuario_id: DEMO_USER_ID,
       titulo: 'Nueva conversacion',
       activa: true,
@@ -254,14 +254,14 @@ export async function enviarMensaje(
   try {
     // Guardar mensaje del usuario via Convex
     await convex.mutation(api.chat.sendChatMensaje, {
-      sesion_id: sesionId as any,
+      sesion_id: sesionId as Id<"chat_sesiones">,
       rol: 'user',
       contenido: contenido,
     })
 
     // Obtener historial de mensajes para contexto
     const historial = await convex.query(api.chat.getChatMensajes, {
-      sesion_id: sesionId as any,
+      sesion_id: sesionId as Id<"chat_sesiones">,
       limit: 10,
     })
 
@@ -299,7 +299,7 @@ export async function enviarMensaje(
 
     // Guardar respuesta del asistente via Convex
     const respuestaId = await convex.mutation(api.chat.sendChatMensaje, {
-      sesion_id: sesionId as any,
+      sesion_id: sesionId as Id<"chat_sesiones">,
       rol: 'assistant',
       contenido: respuestaData.texto,
       fuentes: respuestaData.fuentes as any,
@@ -307,7 +307,7 @@ export async function enviarMensaje(
     })
 
     const respuesta: ChatMensaje = {
-      id: respuestaId as any,
+      id: respuestaId as string,
       sesion_id: sesionId,
       rol: 'assistant',
       contenido: respuestaData.texto,
@@ -321,13 +321,13 @@ export async function enviarMensaje(
 
     // Actualizar titulo de la sesion si es el primer mensaje real
     const allMensajes = await convex.query(api.chat.getChatMensajes, {
-      sesion_id: sesionId as any,
+      sesion_id: sesionId as Id<"chat_sesiones">,
     })
 
     if (allMensajes && allMensajes.length === 3) { // bienvenida + user + assistant
       try {
         await convex.mutation(api.chat.updateSesionTitulo, {
-          id: sesionId as any,
+          id: sesionId as Id<"chat_sesiones">,
           titulo: contenido.substring(0, 50) + (contenido.length > 50 ? '...' : ''),
         })
       } catch (e) {
@@ -521,7 +521,7 @@ export async function darFeedback(
 export async function eliminarSesion(sesionId: string): Promise<{ success: boolean }> {
   try {
     await convex.mutation(api.chat.archiveChatSesion, {
-      id: sesionId as any,
+      id: sesionId as Id<"chat_sesiones">,
     })
 
     revalidatePath('/dashboard/chat')

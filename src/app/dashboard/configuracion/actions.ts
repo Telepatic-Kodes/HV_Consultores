@@ -1,8 +1,8 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../../../convex/_generated/api"
+import { Id } from "../../../../convex/_generated/dataModel"
 import { revalidatePath } from 'next/cache'
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
@@ -49,21 +49,21 @@ export interface IntegracionConfig {
 export async function getUserProfile(): Promise<UserProfile | null> {
   try {
     const data = await convex.query(api.profiles.getProfileWithRoles, {
-      id: DEMO_USER_ID as any,
+      id: DEMO_USER_ID as Id<"profiles">,
     })
 
     if (!data) return null
 
     return {
-      id: data._id ?? data.id ?? DEMO_USER_ID,
+      id: (data._id as string) ?? DEMO_USER_ID,
       nombre_completo: data.nombre_completo ?? null,
       telefono: data.telefono ?? null,
       cargo: data.cargo ?? null,
       avatar_url: data.avatar_url ?? null,
-      created_at: data._creationTime ? new Date(data._creationTime).toISOString() : data.created_at ?? new Date().toISOString(),
+      created_at: data._creationTime ? new Date(data._creationTime).toISOString() : ((data as any).created_at ?? new Date().toISOString()),
       updated_at: data.updated_at ?? new Date().toISOString(),
-      email: data.email ?? 'demo@hvconsultores.cl',
-      rol: data.rol ?? 'Usuario',
+      email: (data as any).email ?? 'demo@hvconsultores.cl',
+      rol: (data.roles && data.roles.length > 0 ? data.roles[0].nombre : undefined) ?? 'Usuario',
     }
   } catch (error) {
     console.error('Error fetching profile from Convex:', error)
@@ -90,7 +90,7 @@ export async function actualizarPerfil(datos: {
 }): Promise<{ success: boolean; error?: string }> {
   try {
     await convex.mutation(api.profiles.updateProfile, {
-      id: DEMO_USER_ID as any,
+      id: DEMO_USER_ID as Id<"profiles">,
       nombre_completo: datos.nombre_completo,
       telefono: datos.telefono,
       cargo: datos.cargo,

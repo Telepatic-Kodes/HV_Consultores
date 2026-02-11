@@ -1,8 +1,8 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../../../convex/_generated/api"
+import { Id } from "../../../../convex/_generated/dataModel"
 import { revalidatePath } from 'next/cache'
 import OpenAI from 'openai'
 
@@ -80,7 +80,7 @@ export interface ClasificadorStats {
 export async function getDocumentosPendientes(clienteId?: string): Promise<DocumentoConClasificacion[]> {
   try {
     const data = await convex.query(api.documents.listDocuments, {
-      clienteId: clienteId as any,
+      clienteId: clienteId as Id<"clientes">,
       status: 'pendiente',
       limit: 50,
     })
@@ -127,14 +127,14 @@ export async function getDocumentosPendientes(clienteId?: string): Promise<Docum
 export async function getClasificadorStats(clienteId?: string): Promise<ClasificadorStats> {
   try {
     const stats = await convex.query(api.documents.getDocumentStats, {
-      clienteId: clienteId as any,
+      clienteId: clienteId as Id<"clientes">,
     })
 
     return {
-      totalHoy: stats?.totalHoy ?? 0,
-      clasificados: stats?.clasificados ?? 0,
-      pendientes: stats?.pendientes ?? 0,
-      precision: stats?.precision ?? 95.0,
+      totalHoy: stats?.todayCount ?? 0,
+      clasificados: stats?.clasificado ?? 0,
+      pendientes: stats?.pendiente ?? 0,
+      precision: 95.0,
     }
   } catch (error) {
     console.error('Error fetching clasificador stats:', error)
@@ -163,8 +163,8 @@ export async function confirmarClasificacion(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     await convex.mutation(api.documents.classifyDocument, {
-      id: documentoId as any,
-      cuenta_final_id: cuentaId,
+      id: documentoId as Id<"documentos">,
+      cuenta_final_id: cuentaId as Id<"cuentas_contables">,
       confidence_score: 1.0,
       clasificado_por: 'manual',
     })
@@ -185,8 +185,8 @@ export async function reclasificarDocumento(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     await convex.mutation(api.documents.classifyDocument, {
-      id: documentoId as any,
-      cuenta_final_id: cuentaCorrectaId,
+      id: documentoId as Id<"documentos">,
+      cuenta_final_id: cuentaCorrectaId as Id<"cuentas_contables">,
       clasificado_por: 'manual',
     })
 
@@ -211,7 +211,7 @@ export async function aprobarLoteAltaConfianza(
   try {
     // Get pending documents from Convex
     const docs = await convex.query(api.documents.listDocuments, {
-      clienteId: clienteId as any,
+      clienteId: clienteId as Id<"clientes">,
       status: 'pendiente',
       limit: 100,
     })
@@ -236,13 +236,13 @@ export async function aprobarLoteAltaConfianza(
     for (const doc of highConfidenceDocs) {
       try {
         await convex.mutation(api.documents.classifyDocument, {
-          id: (doc._id ?? doc.id) as any,
-          cuenta_final_id: doc.cuenta_sugerida_id,
+          id: doc._id as Id<"documentos">,
+          cuenta_final_id: doc.cuenta_sugerida_id! as Id<"cuentas_contables">,
           clasificado_por: 'modelo',
         })
         aprobados++
       } catch (e) {
-        console.error('Error approving doc:', doc._id ?? doc.id, e)
+        console.error('Error approving doc:', doc._id, e)
       }
     }
 
@@ -417,8 +417,8 @@ Analiza el documento y sugiere las cuentas mas apropiadas.`
       const mejorClasificacion = clasificacionesValidas[0]
 
       await convex.mutation(api.documents.classifyDocument, {
-        id: documentoId as any,
-        cuenta_final_id: mejorClasificacion.cuenta_id,
+        id: documentoId as Id<"documentos">,
+        cuenta_final_id: mejorClasificacion.cuenta_id as Id<"cuentas_contables">,
         confidence_score: mejorClasificacion.confianza,
         clasificado_por: 'gpt-4o-mini-v1',
       })
@@ -470,7 +470,7 @@ export async function clasificarTodosPendientesConIA(
 ): Promise<{ success: boolean; procesados: number; errores: number; total: number }> {
   try {
     const documentos = await convex.query(api.documents.listDocuments, {
-      clienteId: clienteId as any,
+      clienteId: clienteId as Id<"clientes">,
       status: 'pendiente',
       limit: 50, // Limitar para evitar timeouts
     })

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 // TODO: Phase 2 - Implement intelligence/analytics module in Convex
 // Tables needed: template_analytics, smart_suggestions, document_insights, document_classifications

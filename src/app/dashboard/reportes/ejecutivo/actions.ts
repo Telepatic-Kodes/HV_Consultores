@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 // TODO: Phase 2 - Implement executive dashboard analytics in Convex
 // Tables needed: documentos, f29_calculos, bot_jobs, chat_sesiones, clientes

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
@@ -110,6 +109,7 @@ export async function cargarDocumento(
       return { success: false, error: validacion.error }
     }
 
+    if (!convex) throw new Error('Convex client not initialized')
     // Create document via Convex (simplified - document_cargas table not in current schema)
     // For now, create as a regular documento
     const documentId = await convex.mutation(api.documents.createDocument, {
@@ -134,6 +134,7 @@ export async function cargarDocumento(
 // Obtener documentos cargados (from Convex)
 export async function obtenerDocumentosCargados(clienteId?: string): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const docs = await convex.query(api.documents.listDocuments, {
       clienteId: clienteId as any,
     })
@@ -151,6 +152,7 @@ export async function cambiarEstadoDocumento(
   notas?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     await convex.mutation(api.documents.updateDocument, {
       id: documentoId as any,
       status: estadoNuevo as any,
@@ -215,6 +217,7 @@ export async function obtenerEstadisticasDocumentos(clienteId?: string): Promise
   rechazado: number
 }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const docs = await convex.query(api.documents.listDocuments, {
       clienteId: clienteId as any,
     })

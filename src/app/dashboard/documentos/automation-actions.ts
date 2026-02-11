@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 // TODO: Phase 2 - Implement automation module in Convex
 // Tables needed: automation_rules, automation_executions, notifications,

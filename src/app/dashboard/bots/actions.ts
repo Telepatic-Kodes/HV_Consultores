@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
@@ -11,9 +10,10 @@ const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null
 // Get bots list with stats (mapped to BotConStats)
 export async function getBots(): Promise<BotConStats[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const [bots, jobs] = await Promise.all([
-      convex!.query(api.bots.listBotDefiniciones, {}),
-      convex!.query(api.bots.listJobs, {}),
+      convex.query(api.bots.listBotDefiniciones, {}),
+      convex.query(api.bots.listJobs, {}),
     ])
     const today = new Date().toISOString().slice(0, 10)
     return (bots as any[]).map((b: any) => {
@@ -44,6 +44,7 @@ export async function getBots(): Promise<BotConStats[]> {
 // Get bot jobs
 export async function getBotJobs(botId?: string) {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const jobs = await convex.query(api.bots.listJobs, {})
     return botId ? jobs.filter(j => j.bot_id === botId) : jobs
   } catch (error) {
@@ -55,6 +56,7 @@ export async function getBotJobs(botId?: string) {
 // Create bot job
 export async function createBotJob(botId: string, clienteId?: string, config?: any) {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const jobId = await convex.mutation(api.bots.createJob, {
       bot_id: botId as any,
       cliente_id: clienteId as any,
@@ -112,6 +114,7 @@ export interface BotStats {
 
 export async function getBotStats(): Promise<BotStats> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const [bots, jobs] = await Promise.all([
       convex.query(api.bots.listBotDefinitions, {}),
       convex.query(api.bots.listJobs, {}),
@@ -139,6 +142,7 @@ export async function getJobsRecientes(limit: number = 20): Promise<BotJobConDet
 
 export async function getClientesParaBot(): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     return await convex.query(api.clients.listClientes, {})
   } catch {
     return []
@@ -157,6 +161,7 @@ export async function cancelarJob(
   jobId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     await convex.mutation(api.bots.updateJobStatus, {
       id: jobId as any,
       status: 'cancelado',

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
@@ -29,6 +28,7 @@ export interface F29Stats {
 // Obtener lista de F29 con detalles
 export async function getF29List(periodo?: string): Promise<F29ConDetalles[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const submissions = await convex.query(api.f29.listSubmissions, {
       periodo,
     })
@@ -42,6 +42,7 @@ export async function getF29List(periodo?: string): Promise<F29ConDetalles[]> {
 // Obtener estadísticas de F29
 export async function getF29Stats(periodo?: string): Promise<F29Stats> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const submissions = await convex.query(api.f29.listSubmissions, {
       periodo,
     })
@@ -71,6 +72,7 @@ export async function generarF29(
   periodo: string
 ): Promise<{ success: boolean; f29Id?: string; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     // Get documents for the period
     const docs = await convex.query(api.documents.listDocuments, {
       clienteId: clienteId as any,
@@ -109,6 +111,7 @@ export async function actualizarEstadoF29(
   nuevoEstado: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     await convex.mutation(api.f29.updateSubmissionStatus, {
       id: f29Id as any,
       status: nuevoEstado as any,
@@ -125,8 +128,9 @@ export async function actualizarEstadoF29(
 // Obtener validaciones de un F29
 export async function getF29Validations(f29Id: string): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const validations = await convex.query(api.f29.getSubmissionValidations, {
-      submissionId: f29Id as any,
+      f29CalculoId: f29Id as any,
     })
     return validations
   } catch (error) {
@@ -140,6 +144,7 @@ export async function aprobarF29(
   f29Id: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     await convex.mutation(api.f29.updateSubmissionStatus, {
       id: f29Id as any,
       status: 'aprobado',
@@ -158,6 +163,7 @@ export async function enviarF29AlSII(
   f29Id: string
 ): Promise<{ success: boolean; error?: string; folioSII?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     // TODO: Implement actual SII submission logic
     await convex.mutation(api.f29.updateSubmissionStatus, {
       id: f29Id as any,
@@ -177,6 +183,7 @@ export async function eliminarF29(
   f29Id: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     await convex.mutation(api.f29.deleteSubmission, {
       id: f29Id as any,
     })
@@ -193,6 +200,7 @@ export async function eliminarF29(
 
 export async function getClientesConDocumentos(): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const clientes = await convex.query(api.clients.listClientes, {})
     return clientes.filter((c: any) => c.activo)
   } catch {
@@ -213,6 +221,7 @@ export async function getPeriodosDisponibles(): Promise<string[]> {
 export async function getDatosF29ParaReporte(f29Id?: string): Promise<any> {
   if (!f29Id) return null
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const submissions = await convex.query(api.f29.listSubmissions, {})
     return (submissions as any[]).find((s: any) => s._id === f29Id) || null
   } catch {
@@ -222,6 +231,7 @@ export async function getDatosF29ParaReporte(f29Id?: string): Promise<any> {
 
 export async function getDocumentosParaReporte(clienteId?: string, periodo?: string): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const docs = await convex.query(api.documents.listDocuments, {
       clienteId: clienteId as any,
       periodo,
@@ -234,6 +244,7 @@ export async function getDocumentosParaReporte(clienteId?: string, periodo?: str
 
 export async function getResumenMensualParaReporte(clienteId?: string, periodo?: string): Promise<any> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const [docs, f29s] = await Promise.all([
       convex.query(api.documents.listDocuments, { clienteId: clienteId as any, periodo }),
       convex.query(api.f29.listSubmissions, { clienteId: clienteId as any, periodo }),

@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 
 // =============================================================================
@@ -55,12 +54,12 @@ export async function getBankModuleStats(): Promise<ActionResult<BankModuleStats
     return {
       success: true,
       data: {
-        cuentas_activas: stats?.cuentas_activas ?? 0,
-        transacciones_mes: stats?.transacciones_mes ?? 0,
-        pendientes_categorizar: stats?.pendientes_categorizar ?? 0,
-        pendientes_conciliar: stats?.pendientes_conciliar ?? 0,
+        cuentas_activas: 0, // TODO: cartolas_cuentas_bancarias not in Convex yet
+        transacciones_mes: stats?.total ?? 0,
+        pendientes_categorizar: stats?.pendientes ?? 0,
+        pendientes_conciliar: stats?.pendientes ?? 0,
         jobs_en_progreso: 0, // TODO: cartolas_jobs not in Convex yet
-        ultimo_sync: stats?.ultimo_sync ?? undefined,
+        ultimo_sync: undefined, // not available from getTransactionStats
       },
     }
   } catch (error) {

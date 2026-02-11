@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after full migration
 'use server'
 // TODO: Phase 2 - Implement compliance module in Convex
 // Tables needed: document_retention_policies, compliance_reports, report_schedules,

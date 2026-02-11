@@ -1,4 +1,3 @@
-// @ts-nocheck — temporary: remove after npx convex dev generates real types
 'use server'
 
 import { ConvexHttpClient } from "convex/browser"
@@ -22,6 +21,7 @@ export async function getReportData(
   clienteId?: string
 ): Promise<ReportData[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     // Get all data from Convex
     const [docs, f29s, jobs, clientes] = await Promise.all([
       convex.query(api.documents.listDocuments, {
@@ -74,6 +74,7 @@ export async function getDocumentosReportePorCliente(
   fechaFin: string
 ): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const [docs, clientes] = await Promise.all([
       convex.query(api.documents.listDocuments, {}),
       convex.query(api.clients.listClientes, {}),
@@ -113,6 +114,7 @@ export async function getF29Reporte(
   clienteId?: string
 ): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const f29s = await convex.query(api.f29.listSubmissions, {
       clienteId: clienteId as any,
     })
@@ -197,6 +199,7 @@ export interface DatosGrafico {
 
 export async function getMetricasGenerales(): Promise<MetricaGeneral[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const [docs, f29s, clientes] = await Promise.all([
       convex.query(api.documents.listDocuments, {}),
       convex.query(api.f29.listSubmissions, {}),
@@ -241,6 +244,7 @@ export async function getProductividadContadores(): Promise<any[]> {
 
 export async function getClientesParaReportes(): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const clientes = await convex.query(api.clients.listClientes, {})
     return clientes.filter((c: any) => c.activo)
   } catch {
@@ -268,6 +272,7 @@ export async function getPeriodosDisponibles(): Promise<string[]> {
 
 export async function getDocumentosParaReporte(clienteId?: string, periodo?: string): Promise<any[]> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const docs = await convex.query(api.documents.listDocuments, {
       clienteId: clienteId as any,
       periodo,
@@ -280,6 +285,7 @@ export async function getDocumentosParaReporte(clienteId?: string, periodo?: str
 
 export async function getResumenMensualParaReporte(clienteId?: string, periodo?: string): Promise<any> {
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const [docs, f29s] = await Promise.all([
       convex.query(api.documents.listDocuments, { clienteId: clienteId as any, periodo }),
       convex.query(api.f29.listSubmissions, { clienteId: clienteId as any, periodo }),
@@ -297,6 +303,7 @@ export async function getResumenMensualParaReporte(clienteId?: string, periodo?:
 export async function getDatosF29ParaReporte(f29Id?: string): Promise<any> {
   if (!f29Id) return null
   try {
+    if (!convex) throw new Error('Convex client not initialized')
     const submissions = await convex.query(api.f29.listSubmissions, {})
     return (submissions as any[]).find((s: any) => s._id === f29Id) || null
   } catch {
