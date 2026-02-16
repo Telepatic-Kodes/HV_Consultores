@@ -1,8 +1,11 @@
 'use client'
 
+import { useState } from 'react'
+import { useMutation, useQuery } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Check, X, ArrowRight } from 'lucide-react'
+import { Check, X, ArrowRight, FlaskConical, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 interface ResumenStepProps {
@@ -38,6 +41,13 @@ const BANCO_LABELS: Record<string, string> = {
 
 export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
   const db = data.datosBasicos
+  const clientes = useQuery(api.clients.listClientes, {})
+  const seedDemoData = useMutation(api.seed.seedDemoData)
+  const [seedLoading, setSeedLoading] = useState(false)
+  const [seedDone, setSeedDone] = useState(false)
+
+  // Show offer only when this is the first/only client
+  const isFirstClient = clientes && clientes.length <= 1
 
   return (
     <div className="space-y-6">
@@ -117,6 +127,54 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Seed data offer for first-time users */}
+      {isFirstClient && !seedDone && (
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="p-5">
+            <div className="flex items-start gap-4">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <FlaskConical className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-sm">¿Primera vez? Carga datos de ejemplo</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Agrega 3 empresas chilenas con documentos, F29, transacciones y más para explorar todos los flujos.
+                </p>
+                <Button
+                  size="sm"
+                  className="mt-3"
+                  disabled={seedLoading}
+                  onClick={async () => {
+                    setSeedLoading(true)
+                    try {
+                      await seedDemoData()
+                      setSeedDone(true)
+                    } catch {
+                      // silently handle — data may already exist
+                    }
+                    setSeedLoading(false)
+                  }}
+                >
+                  {seedLoading ? (
+                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <FlaskConical className="mr-2 h-3.5 w-3.5" />
+                  )}
+                  Cargar datos de ejemplo
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {seedDone && (
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
+          <Check className="h-4 w-4" />
+          Datos de ejemplo cargados. ¡Explora el dashboard!
+        </div>
+      )}
 
       <div className="flex justify-between pt-4">
         <Button type="button" variant="outline" onClick={onBack}>

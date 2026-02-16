@@ -26,6 +26,7 @@ import {
   User,
   Clock,
 } from 'lucide-react'
+import Link from 'next/link'
 import { crearCliente, actualizarCliente, desactivarCliente } from './actions'
 import type { ClienteConStats, ClienteStats } from './actions'
 import type { Database } from '@/types/database.types'
@@ -185,10 +186,12 @@ export function ClientesContent({ clientes, stats, contadores }: ClientesContent
             onChange={(e) => setFiltro(e.target.value)}
           />
         </div>
-        <Button onClick={() => handleOpenModal()} className="shadow-executive">
-          <Plus className="mr-2 h-4 w-4" />
-          Nuevo Cliente
-        </Button>
+        <Link href="/dashboard/clientes/nuevo">
+          <Button className="shadow-executive">
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo Cliente
+          </Button>
+        </Link>
       </div>
 
       {/* Stats */}
@@ -276,10 +279,12 @@ export function ClientesContent({ clientes, stats, contadores }: ClientesContent
                 {filtro ? 'Intenta con otro termino de busqueda' : 'Comienza agregando tu primer cliente'}
               </p>
               {!filtro && (
-                <Button className="mt-6 shadow-executive" onClick={() => handleOpenModal()}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Agregar primer cliente
-                </Button>
+                <Link href="/dashboard/clientes/nuevo">
+                  <Button className="mt-6 shadow-executive">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Agregar primer cliente
+                  </Button>
+                </Link>
               )}
             </div>
           ) : (

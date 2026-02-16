@@ -16,7 +16,11 @@ import {
   Loader2,
   CheckCircle,
   XCircle,
+  FlaskConical,
+  Trash2,
 } from 'lucide-react'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 import {
   actualizarPerfil,
   actualizarNotificaciones,
@@ -32,7 +36,7 @@ interface ConfiguracionContentProps {
   integraciones: IntegracionConfig
 }
 
-type TabType = 'perfil' | 'notificaciones' | 'seguridad' | 'api' | 'integraciones'
+type TabType = 'perfil' | 'notificaciones' | 'seguridad' | 'api' | 'integraciones' | 'demo'
 
 const tabs: { id: TabType; icon: typeof User; label: string }[] = [
   { id: 'perfil', icon: User, label: 'Perfil' },
@@ -40,6 +44,7 @@ const tabs: { id: TabType; icon: typeof User; label: string }[] = [
   { id: 'seguridad', icon: Shield, label: 'Seguridad' },
   { id: 'api', icon: Key, label: 'API Keys' },
   { id: 'integraciones', icon: Database, label: 'Integraciones' },
+  { id: 'demo', icon: FlaskConical, label: 'Datos Demo' },
 ]
 
 export function ConfiguracionContent({
@@ -78,6 +83,12 @@ export function ConfiguracionContent({
 
   // Estado de verificación
   const [verificando, setVerificando] = useState<string | null>(null)
+
+  // Seed data
+  const seedDemoData = useMutation(api.seed.seedDemoData)
+  const clearDemoData = useMutation(api.seed.clearDemoData)
+  const [seedLoading, setSeedLoading] = useState(false)
+  const [clearLoading, setClearLoading] = useState(false)
 
   const handleGuardarPerfil = async () => {
     startTransition(async () => {
@@ -519,6 +530,84 @@ export function ConfiguracionContent({
                   <p className="text-xs text-muted-foreground">
                     Las credenciales del SII se configuran por cliente en el módulo de Clientes
                   </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Datos Demo */}
+          {activeTab === 'demo' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FlaskConical className="h-5 w-5" />
+                  Datos de Demostración
+                </CardTitle>
+                <CardDescription>
+                  Carga datos de ejemplo con 3 empresas chilenas para probar todos los flujos de la plataforma
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 text-sm">
+                  <p className="font-medium text-primary">Empresas incluidas:</p>
+                  <ul className="mt-2 space-y-1 text-muted-foreground">
+                    <li>Distribuidora Los Andes SpA — Régimen 14D (PyME)</li>
+                    <li>Constructora Pacífico Ltda — Régimen 14A (General)</li>
+                    <li>Café Artesanal Sur SPA — Régimen 14D N°8 (Pro PyME)</li>
+                  </ul>
+                  <p className="mt-3 text-muted-foreground">
+                    Incluye documentos tributarios, F29, cuentas bancarias, transacciones, conciliaciones, bots, procesos y más.
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    onClick={async () => {
+                      if (!confirm('¿Cargar datos de ejemplo? Esto creará 3 empresas con datos completos.')) return
+                      setSeedLoading(true)
+                      try {
+                        await seedDemoData()
+                        setMensaje({ tipo: 'success', texto: 'Datos de ejemplo cargados correctamente' })
+                      } catch (err: any) {
+                        setMensaje({ tipo: 'error', texto: err.message || 'Error al cargar datos' })
+                      }
+                      setSeedLoading(false)
+                      setTimeout(() => setMensaje(null), 4000)
+                    }}
+                    disabled={seedLoading || clearLoading}
+                    className="shadow-executive"
+                  >
+                    {seedLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <FlaskConical className="mr-2 h-4 w-4" />
+                    )}
+                    Cargar datos de ejemplo
+                  </Button>
+
+                  <Button
+                    variant="destructive"
+                    onClick={async () => {
+                      if (!confirm('¿Eliminar TODOS los datos? Esta acción no se puede deshacer.')) return
+                      setClearLoading(true)
+                      try {
+                        await clearDemoData()
+                        setMensaje({ tipo: 'success', texto: 'Datos eliminados correctamente' })
+                      } catch (err: any) {
+                        setMensaje({ tipo: 'error', texto: err.message || 'Error al eliminar datos' })
+                      }
+                      setClearLoading(false)
+                      setTimeout(() => setMensaje(null), 4000)
+                    }}
+                    disabled={seedLoading || clearLoading}
+                  >
+                    {clearLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="mr-2 h-4 w-4" />
+                    )}
+                    Limpiar todos los datos
+                  </Button>
                 </div>
               </CardContent>
             </Card>
