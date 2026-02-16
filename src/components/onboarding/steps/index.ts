@@ -1,0 +1,6 @@
+export { DatosBasicosStep } from './DatosBasicosStep'
+export { RegimenStep } from './RegimenStep'
+export { PlanCuentasStep } from './PlanCuentasStep'
+export { CuentaBancariaStep } from './CuentaBancariaStep'
+export { CredencialesSIIStep } from './CredencialesSIIStep'
+export { ResumenStep } from './ResumenStep'

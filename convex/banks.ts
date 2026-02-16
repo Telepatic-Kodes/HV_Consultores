@@ -406,3 +406,58 @@ export const bulkReconcileTransactions = mutation({
     return { success: true, count: args.transactionIds.length };
   },
 });
+
+// ─── BANK ACCOUNTS ────────────────────────────────────────
+
+/**
+ * Create a bank account for a client
+ */
+export const createBankAccount = mutation({
+  args: {
+    cliente_id: v.id("clientes"),
+    banco: v.union(
+      v.literal("bancochile"),
+      v.literal("bancoestado"),
+      v.literal("santander"),
+      v.literal("bci")
+    ),
+    tipo_cuenta: v.union(
+      v.literal("corriente"),
+      v.literal("vista"),
+      v.literal("ahorro"),
+      v.literal("credito")
+    ),
+    numero_cuenta: v.string(),
+    moneda: v.optional(v.union(v.literal("CLP"), v.literal("USD"), v.literal("EUR"), v.literal("UF"))),
+    alias: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("bancos_cuentas", {
+      cliente_id: args.cliente_id,
+      banco: args.banco,
+      tipo_cuenta: args.tipo_cuenta,
+      numero_cuenta: args.numero_cuenta,
+      moneda: args.moneda ?? "CLP",
+      alias: args.alias,
+      saldo_actual: 0,
+      activa: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+  },
+});
+
+/**
+ * List bank accounts for a client
+ */
+export const listBankAccounts = query({
+  args: {
+    clienteId: v.id("clientes"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("bancos_cuentas")
+      .withIndex("by_cliente", (q: any) => q.eq("cliente_id", args.clienteId))
+      .collect();
+  },
+});
