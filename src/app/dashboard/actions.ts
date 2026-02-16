@@ -7,8 +7,7 @@ import { Id } from "../../../convex/_generated/dataModel"
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
 const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null
 
-// Helper: throws immediately when Convex is not configured so catch blocks
-// return demo-friendly fallback data without attempting network calls.
+// Helper: throws when Convex is not configured.
 function requireConvex() {
   if (!convex) throw new Error('Convex not configured')
   return convex
@@ -21,6 +20,7 @@ export interface DashboardStats {
   precisionML: number
   pendientesClasificar: number
   alertasF29: number
+  resumen: string
 }
 
 export interface ModuloStatus {
@@ -98,6 +98,13 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       ? Math.round((documentosHoy - documentosAyer) / documentosAyer * 100)
       : 0
 
+    const partes: string[] = []
+    if (pendientes > 0) partes.push(`${pendientes} documentos pendientes`)
+    if (alertas > 0) partes.push(`${alertas} alertas F29`)
+    const resumen = partes.length > 0
+      ? `Tienes ${partes.join(' y ')}`
+      : 'Todo al día, sin pendientes'
+
     return {
       documentosHoy,
       documentosTendencia: tendencia,
@@ -105,6 +112,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       precisionML,
       pendientesClasificar: pendientes,
       alertasF29: alertas,
+      resumen,
     }
   } catch (error) {
     console.error('Error getting dashboard stats:', error)
@@ -115,6 +123,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       precisionML: 95,
       pendientesClasificar: 0,
       alertasF29: 0,
+      resumen: 'Sin datos disponibles',
     }
   }
 }
@@ -401,12 +410,7 @@ export async function getDocumentosPorTipo(): Promise<DocumentosPorTipo[]> {
     const allDocs = await requireConvex().query(api.documents.listDocuments, {})
 
     if (allDocs.length === 0) {
-      return [
-        { tipo: 'Facturas', cantidad: 45, porcentaje: 45 },
-        { tipo: 'Boletas', cantidad: 30, porcentaje: 30 },
-        { tipo: 'Notas Crédito', cantidad: 15, porcentaje: 15 },
-        { tipo: 'Otros', cantidad: 10, porcentaje: 10 },
-      ]
+      return []
     }
 
     const conteo: Record<string, number> = {}
