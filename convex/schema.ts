@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 // Enum-like unions for status fields
 const botJobStatus = v.union(
@@ -82,9 +83,50 @@ const bancoCode = v.union(
   v.literal("bci")
 );
 
+const procesoTipo = v.union(
+  v.literal("contabilidad_mensual"),
+  v.literal("declaracion_f29"),
+  v.literal("declaracion_renta"),
+  v.literal("cierre_anual"),
+  v.literal("onboarding_cliente"),
+  v.literal("otro")
+);
+
+const procesoEstado = v.union(
+  v.literal("activo"),
+  v.literal("pausado"),
+  v.literal("completado"),
+  v.literal("cancelado")
+);
+
+const tareaEstado = v.union(
+  v.literal("pendiente"),
+  v.literal("en_progreso"),
+  v.literal("en_revision"),
+  v.literal("completada"),
+  v.literal("bloqueada")
+);
+
+const tareaPrioridad = v.union(
+  v.literal("urgente"),
+  v.literal("alta"),
+  v.literal("media"),
+  v.literal("baja")
+);
+
+const comentarioTipo = v.union(
+  v.literal("comentario"),
+  v.literal("cambio_estado"),
+  v.literal("asignacion"),
+  v.literal("sistema")
+);
+
 export default defineSchema({
+  ...authTables,
+
   // ─── User Profiles ───────────────────────────────────────
   profiles: defineTable({
+    userId: v.optional(v.id("users")),
     nombre_completo: v.string(),
     cargo: v.optional(v.string()),
     telefono: v.optional(v.string()),
@@ -92,7 +134,8 @@ export default defineSchema({
     activo: v.optional(v.boolean()),
     created_at: v.optional(v.string()),
     updated_at: v.optional(v.string()),
-  }),
+  })
+    .index("by_userId", ["userId"]),
 
   roles: defineTable({
     nombre: v.string(),
@@ -677,4 +720,122 @@ export default defineSchema({
   })
     .index("by_cliente", ["cliente_id"])
     .index("by_descripcion", ["descripcion_patron"]),
+
+  // ─── Procesos (Workflows) ────────────────────────────────
+  procesos: defineTable({
+    nombre: v.string(),
+    descripcion: v.optional(v.string()),
+    tipo: procesoTipo,
+    cliente_id: v.id("clientes"),
+    periodo: v.optional(v.string()),
+    estado: procesoEstado,
+    fecha_inicio: v.optional(v.string()),
+    fecha_limite: v.optional(v.string()),
+    responsable_id: v.optional(v.id("profiles")),
+    created_at: v.optional(v.string()),
+    updated_at: v.optional(v.string()),
+  })
+    .index("by_cliente", ["cliente_id"])
+    .index("by_estado", ["estado"])
+    .index("by_tipo", ["tipo"]),
+
+  // ─── Tareas (Tasks within Processes) ─────────────────────
+  tareas: defineTable({
+    titulo: v.string(),
+    descripcion: v.optional(v.string()),
+    proceso_id: v.id("procesos"),
+    estado: tareaEstado,
+    prioridad: tareaPrioridad,
+    orden: v.number(),
+    asignado_a: v.optional(v.id("profiles")),
+    fecha_inicio: v.optional(v.string()),
+    fecha_limite: v.optional(v.string()),
+    etiquetas: v.optional(v.array(v.string())),
+    checklist: v.optional(v.array(v.object({
+      texto: v.string(),
+      completado: v.boolean(),
+    }))),
+    estimacion_horas: v.optional(v.number()),
+    horas_reales: v.optional(v.number()),
+    created_at: v.optional(v.string()),
+    updated_at: v.optional(v.string()),
+  })
+    .index("by_proceso", ["proceso_id"])
+    .index("by_estado", ["estado"])
+    .index("by_asignado", ["asignado_a"])
+    .index("by_fecha_limite", ["fecha_limite"]),
+
+  // ─── Comentarios de Tarea ────────────────────────────────
+  comentarios_tarea: defineTable({
+    tarea_id: v.id("tareas"),
+    autor_id: v.optional(v.id("profiles")),
+    contenido: v.string(),
+    tipo: comentarioTipo,
+    created_at: v.optional(v.string()),
+  })
+    .index("by_tarea", ["tarea_id"]),
+
+  // ─── Plantillas de Proceso ──────────────────────────────
+  plantillas_proceso: defineTable({
+    nombre: v.string(),
+    descripcion: v.optional(v.string()),
+    tipo: procesoTipo,
+    tareas_template: v.array(v.object({
+      titulo: v.string(),
+      descripcion: v.optional(v.string()),
+      prioridad: tareaPrioridad,
+      etiquetas: v.optional(v.array(v.string())),
+      offset_dias_inicio: v.number(),
+      offset_dias_limite: v.number(),
+      checklist: v.optional(v.array(v.object({
+        texto: v.string(),
+        completado: v.boolean(),
+      }))),
+    })),
+    created_at: v.optional(v.string()),
+    updated_at: v.optional(v.string()),
+  })
+    .index("by_tipo", ["tipo"]),
+
+  // ─── Subscriptions (Stripe Billing) ─────────────────────
+  subscriptions: defineTable({
+    userId: v.id("users"),
+    stripeCustomerId: v.string(),
+    stripeSubscriptionId: v.optional(v.string()),
+    stripePriceId: v.optional(v.string()),
+    plan: v.union(
+      v.literal("free"),
+      v.literal("pro"),
+      v.literal("enterprise")
+    ),
+    status: v.union(
+      v.literal("active"),
+      v.literal("canceled"),
+      v.literal("past_due"),
+      v.literal("trialing"),
+      v.literal("incomplete"),
+      v.literal("unpaid")
+    ),
+    currentPeriodStart: v.optional(v.string()),
+    currentPeriodEnd: v.optional(v.string()),
+    cancelAtPeriodEnd: v.optional(v.boolean()),
+    maxClients: v.number(),
+    maxBotRuns: v.number(),
+    created_at: v.optional(v.string()),
+    updated_at: v.optional(v.string()),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_stripeCustomerId", ["stripeCustomerId"])
+    .index("by_stripeSubscriptionId", ["stripeSubscriptionId"])
+    .index("by_plan", ["plan"]),
+
+  billing_events: defineTable({
+    subscriptionId: v.id("subscriptions"),
+    stripeEventId: v.string(),
+    type: v.string(),
+    data: v.optional(v.any()),
+    created_at: v.optional(v.string()),
+  })
+    .index("by_subscription", ["subscriptionId"])
+    .index("by_stripeEventId", ["stripeEventId"]),
 });

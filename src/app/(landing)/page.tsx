@@ -1,4 +1,4 @@
-import { Hero, Services, Benefits, CTA } from '@/components/landing'
+import { Hero, Services, Benefits, Pricing, CTA } from '@/components/landing'
 
 export default function HomePage() {
   return (
@@ -6,6 +6,7 @@ export default function HomePage() {
       <Hero />
       <Services />
       <Benefits />
+      <Pricing />
       <CTA />
     </>
   )

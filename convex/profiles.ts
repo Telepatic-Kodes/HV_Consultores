@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 // ─── QUERIES ───────────────────────────────────────────────
 
@@ -30,6 +31,54 @@ export const getProfile = query({
   args: { id: v.id("profiles") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
+  },
+});
+
+/**
+ * Get profile for the currently authenticated user
+ */
+export const getMyProfile = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q: any) => q.eq("userId", userId))
+      .first();
+
+    return profile;
+  },
+});
+
+/**
+ * Create a profile for a newly authenticated user (called from auth callback or client)
+ */
+export const createMyProfile = mutation({
+  args: {
+    nombre_completo: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    // Check if profile already exists
+    const existing = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q: any) => q.eq("userId", userId))
+      .first();
+
+    if (existing) return existing._id;
+
+    const now = new Date().toISOString();
+    return await ctx.db.insert("profiles", {
+      userId,
+      nombre_completo: args.nombre_completo,
+      activo: true,
+      created_at: now,
+      updated_at: now,
+    });
   },
 });
 

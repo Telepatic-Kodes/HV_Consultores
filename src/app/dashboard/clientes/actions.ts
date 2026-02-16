@@ -3,6 +3,7 @@
 import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../../../convex/_generated/api"
 import { revalidatePath } from 'next/cache'
+import { getAuthenticatedConvex } from "@/lib/auth-server"
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL
 const convex = convexUrl ? new ConvexHttpClient(convexUrl) : null
@@ -114,6 +115,14 @@ export async function createCliente(data: {
 }): Promise<{ success: boolean; clienteId?: string; error?: string }> {
   try {
     if (!convex) throw new Error('Convex client not initialized')
+
+    // Check subscription limits before creating a client
+    const authConvex = await getAuthenticatedConvex()
+    const canAdd = await authConvex.query(api.subscriptions.canAddClient, {})
+    if (!canAdd.allowed) {
+      return { success: false, error: canAdd.reason || 'Límite de clientes alcanzado. Actualiza tu plan.' }
+    }
+
     const clienteId = await convex.mutation(api.clients.createCliente, {
       razon_social: data.razon_social,
       rut: data.rut,
@@ -196,10 +205,7 @@ export async function getClienteStats(): Promise<ClienteStats> {
 }
 
 export async function getContadores(): Promise<any[]> {
-  // Contadores not in current schema - return demo data
-  return [
-    { id: '1', nombre: 'Demo Contador', email: 'demo@hv.cl', clientes_asignados: 0 },
-  ]
+  return []
 }
 
 export async function crearCliente(

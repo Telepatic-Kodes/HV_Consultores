@@ -1,12 +1,8 @@
 'use server'
 
-import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../../../convex/_generated/api"
-import { Id } from "../../../../convex/_generated/dataModel"
 import { revalidatePath } from 'next/cache'
-
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
-const DEMO_USER_ID = 'demo-user'
+import { getServerProfileId, getAuthenticatedConvex } from '@/lib/auth-server'
 
 type Profile = {
   id: string
@@ -48,37 +44,28 @@ export interface IntegracionConfig {
 // Obtener perfil del usuario actual
 export async function getUserProfile(): Promise<UserProfile | null> {
   try {
+    const convex = await getAuthenticatedConvex()
+    const profileId = await getServerProfileId()
     const data = await convex.query(api.profiles.getProfileWithRoles, {
-      id: DEMO_USER_ID as Id<"profiles">,
+      id: profileId,
     })
 
     if (!data) return null
 
     return {
-      id: (data._id as string) ?? DEMO_USER_ID,
+      id: data._id as string,
       nombre_completo: data.nombre_completo ?? null,
       telefono: data.telefono ?? null,
       cargo: data.cargo ?? null,
       avatar_url: data.avatar_url ?? null,
       created_at: data._creationTime ? new Date(data._creationTime).toISOString() : ((data as any).created_at ?? new Date().toISOString()),
       updated_at: data.updated_at ?? new Date().toISOString(),
-      email: (data as any).email ?? 'demo@hvconsultores.cl',
+      email: (data as any).email,
       rol: (data.roles && data.roles.length > 0 ? data.roles[0].nombre : undefined) ?? 'Usuario',
     }
   } catch (error) {
     console.error('Error fetching profile from Convex:', error)
-    // Return demo profile as fallback
-    return {
-      id: DEMO_USER_ID,
-      nombre_completo: 'Usuario Demo',
-      telefono: null,
-      cargo: 'Contador',
-      avatar_url: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      email: 'demo@hvconsultores.cl',
-      rol: 'Usuario',
-    }
+    return null
   }
 }
 
@@ -89,8 +76,10 @@ export async function actualizarPerfil(datos: {
   cargo?: string
 }): Promise<{ success: boolean; error?: string }> {
   try {
+    const convex = await getAuthenticatedConvex()
+    const profileId = await getServerProfileId()
     await convex.mutation(api.profiles.updateProfile, {
-      id: DEMO_USER_ID as Id<"profiles">,
+      id: profileId,
       nombre_completo: datos.nombre_completo,
       telefono: datos.telefono,
       cargo: datos.cargo,
@@ -105,9 +94,8 @@ export async function actualizarPerfil(datos: {
 }
 
 // Obtener configuracion de notificaciones
-// TODO: Implement in Convex when configuracion_sistema table is migrated
 export async function getNotificacionesConfig(): Promise<NotificacionConfig> {
-  // Return default config - no Convex equivalent for configuracion_sistema yet
+  // TODO: Implement in Convex when configuracion_sistema table is added
   return {
     documentos_pendientes: true,
     errores_bots: true,
@@ -117,19 +105,15 @@ export async function getNotificacionesConfig(): Promise<NotificacionConfig> {
 }
 
 // Actualizar configuracion de notificaciones
-// TODO: Implement in Convex when configuracion_sistema table is migrated
 export async function actualizarNotificaciones(
   config: NotificacionConfig
 ): Promise<{ success: boolean }> {
-  // Stub - no Convex equivalent for configuracion_sistema yet
-  console.log('Notification config update (stub):', config)
+  // TODO: Implement in Convex when configuracion_sistema table is added
   return { success: true }
 }
 
 // Verificar estado de integraciones
-// TODO: Implement in Convex when configuracion_sistema table is migrated
 export async function getIntegracionesStatus(): Promise<IntegracionConfig> {
-  // Check env vars directly instead of querying configuracion_sistema
   return {
     nubox_configured: !!process.env.NUBOX_API_KEY,
     openai_configured: !!process.env.OPENAI_API_KEY,
@@ -138,13 +122,11 @@ export async function getIntegracionesStatus(): Promise<IntegracionConfig> {
 }
 
 // Guardar credencial de integracion (solo admin)
-// TODO: Implement in Convex when configuracion_sistema table is migrated
 export async function guardarIntegracion(
   tipo: 'nubox' | 'openai' | 'sii',
   credencial: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub - no Convex equivalent for configuracion_sistema yet
-  console.log('Integration save (stub):', tipo)
+  // TODO: Implement in Convex when configuracion_sistema table is added
   return { success: true }
 }
 
@@ -167,31 +149,52 @@ export async function verificarIntegracion(
 }
 
 // Cambiar contrasena
-// TODO: Implement proper auth when Convex auth is set up
 export async function cambiarPassword(
   passwordActual: string,
   passwordNuevo: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Demo mode - no auth system in Convex yet
-  console.log('Password change requested (demo mode)')
-  return { success: true }
+  // TODO: Implement password change via Convex Auth
+  return { success: false, error: 'Cambio de contrasena aun no implementado' }
+}
+
+// Obtener datos de suscripcion del usuario actual
+export async function getSubscriptionData() {
+  try {
+    const convex = await getAuthenticatedConvex()
+    const [subscription, usage] = await Promise.all([
+      convex.query(api.subscriptions.getMySubscription, {}),
+      convex.query(api.subscriptions.getUsageStats, {}),
+    ])
+    return { subscription, usage }
+  } catch (error) {
+    console.error('Error fetching subscription data:', error)
+    return { subscription: null, usage: null }
+  }
+}
+
+// Obtener userId del usuario autenticado para Stripe
+export async function getAuthUserId() {
+  try {
+    const convex = await getAuthenticatedConvex()
+    const profile = await convex.query(api.profiles.getMyProfile, {})
+    return profile?.userId || null
+  } catch (error) {
+    return null
+  }
 }
 
 // Obtener configuracion general del sistema (solo admin)
-// TODO: Implement in Convex when configuracion_sistema table is migrated
 export async function getConfiguracionSistema(): Promise<ConfiguracionSistema[]> {
-  // Stub - return empty array, no Convex equivalent yet
+  // TODO: Implement in Convex when configuracion_sistema table is added
   return []
 }
 
 // Actualizar configuracion del sistema (solo admin)
-// TODO: Implement in Convex when configuracion_sistema table is migrated
 export async function actualizarConfigSistema(
   clave: string,
   valor: any,
   descripcion?: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub - no Convex equivalent for configuracion_sistema yet
-  console.log('System config update (stub):', clave)
+  // TODO: Implement in Convex when configuracion_sistema table is added
   return { success: true }
 }

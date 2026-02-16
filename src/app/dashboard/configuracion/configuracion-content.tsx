@@ -10,6 +10,7 @@ import {
   Shield,
   Key,
   Database,
+  CreditCard,
   Save,
   Eye,
   EyeOff,
@@ -17,6 +18,7 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react'
+import { SubscriptionManager } from '@/components/billing/SubscriptionManager'
 import {
   actualizarPerfil,
   actualizarNotificaciones,
@@ -26,16 +28,38 @@ import {
 } from './actions'
 import type { UserProfile, NotificacionConfig, IntegracionConfig } from './actions'
 
+interface SubscriptionData {
+  plan: 'free' | 'pro' | 'enterprise'
+  status: string
+  maxClients: number
+  maxBotRuns: number
+  cancelAtPeriodEnd?: boolean
+  currentPeriodEnd?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+}
+
+interface UsageData {
+  plan: string
+  clients: { used: number; limit: number }
+  botRuns: { used: number; limit: number }
+}
+
 interface ConfiguracionContentProps {
   profile: UserProfile | null
   notificaciones: NotificacionConfig
   integraciones: IntegracionConfig
+  subscription?: SubscriptionData | null
+  usage?: UsageData | null
+  userId?: string
+  email?: string
 }
 
-type TabType = 'perfil' | 'notificaciones' | 'seguridad' | 'api' | 'integraciones'
+type TabType = 'perfil' | 'facturacion' | 'notificaciones' | 'seguridad' | 'api' | 'integraciones'
 
 const tabs: { id: TabType; icon: typeof User; label: string }[] = [
   { id: 'perfil', icon: User, label: 'Perfil' },
+  { id: 'facturacion', icon: CreditCard, label: 'Facturación' },
   { id: 'notificaciones', icon: Bell, label: 'Notificaciones' },
   { id: 'seguridad', icon: Shield, label: 'Seguridad' },
   { id: 'api', icon: Key, label: 'API Keys' },
@@ -46,6 +70,10 @@ export function ConfiguracionContent({
   profile,
   notificaciones,
   integraciones,
+  subscription,
+  usage,
+  userId,
+  email,
 }: ConfiguracionContentProps) {
   const [isPending, startTransition] = useTransition()
   const [activeTab, setActiveTab] = useState<TabType>('perfil')
@@ -275,6 +303,16 @@ export function ConfiguracionContent({
                 </Button>
               </CardContent>
             </Card>
+          )}
+
+          {/* Facturación */}
+          {activeTab === 'facturacion' && (
+            <SubscriptionManager
+              subscription={subscription || null}
+              usage={usage || null}
+              userId={userId || ''}
+              email={email || ''}
+            />
           )}
 
           {/* Notificaciones */}

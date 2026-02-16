@@ -4,3 +4,5 @@ export {
   useDocumentosRealtime,
   useF29Realtime,
 } from './use-realtime'
+
+export { useCurrentUser } from './use-auth'
