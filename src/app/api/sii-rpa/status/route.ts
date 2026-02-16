@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // SII RPA Status API Route
 // GET - Check job status
 

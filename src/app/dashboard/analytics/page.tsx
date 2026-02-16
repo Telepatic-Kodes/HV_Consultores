@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useCurrentUser } from '@/hooks/use-auth'
 import dynamic from 'next/dynamic'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
@@ -36,12 +37,6 @@ const ReportScheduler = dynamic(
   { ssr: false, loading: () => <TabSkeleton /> }
 )
 
-// Demo user constant - replaces Supabase auth session
-const DEMO_USER = {
-  id: 'demo-user-hv-consultores',
-  email: 'demo@hvconsultores.cl',
-  name: 'Usuario Demo',
-}
 
 function TabSkeleton() {
   return (
@@ -65,16 +60,11 @@ interface AnalyticsDashboardPageProps {
 export default function AnalyticsDashboardPage({
   searchParams,
 }: AnalyticsDashboardPageProps) {
-  const [organizationId, setOrganizationId] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { profile, isLoading } = useCurrentUser()
+  const organizationId = profile?._id ? String(profile._id) : null
   const router = useRouter()
 
-  useEffect(() => {
-    setOrganizationId(DEMO_USER.id)
-    setLoading(false)
-  }, [router])
-
-  if (loading) {
+  if (isLoading) {
     return <LoadingState />
   }
 

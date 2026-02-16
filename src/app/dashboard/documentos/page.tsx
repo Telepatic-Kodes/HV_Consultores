@@ -17,9 +17,10 @@ import { DocumentBatchUpload } from '@/components/dashboard/DocumentBatchUpload'
 import { DocumentListView } from '@/components/dashboard/DocumentListView'
 import { DocumentExportMenu } from '@/components/dashboard/DocumentExportMenu'
 import { DocumentAdvancedFilters } from '@/components/dashboard/DocumentAdvancedFilters'
+import { useClientContext } from '@/components/dashboard'
 import { obtenerDocumentosCargados, obtenerEstadisticasDocumentos } from './actions'
 import { useSearchParams } from 'next/navigation'
-import { Loader2, BarChart3, LayoutTemplate, Brain, Shield } from 'lucide-react'
+import { Loader2, BarChart3, LayoutTemplate, Brain, Shield, Building2 } from 'lucide-react'
 import Link from 'next/link'
 
 interface DocumentoCarga {
@@ -52,7 +53,8 @@ interface FilterCriteria {
 
 export default function DocumentosPage() {
   const searchParams = useSearchParams()
-  const clienteId = searchParams.get('cliente_id')
+  const { activeClientId, clients, setActiveClientId } = useClientContext()
+  const clienteId = searchParams.get('cliente_id') || activeClientId
 
   const [documentos, setDocumentos] = useState<DocumentoCarga[]>([])
   const [loading, setLoading] = useState(true)
@@ -205,6 +207,32 @@ export default function DocumentosPage() {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Client picker when no client is selected */}
+      {!clienteId && clients.length > 0 && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="py-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Selecciona un cliente para cargar documentos:</span>
+              </div>
+              <Select onValueChange={(val) => setActiveClientId(val)}>
+                <SelectTrigger className="w-full sm:w-[300px] bg-background">
+                  <SelectValue placeholder="Elegir cliente..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.map((c) => (
+                    <SelectItem key={c._id} value={c._id}>
+                      {c.razon_social} — {c.rut}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       <Tabs defaultValue="upload" className="w-full">

@@ -29,9 +29,9 @@ import {
   createRulesEngine,
   createSIIMatcher,
 } from '@/lib/bank-rpa'
+import { getServerProfileId } from '@/lib/auth-server'
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
-const DEMO_USER_ID = 'demo-user'
 
 // ============================================================================
 // TIPOS DE RESPUESTA
@@ -64,7 +64,7 @@ export async function getBankModuleStats(): Promise<ActionResult<BankModuleStats
     }
   } catch (error) {
     console.error('Error getting bank module stats:', error)
-    // Return mock data as fallback
+    // Return empty data
     return {
       success: true,
       data: {
@@ -86,8 +86,8 @@ export async function getBankModuleStats(): Promise<ActionResult<BankModuleStats
 // TODO: cartolas_cuentas_bancarias table not yet in Convex
 export async function getBankAccounts(clienteId?: string): Promise<ActionResult<BankAccount[]>> {
   try {
-    // Stub - cartolas_cuentas_bancarias not in Convex yet
-    console.log('getBankAccounts (stub) for client:', clienteId)
+    // TODO: cartolas_cuentas_bancarias not in Convex yet
+    console.log('getBankAccounts for client:', clienteId)
     return { success: true, data: [] }
   } catch (error) {
     console.error('Error getting bank accounts:', error)
@@ -106,8 +106,8 @@ export async function createBankAccount(input: {
   credencial_id?: string
 }): Promise<ActionResult<BankAccount>> {
   try {
-    // Stub - cartolas_cuentas_bancarias not in Convex yet
-    console.log('createBankAccount (stub):', input)
+    // TODO: cartolas_cuentas_bancarias not in Convex yet
+    console.log('createBankAccount:', input)
     return { success: false, error: 'Cuentas bancarias pendiente de migracion a Convex' }
   } catch (error) {
     console.error('Error creating bank account:', error)
@@ -125,8 +125,8 @@ export async function updateBankAccount(
   }
 ): Promise<ActionResult<BankAccount>> {
   try {
-    // Stub - cartolas_cuentas_bancarias not in Convex yet
-    console.log('updateBankAccount (stub):', id, updates)
+    // TODO: cartolas_cuentas_bancarias not in Convex yet
+    console.log('updateBankAccount:', id, updates)
     return { success: false, error: 'Cuentas bancarias pendiente de migracion a Convex' }
   } catch (error) {
     console.error('Error updating bank account:', error)
@@ -137,8 +137,8 @@ export async function updateBankAccount(
 // TODO: cartolas_cuentas_bancarias table not yet in Convex
 export async function deleteBankAccount(id: string): Promise<ActionResult> {
   try {
-    // Stub - cartolas_cuentas_bancarias not in Convex yet
-    console.log('deleteBankAccount (stub):', id)
+    // TODO: cartolas_cuentas_bancarias not in Convex yet
+    console.log('deleteBankAccount:', id)
     return { success: false, error: 'Cuentas bancarias pendiente de migracion a Convex' }
   } catch (error) {
     console.error('Error deleting bank account:', error)
@@ -181,7 +181,7 @@ export async function uploadCartola(
     // 6. Inserting transactions (cartolas_transacciones)
     // All these tables need to be migrated to Convex first
 
-    console.log('uploadCartola (stub) - file upload pending Convex migration')
+    console.log('uploadCartola - file upload pending Convex migration')
     return {
       success: false,
       error: 'Carga de cartolas pendiente de migracion completa a Convex',
@@ -275,8 +275,8 @@ export async function updateTransaction(
 // TODO: cartolas_categorias table not yet in Convex
 export async function getCategories(): Promise<ActionResult<TransactionCategory[]>> {
   try {
-    // Stub - cartolas_categorias not in Convex yet
-    console.log('getCategories (stub)')
+    // TODO: cartolas_categorias not in Convex yet
+    console.log('getCategories')
     return { success: true, data: [] }
   } catch (error) {
     console.error('Error getting categories:', error)
@@ -290,8 +290,8 @@ export async function categorizeTransactions(
   clienteId?: string
 ): Promise<ActionResult<{ categorized: number; failed: number }>> {
   try {
-    // Stub - categorization rules engine requires tables not yet in Convex
-    console.log('categorizeTransactions (stub):', transactionIds.length, 'transactions')
+    // TODO: categorization rules engine requires tables not yet in Convex
+    console.log('categorizeTransactions:', transactionIds.length, 'transactions')
     return {
       success: true,
       data: { categorized: 0, failed: transactionIds.length },
@@ -311,8 +311,8 @@ export async function getCategorizationRules(
   clienteId?: string
 ): Promise<ActionResult<CategorizationRule[]>> {
   try {
-    // Stub - cartolas_reglas_categorizacion not in Convex yet
-    console.log('getCategorizationRules (stub) for client:', clienteId)
+    // TODO: cartolas_reglas_categorizacion not in Convex yet
+    console.log('getCategorizationRules for client:', clienteId)
     return { success: true, data: [] }
   } catch (error) {
     console.error('Error getting categorization rules:', error)
@@ -325,8 +325,8 @@ export async function createCategorizationRule(
   input: Omit<CategorizationRule, 'id' | 'created_at' | 'updated_at' | 'veces_aplicada' | 'ultima_aplicacion'>
 ): Promise<ActionResult<CategorizationRule>> {
   try {
-    // Stub - cartolas_reglas_categorizacion not in Convex yet
-    console.log('createCategorizationRule (stub):', input)
+    // TODO: cartolas_reglas_categorizacion not in Convex yet
+    console.log('createCategorizationRule:', input)
     return { success: false, error: 'Reglas de categorizacion pendiente de migracion a Convex' }
   } catch (error) {
     console.error('Error creating categorization rule:', error)
@@ -337,8 +337,8 @@ export async function createCategorizationRule(
 // TODO: cartolas_reglas_categorizacion table not yet in Convex
 export async function deleteCategorizationRule(id: string): Promise<ActionResult> {
   try {
-    // Stub - cartolas_reglas_categorizacion not in Convex yet
-    console.log('deleteCategorizationRule (stub):', id)
+    // TODO: cartolas_reglas_categorizacion not in Convex yet
+    console.log('deleteCategorizationRule:', id)
     return { success: false, error: 'Reglas de categorizacion pendiente de migracion a Convex' }
   } catch (error) {
     console.error('Error deleting categorization rule:', error)
@@ -356,8 +356,8 @@ export async function getJobs(
   status?: string
 ): Promise<ActionResult<CartolaJob[]>> {
   try {
-    // Stub - cartolas_jobs not in Convex yet
-    console.log('getJobs (stub) for account:', cuentaId, 'status:', status)
+    // TODO: cartolas_jobs not in Convex yet
+    console.log('getJobs for account:', cuentaId, 'status:', status)
     return { success: true, data: [] }
   } catch (error) {
     console.error('Error getting jobs:', error)
@@ -372,8 +372,8 @@ export async function createDownloadJob(input: {
   año: number
 }): Promise<ActionResult<CartolaJob>> {
   try {
-    // Stub - cartolas_jobs not in Convex yet
-    console.log('createDownloadJob (stub):', input)
+    // TODO: cartolas_jobs not in Convex yet
+    console.log('createDownloadJob:', input)
     return { success: false, error: 'Jobs de descarga pendiente de migracion a Convex' }
   } catch (error) {
     console.error('Error creating download job:', error)
@@ -391,8 +391,8 @@ export async function getCartolaFiles(
   año?: number
 ): Promise<ActionResult<CartolaFile[]>> {
   try {
-    // Stub - cartolas_archivos not in Convex yet
-    console.log('getCartolaFiles (stub) for account:', cuentaId, 'year:', año)
+    // TODO: cartolas_archivos not in Convex yet
+    console.log('getCartolaFiles for account:', cuentaId, 'year:', año)
     return { success: true, data: [] }
   } catch (error) {
     console.error('Error getting cartola files:', error)

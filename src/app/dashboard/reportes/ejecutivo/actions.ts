@@ -10,8 +10,7 @@ import type {
   TimeSeriesPoint,
   Insight,
 } from '@/types/reportes-ejecutivo.types'
-
-const DEMO_USER_ID = 'demo-user'
+import { getServerProfileId } from '@/lib/auth-server'
 
 // ============================================
 // DASHBOARD EJECUTIVO - SERVER ACTIONS
@@ -54,7 +53,7 @@ export async function getExecutiveKPIs(
   clienteId?: string,
   periodo?: string
 ): Promise<ExecutiveKPI[]> {
-  // Stub: returns mock KPIs with zeros until Convex module is implemented
+  // TODO: implement with Convex
   const emptySparkline = new Array(12).fill(0)
 
   return [
@@ -147,7 +146,7 @@ export async function getWaterfallData(
   clienteId?: string,
   periodo?: string
 ): Promise<WaterfallDataPoint[]> {
-  // Stub: returns empty waterfall until Convex module is implemented
+  // TODO: returns empty waterfall until Convex module is implemented
   return [
     { name: 'Inicio Periodo', value: 0, type: 'total' },
     { name: 'Ingresos Ventas', value: 0, type: 'increase' },
@@ -166,7 +165,7 @@ export async function getCategoryBreakdown(
   clienteId?: string,
   periodo?: string
 ): Promise<CategoryBreakdown[]> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
@@ -175,7 +174,7 @@ export async function getCategoryBreakdown(
 // ============================================
 
 export async function getEvolutionData(clienteId?: string): Promise<TimeSeriesPoint[]> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
@@ -187,7 +186,7 @@ export async function generateInsights(
   clienteId?: string,
   periodo?: string
 ): Promise<Insight[]> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 

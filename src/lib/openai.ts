@@ -212,13 +212,13 @@ export interface DocumentoConSimilitud {
 
 // TODO: Phase 2 - Implement vector search in Convex
 // Was: Supabase RPC 'search_documentos_conocimiento' with pgvector
-// Buscar documentos similares (stub - returns empty until Convex vector search is implemented)
+// Buscar documentos similares
 export async function buscarDocumentosRelevantes(
   _supabaseClient: any,
   _pregunta: string,
   _limite: number = 3,
   _umbralSimilitud: number = 0.5
 ): Promise<DocumentoConSimilitud[]> {
-  // Stub: returns empty array until Convex vector search module is implemented
+  // TODO: Implement with Convex vector search
   return []
 }

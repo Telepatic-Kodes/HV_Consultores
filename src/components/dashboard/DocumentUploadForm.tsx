@@ -32,21 +32,24 @@ export function DocumentUploadForm({ clienteId, onSuccess }: DocumentUploadFormP
   const processFile = useCallback(async (file: File) => {
     setError(null)
     setSuccess(null)
+
+    if (!clienteId) {
+      setError('Debes seleccionar un cliente antes de cargar un documento')
+      return
+    }
+
     setLoading(true)
 
     try {
-      const arrayBuffer = await file.arrayBuffer()
-      const resultado = await cargarDocumento(
-        clienteId,
-        tipoDocumento,
-        arrayBuffer,
-        file.name,
-        {
-          folioDocumento: folio || undefined,
-          fechaDocumento: fecha || undefined,
-          montoTotal: monto ? parseFloat(monto) : undefined,
-        }
-      )
+      const formData = new FormData()
+      formData.append('clienteId', clienteId)
+      formData.append('tipoDocumento', tipoDocumento)
+      formData.append('archivo', file)
+      if (folio) formData.append('folioDocumento', folio)
+      if (fecha) formData.append('fechaDocumento', fecha)
+      if (monto) formData.append('montoTotal', monto)
+
+      const resultado = await cargarDocumento(formData)
 
       if (resultado.success) {
         setSuccess(`Documento ${file.name} cargado exitosamente`)
@@ -61,8 +64,7 @@ export function DocumentUploadForm({ clienteId, onSuccess }: DocumentUploadFormP
         setError(resultado.error || 'Error al cargar el documento')
       }
     } catch (err) {
-      console.error('Error cargando documento:', err)
-      setError(err instanceof Error ? err.message : 'Error desconocido')
+      setError(err instanceof Error ? err.message : 'Error desconocido al cargar documento')
     } finally {
       setLoading(false)
     }

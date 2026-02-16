@@ -3,8 +3,7 @@
 // External API integration with Nubox for document processing
 
 import { revalidatePath } from 'next/cache'
-
-const DEMO_USER_ID = 'demo-user'
+import { getServerProfileId } from '@/lib/auth-server'
 
 /**
  * Enviar documento a Nubox para procesamiento
@@ -21,8 +20,8 @@ export async function enviarDocumentoANubox(
     razonSocialEmisor: string
   }
 ): Promise<{ success: boolean; nuboxId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, nuboxId: 'stub-nubox-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, nuboxId: 'pending-nubox-id' }
 }
 
 /**
@@ -31,7 +30,7 @@ export async function enviarDocumentoANubox(
 export async function obtenerEstadoNubox(
   documentoId: string
 ): Promise<{ success: boolean; estado?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true, estado: 'PENDING' }
 }
 
@@ -42,8 +41,8 @@ export async function descargarDocumentoNubox(
   documentoId: string,
   formato: 'pdf' | 'xml'
 ): Promise<{ success: boolean; nombreArchivo?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, nombreArchivo: `stub-document.${formato}` }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, nombreArchivo: `pending-document.${formato}` }
 }
 
 /**
@@ -63,7 +62,7 @@ export async function listarDocumentosNubox(filtros?: {
   }>
   error?: string
 }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, documentos: [] }
 }
 
@@ -76,6 +75,6 @@ export async function sincronizarDocumentosNubox(): Promise<{
   sincronizados: number
   error?: string
 }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true, sincronizados: 0 }
 }

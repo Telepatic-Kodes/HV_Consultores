@@ -2,6 +2,11 @@
 const isDev = process.env.NODE_ENV !== 'production'
 
 const nextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '50mb',
+    },
+  },
   async headers() {
     const securityHeaders = [
       {
@@ -41,7 +46,8 @@ const nextConfig = {
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com",
             "img-src 'self' data: blob:",
-            "connect-src 'self' https://*.convex.cloud wss://*.convex.cloud",
+            "connect-src 'self' https://*.convex.cloud wss://*.convex.cloud https://accounts.google.com https://oauth2.googleapis.com",
+            "frame-src https://accounts.google.com",
             "frame-ancestors 'none'",
           ].join('; '),
         }

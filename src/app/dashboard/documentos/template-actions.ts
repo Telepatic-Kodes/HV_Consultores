@@ -3,8 +3,7 @@
 // Note: This accesses `documento_plantillas` table (different from Convex's `plantillas_plan_cuenta`)
 
 import { revalidatePath } from 'next/cache'
-
-const DEMO_USER_ID = 'demo-user'
+import { getServerProfileId } from '@/lib/auth-server'
 
 export interface DocumentoPlantilla {
   id: string
@@ -28,7 +27,7 @@ export interface DocumentoPlantilla {
 export async function obtenerPlantillasCliente(
   clienteId: string
 ): Promise<{ success: boolean; plantillas?: DocumentoPlantilla[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, plantillas: [] }
 }
 
@@ -44,8 +43,8 @@ export async function crearPlantilla(
     monto_total_default?: number
   }
 ): Promise<{ success: boolean; plantillaId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, plantillaId: 'stub-template-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, plantillaId: 'pending-template-id' }
 }
 
 // Actualizar plantilla
@@ -61,7 +60,7 @@ export async function actualizarPlantilla(
     activa: boolean
   }>
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -69,7 +68,7 @@ export async function actualizarPlantilla(
 export async function eliminarPlantilla(
   plantillaId: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -77,7 +76,7 @@ export async function eliminarPlantilla(
 export async function obtenerPlantilla(
   plantillaId: string
 ): Promise<{ success: boolean; plantilla?: DocumentoPlantilla; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, plantilla: undefined }
 }
 
@@ -85,7 +84,7 @@ export async function obtenerPlantilla(
 export async function usarPlantilla(
   plantillaId: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -93,7 +92,7 @@ export async function usarPlantilla(
 export async function obtenerProximoFolio(
   plantillaId: string
 ): Promise<{ success: boolean; folio?: string; error?: string }> {
-  // Stub: returns a default folio until Convex module is implemented
+  // TODO: returns a default folio until Convex module is implemented
   return { success: true, folio: '0001' }
 }
 
@@ -102,6 +101,6 @@ export async function duplicarPlantilla(
   plantillaId: string,
   nuevoNombre: string
 ): Promise<{ success: boolean; plantillaId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, plantillaId: 'stub-duplicate-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, plantillaId: 'pending-duplicate-id' }
 }

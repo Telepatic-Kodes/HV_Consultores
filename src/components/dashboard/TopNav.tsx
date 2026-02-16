@@ -4,7 +4,9 @@ import { Search, User, Calendar, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NotificationsDropdown } from './NotificationsDropdown'
+import { ClientSelector } from './ClientSelector'
 import { useSidebar } from './SidebarContext'
+import { useCurrentUser } from '@/hooks/use-auth'
 import Link from 'next/link'
 
 interface TopNavProps {
@@ -12,8 +14,20 @@ interface TopNavProps {
   subtitle?: string
 }
 
+function getInitials(name: string | undefined | null): string {
+  if (!name) return '?'
+  return name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
+
 export function TopNav({ title, subtitle }: TopNavProps) {
   const { toggleMobile } = useSidebar()
+  const { profile } = useCurrentUser()
+  const initials = getInitials(profile?.nombre_completo)
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/40 bg-background/80 backdrop-blur-xl px-4 md:px-8">
@@ -53,6 +67,11 @@ export function TopNav({ title, subtitle }: TopNavProps) {
           />
         </div>
 
+        {/* Client selector — desktop only */}
+        <div className="hidden md:block">
+          <ClientSelector />
+        </div>
+
         {/* Divider — desktop only */}
         <div className="hidden md:block h-6 w-px bg-border/60" />
 
@@ -63,7 +82,11 @@ export function TopNav({ title, subtitle }: TopNavProps) {
         <Link href="/dashboard/configuracion">
           <Button variant="ghost" size="icon" className="relative group">
             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center ring-1 ring-primary/10 group-hover:ring-primary/30 transition-all">
-              <User className="h-4 w-4 text-primary" />
+              {profile ? (
+                <span className="text-xs font-semibold text-primary">{initials}</span>
+              ) : (
+                <User className="h-4 w-4 text-primary" />
+              )}
             </div>
             <span className="absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full bg-success ring-2 ring-background" />
           </Button>

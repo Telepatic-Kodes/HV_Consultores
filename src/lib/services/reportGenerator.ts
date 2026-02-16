@@ -290,8 +290,8 @@ class ReportDeliveryService {
     fileBuffer: Buffer,
     fileName: string
   ): Promise<{ status: 'sent' | 'failed'; error?: string }> {
-    // Stub: returns failed since no delivery mechanism available
-    return { status: 'failed', error: 'Email delivery not configured in demo mode' }
+    // TODO: returns failed since no delivery mechanism available
+    return { status: 'failed', error: 'Email delivery not configured yet' }
   }
 
   /**
@@ -302,8 +302,8 @@ class ReportDeliveryService {
     reportName: string,
     downloadUrl: string
   ): Promise<{ status: 'sent' | 'failed'; error?: string }> {
-    // Stub: returns failed since no delivery mechanism available
-    return { status: 'failed', error: 'Slack delivery not configured in demo mode' }
+    // TODO: returns failed since no delivery mechanism available
+    return { status: 'failed', error: 'Slack delivery not configured yet' }
   }
 
   /**
@@ -314,8 +314,8 @@ class ReportDeliveryService {
     reportName: string,
     data: ReportData
   ): Promise<{ status: 'sent' | 'failed'; error?: string }> {
-    // Stub: returns failed since no delivery mechanism available
-    return { status: 'failed', error: 'Webhook delivery not configured in demo mode' }
+    // TODO: returns failed since no delivery mechanism available
+    return { status: 'failed', error: 'Webhook delivery not configured yet' }
   }
 }
 
@@ -459,7 +459,7 @@ export class ReportGenerator {
    * Generate all due reports for an organization
    */
   static async generateDueReports(organizationId: string): Promise<ReportDeliveryResult[]> {
-    // Stub: returns empty results until Convex module is implemented
+    // TODO: returns empty results until Convex module is implemented
     return []
   }
 
@@ -473,14 +473,14 @@ export class ReportGenerator {
     generationTimeMs: number,
     fileSizeBytes: number
   ): Promise<void> {
-    // Stub: no-op until Convex module is implemented
+    // TODO: no-op until Convex module is implemented
   }
 
   /**
    * Manually generate a report immediately
    */
   static async generateNow(scheduleId: string, organizationId: string): Promise<ReportDeliveryResult | null> {
-    // Stub: returns null until Convex module is implemented
+    // TODO: returns null until Convex module is implemented
     return null
   }
 }

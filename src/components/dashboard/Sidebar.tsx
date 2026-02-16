@@ -27,7 +27,9 @@ import {
   Sparkles,
   X,
   TrendingUp,
+  ClipboardList,
 } from 'lucide-react'
+import { useAuthActions } from '@convex-dev/auth/react'
 import { useSidebar } from './SidebarContext'
 
 const navigation = [
@@ -43,6 +45,7 @@ const navigation = [
   { name: 'Parametrización', href: '/dashboard/parametrizacion', icon: Settings2 },
   { name: 'Monedas', href: '/dashboard/monedas', icon: Coins },
   { name: 'Pipeline', href: '/dashboard/pipeline', icon: Workflow },
+  { name: 'Procesos', href: '/dashboard/procesos', icon: ClipboardList },
   { name: 'Inteligencia', href: '/dashboard/inteligencia', icon: Sparkles },
   { name: 'Alertas', href: '/dashboard/alertas', icon: AlertTriangle },
   { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare },
@@ -59,10 +62,11 @@ function SidebarContent() {
   const pathname = usePathname()
   const router = useRouter()
   const { collapsed, toggleCollapsed, setMobileOpen } = useSidebar()
+  const { signOut } = useAuthActions()
 
   const handleLogout = async () => {
+    await signOut()
     router.push('/login')
-    router.refresh()
   }
 
   const handleNavClick = () => {

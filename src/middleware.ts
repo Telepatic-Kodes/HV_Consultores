@@ -1,15 +1,25 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import {
+  convexAuthNextjsMiddleware,
+  createRouteMatcher,
+  nextjsMiddlewareRedirect,
+} from "@convex-dev/auth/nextjs/server";
 
-// Auth middleware disabled — using demo mode per project requirements.
-// All routes are accessible without authentication.
-export async function middleware(request: NextRequest) {
-  return NextResponse.next()
-}
+const isPublicRoute = createRouteMatcher(["/login", "/registro", "/recuperar"]);
+
+export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
+  const isAuth = await convexAuth.isAuthenticated();
+
+  // Redirect unauthenticated users away from protected routes
+  if (!isPublicRoute(request) && !isAuth) {
+    return nextjsMiddlewareRedirect(request, "/login");
+  }
+
+  // Redirect authenticated users away from auth pages
+  if (isPublicRoute(request) && isAuth) {
+    return nextjsMiddlewareRedirect(request, "/dashboard");
+  }
+});
 
 export const config = {
-  matcher: [
-    '/dashboard/:path*',
-    '/login',
-    '/registro',
-  ],
-}
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+};

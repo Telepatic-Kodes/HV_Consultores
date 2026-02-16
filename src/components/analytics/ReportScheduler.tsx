@@ -56,89 +56,13 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
   const [showForm, setShowForm] = useState(false)
   const [editingSchedule, setEditingSchedule] = useState<ReportSchedule | null>(null)
 
-  // Mock data
-  const mockSchedules: ReportSchedule[] = [
-    {
-      id: 'report-1',
-      name: 'Daily Operations Summary',
-      enabled: true,
-      type: 'daily',
-      schedule: {
-        time: '08:00',
-      },
-      recipients: {
-        email: ['ops@example.com', 'manager@example.com'],
-      },
-      dashboards: ['documents', 'queue'],
-      format: 'pdf',
-      includeCharts: true,
-      createdAt: new Date('2026-01-01'),
-      lastSent: new Date('2026-01-11 08:05'),
-    },
-    {
-      id: 'report-2',
-      name: 'Weekly Analytics Report',
-      enabled: true,
-      type: 'weekly',
-      schedule: {
-        time: '09:00',
-        dayOfWeek: 1, // Monday
-      },
-      recipients: {
-        email: ['analytics@example.com', 'director@example.com'],
-        slack: 'https://hooks.slack.com/services/...',
-      },
-      dashboards: ['documents', 'automation', 'team', 'queue'],
-      format: 'excel',
-      includeCharts: true,
-      createdAt: new Date('2025-12-15'),
-      lastSent: new Date('2026-01-06 09:15'),
-    },
-    {
-      id: 'report-3',
-      name: 'Monthly Compliance Report',
-      enabled: true,
-      type: 'monthly',
-      schedule: {
-        time: '10:00',
-        dayOfMonth: 1,
-      },
-      recipients: {
-        email: ['compliance@example.com'],
-      },
-      dashboards: ['compliance'],
-      format: 'pdf',
-      includeCharts: true,
-      createdAt: new Date('2025-11-20'),
-      lastSent: new Date('2026-01-01 10:30'),
-    },
-    {
-      id: 'report-4',
-      name: 'Team Performance (Disabled)',
-      enabled: false,
-      type: 'weekly',
-      schedule: {
-        time: '17:00',
-        dayOfWeek: 5, // Friday
-      },
-      recipients: {
-        email: ['hr@example.com'],
-      },
-      dashboards: ['team'],
-      format: 'html',
-      includeCharts: true,
-      createdAt: new Date('2025-12-01'),
-    },
-  ]
-
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
         setLoading(true)
         setError(null)
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        setSchedules(mockSchedules)
+        // TODO: Fetch real schedules from Convex
+        setSchedules([])
       } catch (err) {
         console.error('Error fetching schedules:', err)
         setError('Failed to load report schedules')

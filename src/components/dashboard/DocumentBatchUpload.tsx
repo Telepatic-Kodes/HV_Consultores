@@ -49,11 +49,14 @@ export function DocumentBatchUpload({ clienteId, onSuccess }: DocumentBatchUploa
           )
         )
 
-        // Convert file to ArrayBuffer
-        const arrayBuffer = await file.arrayBuffer()
+        // Build FormData for each file
+        const formData = new FormData()
+        formData.append('clienteId', clienteId)
+        formData.append('tipoDocumento', 'factura')
+        formData.append('archivo', file)
 
         // Upload
-        const resultado = await cargarDocumento(clienteId, 'factura', arrayBuffer, file.name)
+        const resultado = await cargarDocumento(formData)
 
         if (resultado.success) {
           setUploads((prev) =>

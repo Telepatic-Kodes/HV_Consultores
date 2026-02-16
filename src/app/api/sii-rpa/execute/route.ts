@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // SII RPA Execute API Route
 // POST - Trigger task execution on RPA server
 

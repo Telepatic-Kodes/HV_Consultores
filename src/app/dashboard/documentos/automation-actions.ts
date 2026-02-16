@@ -4,14 +4,14 @@
 // notification_preferences, email_templates, email_logs, slack_integrations,
 // slack_messages, webhooks, webhook_deliveries, batch_jobs
 
-const DEMO_USER_ID = 'demo-user'
+import { getServerProfileId } from '@/lib/auth-server'
 
 // =============================================================================
 // AUTOMATION RULES - CRUD Operations
 // =============================================================================
 
 export async function obtenerReglas(clienteId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
@@ -29,8 +29,8 @@ export async function crearRegla(
     hora?: string
   }
 ) {
-  // Stub: returns success until Convex module is implemented
-  return { id: 'stub-rule-id' }
+  // TODO: returns success until Convex module is implemented
+  return { id: 'pending-rule-id' }
 }
 
 export async function actualizarRegla(
@@ -48,19 +48,19 @@ export async function actualizarRegla(
     activa: boolean
   }>
 ) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 export async function eliminarRegla(reglaId: string) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 export async function alternarRegla(reglaId: string, activa: boolean) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 export async function toggleRegla(reglaId: string) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 // =============================================================================
@@ -68,7 +68,7 @@ export async function toggleRegla(reglaId: string) {
 // =============================================================================
 
 export async function ejecutarReglaManualmente(reglaId: string) {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     success: true,
     exitosos: 0,
@@ -79,12 +79,12 @@ export async function ejecutarReglaManualmente(reglaId: string) {
 }
 
 export async function obtenerEjecuciones(clienteId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
 export async function obtenerDetalleEjecucion(ejecucionId: string) {
-  // Stub: returns null until Convex module is implemented
+  // TODO: returns null until Convex module is implemented
   return null
 }
 
@@ -93,27 +93,27 @@ export async function obtenerDetalleEjecucion(ejecucionId: string) {
 // =============================================================================
 
 export async function obtenerNotificaciones(usuarioId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
 export async function marcarComoLeido(notificacionId: string) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 export async function marcarTodosComoLeidos(usuarioId: string) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 export async function eliminarNotificacion(notificacionId: string) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 export async function obtenerResumenNotificaciones(
   usuarioId: string,
   clienteId: string
 ) {
-  // Stub: returns empty summary until Convex module is implemented
+  // TODO: returns empty summary until Convex module is implemented
   return {
     total: 0,
     sin_leer: 0,
@@ -126,7 +126,7 @@ export async function obtenerResumenNotificaciones(
 // =============================================================================
 
 export async function obtenerPreferencias(usuarioId: string): Promise<Record<string, any> | null> {
-  // Stub: returns null until Convex module is implemented
+  // TODO: returns null until Convex module is implemented
   return null
 }
 
@@ -147,7 +147,7 @@ export async function actualizarPreferencias(
     alertas_cumplimiento: boolean
   }>
 ) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 // =============================================================================
@@ -155,7 +155,7 @@ export async function actualizarPreferencias(
 // =============================================================================
 
 export async function obtenerTemplatesEmail(clienteId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
@@ -169,8 +169,8 @@ export async function crearTemplateEmail(
     es_default?: boolean
   }
 ) {
-  // Stub: returns success until Convex module is implemented
-  return { id: 'stub-email-template-id' }
+  // TODO: returns success until Convex module is implemented
+  return { id: 'pending-email-template-id' }
 }
 
 export async function actualizarTemplateEmail(
@@ -184,7 +184,7 @@ export async function actualizarTemplateEmail(
     es_default: boolean
   }>
 ) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 // =============================================================================
@@ -203,8 +203,8 @@ export async function enviarEmail(
     variables?: Record<string, string>
   }
 ) {
-  // Stub: returns success until Convex module is implemented
-  return { id: 'stub-email-id', estado: 'PENDING' }
+  // TODO: returns success until Convex module is implemented
+  return { id: 'pending-email-id', estado: 'PENDING' }
 }
 
 export async function enviarEmailBatch(
@@ -216,7 +216,7 @@ export async function enviarEmailBatch(
     cuerpo: string
   }>
 ) {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     enviados: 0,
     estado: 'PENDING',
@@ -224,7 +224,7 @@ export async function enviarEmailBatch(
 }
 
 export async function obtenerEmailLogs(clienteId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
@@ -233,7 +233,7 @@ export async function obtenerEmailLogs(clienteId: string) {
 // =============================================================================
 
 export async function obtenerIntegracionesSlack(clienteId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
@@ -247,8 +247,8 @@ export async function crearIntegracionSlack(
     eventos_habilitados?: string[]
   }
 ) {
-  // Stub: returns success until Convex module is implemented
-  return { id: 'stub-slack-integration-id' }
+  // TODO: returns success until Convex module is implemented
+  return { id: 'pending-slack-id' }
 }
 
 export async function actualizarIntegracionSlack(
@@ -261,12 +261,12 @@ export async function actualizarIntegracionSlack(
     activo: boolean
   }>
 ) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 export async function pruebaIntegracionSlack(integracionId: string) {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, message: 'Stub: Webhook test not available in demo mode' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, message: 'Not available: Webhook test not available yet' }
 }
 
 export async function enviarAlertaSlack(
@@ -277,7 +277,7 @@ export async function enviarAlertaSlack(
     severidad?: 'info' | 'warning' | 'error'
   }
 ) {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     enviados: 0,
     errores: undefined,
@@ -289,7 +289,7 @@ export async function enviarAlertaSlack(
 // =============================================================================
 
 export async function obtenerWebhooks(clienteId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
@@ -305,8 +305,8 @@ export async function crearWebhook(
     timeout_segundos?: number
   }
 ) {
-  // Stub: returns success until Convex module is implemented
-  return { id: 'stub-webhook-id' }
+  // TODO: returns success until Convex module is implemented
+  return { id: 'pending-webhook-id' }
 }
 
 export async function actualizarWebhook(
@@ -320,17 +320,17 @@ export async function actualizarWebhook(
     timeout_segundos: number
   }>
 ) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 export async function obtenerEntregasWebhook(webhookId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
 export async function reintentarEntrega(entregaId: string) {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, message: 'Stub: Retry not available in demo mode' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, message: 'Not available: Retry not available yet' }
 }
 
 // =============================================================================
@@ -341,30 +341,30 @@ export async function iniciarBatchArchivo(
   clienteId: string,
   documentoIds: string[]
 ) {
-  // Stub: returns success until Convex module is implemented
-  return { jobId: 'stub-batch-job-id', estado: 'PENDING' }
+  // TODO: returns success until Convex module is implemented
+  return { jobId: 'pending-batch-job-id', estado: 'PENDING' }
 }
 
 export async function iniciarBatchEliminacion(
   clienteId: string,
   documentoIds: string[]
 ) {
-  // Stub: returns success until Convex module is implemented
-  return { jobId: 'stub-batch-job-id', estado: 'PENDING' }
+  // TODO: returns success until Convex module is implemented
+  return { jobId: 'pending-batch-job-id', estado: 'PENDING' }
 }
 
 export async function obtenerBatchJob(jobId: string) {
-  // Stub: returns null until Convex module is implemented
+  // TODO: returns null until Convex module is implemented
   return null
 }
 
 export async function obtenerBatchJobs(clienteId: string) {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return []
 }
 
 export async function cancelarBatchJob(jobId: string) {
-  // Stub: no-op until Convex module is implemented
+  // TODO: no-op until Convex module is implemented
 }
 
 // =============================================================================

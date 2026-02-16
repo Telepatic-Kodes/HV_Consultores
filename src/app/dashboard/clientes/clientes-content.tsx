@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -47,6 +48,7 @@ const regimenes = [
 ]
 
 export function ClientesContent({ clientes, stats, contadores }: ClientesContentProps) {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [filtro, setFiltro] = useState('')
   const [showModal, setShowModal] = useState(false)
@@ -305,7 +307,7 @@ export function ClientesContent({ clientes, stats, contadores }: ClientesContent
                   <TableRow
                     key={cliente.id}
                     className="cursor-pointer"
-                    onClick={() => handleOpenModal(cliente)}
+                    onClick={() => router.push(`/dashboard/clientes/${cliente.id}`)}
                   >
                     <TableCell>
                       <div>

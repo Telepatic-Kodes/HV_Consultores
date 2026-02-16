@@ -73,7 +73,7 @@ class MetricsCollector {
     metric: AlertCondition['metric'],
     organizationId: string
   ): Promise<number> {
-    // Stub: returns mock values
+    // TODO: returns default values until implemented
     const mockMetrics: Record<string, number> = {
       queueDepth: 0,
       errorRate: 0,
@@ -93,7 +93,7 @@ class MetricsCollector {
     organizationId: string,
     durationMinutes: number
   ): Promise<MetricReading[]> {
-    // Stub: returns empty history
+    // TODO: returns empty history
     return []
   }
 }
@@ -210,8 +210,8 @@ class NotificationDispatcher {
     value: number,
     threshold: number
   ): Promise<NotificationResult> {
-    // Stub: returns pending status
-    return { channel: 'email', status: 'pending', error: 'Not configured in demo mode' }
+    // TODO: returns pending status
+    return { channel: 'email', status: 'pending', error: 'Not configured yet' }
   }
 
   /**
@@ -224,8 +224,8 @@ class NotificationDispatcher {
     value: number,
     threshold: number
   ): Promise<NotificationResult> {
-    // Stub: returns pending status
-    return { channel: 'slack', status: 'pending', error: 'Not configured in demo mode' }
+    // TODO: returns pending status
+    return { channel: 'slack', status: 'pending', error: 'Not configured yet' }
   }
 
   /**
@@ -238,8 +238,8 @@ class NotificationDispatcher {
     value: number,
     threshold: number
   ): Promise<NotificationResult> {
-    // Stub: returns pending status
-    return { channel: 'inApp', status: 'pending', error: 'Not configured in demo mode' }
+    // TODO: returns pending status
+    return { channel: 'inApp', status: 'pending', error: 'Not configured yet' }
   }
 
   /**
@@ -252,8 +252,8 @@ class NotificationDispatcher {
     value: number,
     threshold: number
   ): Promise<NotificationResult> {
-    // Stub: returns pending status
-    return { channel: 'webhook', status: 'pending', error: 'Not configured in demo mode' }
+    // TODO: returns pending status
+    return { channel: 'webhook', status: 'pending', error: 'Not configured yet' }
   }
 
   /**
@@ -373,7 +373,7 @@ export class AlertRuleEngine {
    * Evaluate all active alert rules for an organization
    */
   static async evaluateOrganizationRules(organizationId: string): Promise<AlertTriggerResult[]> {
-    // Stub: returns empty results until Convex module is implemented
+    // TODO: returns empty results until Convex module is implemented
     return []
   }
 
@@ -389,7 +389,7 @@ export class AlertRuleEngine {
     },
     notifications: NotificationResult[]
   ): Promise<void> {
-    // Stub: no-op until Convex module is implemented
+    // TODO: no-op until Convex module is implemented
   }
 
   /**

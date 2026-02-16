@@ -52,7 +52,7 @@ export default function AprobacionesPage() {
     setLoading(true)
     try {
       // TODO: Phase 2 - Replace with Convex useQuery for pending approvals
-      // Stub with empty data until Convex documento_aprobaciones table is available
+      // TODO: Implement with Convex documento_aprobaciones table
       setAprobaciones([])
     } finally {
       setLoading(false)

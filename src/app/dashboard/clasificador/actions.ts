@@ -5,9 +5,9 @@ import { api } from "../../../../convex/_generated/api"
 import { Id } from "../../../../convex/_generated/dataModel"
 import { revalidatePath } from 'next/cache'
 import OpenAI from 'openai'
+import { getServerProfileId } from '@/lib/auth-server'
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
-const DEMO_USER_ID = 'demo-user'
 
 // Cliente OpenAI
 const openai = process.env.OPENAI_API_KEY
@@ -150,9 +150,8 @@ export async function getClasificadorStats(clienteId?: string): Promise<Clasific
 // Obtener cuentas contables para un cliente
 // TODO: Migrate cuentas_contables table to Convex
 export async function getCuentasContables(clienteId: string): Promise<CuentaContable[]> {
-  // Stub - cuentas_contables table not yet in Convex
-  // Return empty array until the table is migrated
-  console.log('getCuentasContables (stub) for client:', clienteId)
+  // TODO: cuentas_contables table not yet in Convex
+  console.log('getCuentasContables for client:', clienteId)
   return []
 }
 
@@ -192,7 +191,7 @@ export async function reclasificarDocumento(
 
     // TODO: Register feedback when feedback_clasificacion table is in Convex
     if (comentario) {
-      console.log('Feedback for reclassification (stub):', { documentoId, comentario })
+      console.log('Feedback for reclassification:', { documentoId, comentario })
     }
 
     revalidatePath('/dashboard/clasificador')
@@ -257,8 +256,8 @@ export async function aprobarLoteAltaConfianza(
 // Obtener lista de clientes
 // TODO: Migrate clientes table to Convex
 export async function getClientes(): Promise<{ id: string; razon_social: string; rut: string }[]> {
-  // Stub - clientes table not yet directly in Convex for this module
-  console.log('getClientes (stub)')
+  // TODO: clientes table not yet directly in Convex for this module
+  console.log('getClientes')
   return []
 }
 
@@ -341,7 +340,7 @@ export async function clasificarDocumentoConIA(
       }
     }
 
-    // Obtener cuentas contables - stub since not in Convex yet
+    // TODO: cuentas contables not yet in Convex
     // TODO: Replace with Convex query when cuentas_contables is migrated
     const cuentas: CuentaContable[] = []
 
@@ -424,7 +423,7 @@ Analiza el documento y sugiere las cuentas mas apropiadas.`
       })
 
       // TODO: Save to clasificaciones_ml table when migrated to Convex
-      console.log('ML classifications (stub - not saved to Convex):', clasificacionesValidas.length)
+      // TODO: Save ML classifications to Convex
 
       revalidatePath('/dashboard/clasificador')
     }

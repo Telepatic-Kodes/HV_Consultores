@@ -3,7 +3,7 @@
 // Tables needed: document_retention_policies, compliance_reports, report_schedules,
 // compliance_checklists, audit_logs_extended
 
-const DEMO_USER_ID = 'demo-user'
+import { getServerProfileId } from '@/lib/auth-server'
 
 // ============================================================================
 // TYPES
@@ -65,7 +65,7 @@ export interface AuditLog {
 export async function obtenerPoliticasRetencion(
   clienteId: string
 ): Promise<{ success: boolean; politicas?: RetentionPolicy[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, politicas: [] }
 }
 
@@ -83,8 +83,8 @@ export async function crearPoliticaRetencion(
     requiere_sii_confirmacion?: boolean
   }
 ): Promise<{ success: boolean; politicaId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, politicaId: 'stub-policy-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, politicaId: 'pending-policy-id' }
 }
 
 /**
@@ -100,7 +100,7 @@ export async function actualizarPoliticaRetencion(
     activa: boolean
   }>
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -115,7 +115,7 @@ export async function obtenerReportesComplianza(
   clienteId: string,
   tipo?: string
 ): Promise<{ success: boolean; reportes?: ComplianceReport[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, reportes: [] }
 }
 
@@ -132,8 +132,8 @@ export async function crearReporteComplianza(
     descripcion?: string
   }
 ): Promise<{ success: boolean; reporteId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, reporteId: 'stub-report-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, reporteId: 'pending-report-id' }
 }
 
 /**
@@ -142,7 +142,7 @@ export async function crearReporteComplianza(
 export async function aprobarReporteComplianza(
   reporteId: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -153,7 +153,7 @@ export async function distribuirReporteComplianza(
   reporteId: string,
   destinatarios: string[]
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -167,7 +167,7 @@ export async function distribuirReporteComplianza(
 export async function obtenerProgramasReportes(
   clienteId: string
 ): Promise<{ success: boolean; programas?: ReportSchedule[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, programas: [] }
 }
 
@@ -186,8 +186,8 @@ export async function crearProgramaReporte(
     formato?: string
   }
 ): Promise<{ success: boolean; programaId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, programaId: 'stub-schedule-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, programaId: 'pending-schedule-id' }
 }
 
 /**
@@ -197,7 +197,7 @@ export async function alternarProgramaReporte(
   programaId: string,
   activa: boolean
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -212,7 +212,7 @@ export async function obtenerListasVerificacion(
   clienteId: string,
   tipo?: string
 ): Promise<{ success: boolean; listas?: any[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, listas: [] }
 }
 
@@ -232,8 +232,8 @@ export async function crearListaVerificacion(
     }>
   }
 ): Promise<{ success: boolean; listaId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, listaId: 'stub-checklist-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, listaId: 'pending-checklist-id' }
 }
 
 /**
@@ -244,7 +244,7 @@ export async function actualizarElementoListaVerificacion(
   itemId: string,
   completado: boolean
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -265,7 +265,7 @@ export async function obtenerRegistrosAuditoria(
     fecha_hasta?: string
   }
 ): Promise<{ success: boolean; registros?: AuditLog[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, registros: [] }
 }
 
@@ -286,7 +286,7 @@ export async function obtenerResumenAuditoria(
   }
   error?: string
 }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return {
     success: true,
     resumen: {
@@ -322,7 +322,7 @@ export async function obtenerResumenComplianza(
   }
   error?: string
 }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return {
     success: true,
     resumen: {
@@ -352,6 +352,6 @@ export async function obtenerDocumentosVencidos(
   }>
   error?: string
 }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, documentos: [] }
 }

@@ -3,13 +3,18 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-// TODO: Phase 2 - Replace demo registration with Convex auth (e.g. Clerk or ConvexAuth)
+import { useAuthActions } from '@convex-dev/auth/react'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Mail, Lock, User, AlertCircle, Loader2, CheckCircle, Building2, ArrowRight } from 'lucide-react'
 
 export default function RegistroPage() {
   const router = useRouter()
+  const { signIn } = useAuthActions()
+  const createProfile = useMutation(api.profiles.createMyProfile)
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -37,12 +42,28 @@ export default function RegistroPage() {
     setLoading(true)
 
     try {
-      // Demo mode: simulate successful registration
-      // TODO: Phase 2 - Implement real signup with Convex auth
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      // Create auth account via Convex Auth
+      await signIn("password", {
+        email: formData.email,
+        password: formData.password,
+        name: formData.fullName,
+        flow: "signUp",
+      })
+
+      // Create profile record linked to the auth user
+      await createProfile({ nombre_completo: formData.fullName })
+
       setSuccess(true)
-    } catch (err) {
-      setError('Error al crear la cuenta. Intenta nuevamente.')
+
+      // Redirect to dashboard after brief success message
+      setTimeout(() => router.push('/dashboard'), 1500)
+    } catch (err: any) {
+      const message = err?.message || ''
+      if (message.includes('already exists') || message.includes('duplicate')) {
+        setError('Ya existe una cuenta con este email. Intenta iniciar sesion.')
+      } else {
+        setError('Error al crear la cuenta. Intenta nuevamente.')
+      }
     } finally {
       setLoading(false)
     }
@@ -57,14 +78,8 @@ export default function RegistroPage() {
           </div>
           <h2 className="text-2xl font-semibold text-foreground">Registro Exitoso</h2>
           <p className="mt-3 text-muted-foreground">
-            Tu cuenta ha sido creada. Puedes iniciar sesion con tus credenciales.
+            Tu cuenta ha sido creada. Redirigiendo al dashboard...
           </p>
-          <Button asChild className="mt-8 shadow-executive">
-            <Link href="/login">
-              Ir a Iniciar Sesion
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
         </div>
       </div>
     )

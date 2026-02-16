@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // SII RPA Webhook API Route
 // POST - Receive updates from RPA server
 // Uses Convex bots module to persist job state updates

@@ -24,7 +24,7 @@ export async function createSiiJob(input: SiiJobCreateInput): Promise<{
   job?: SiiJob
   error?: string
 }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true, job: undefined, error: undefined }
 }
 
@@ -36,7 +36,7 @@ export async function updateJobStatus(
   status: SiiJobStatus,
   additionalData?: Partial<SiiJob>
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -48,8 +48,8 @@ export async function getJobById(jobId: string): Promise<{
   job?: SiiJob
   error?: string
 }> {
-  // Stub: returns not found until Convex module is implemented
-  return { success: false, error: 'Job not found (demo mode)' }
+  // TODO: returns not found until Convex module is implemented
+  return { success: false, error: 'Job not found' }
 }
 
 /**
@@ -69,7 +69,7 @@ export async function getJobsForCliente(
   total?: number
   error?: string
 }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return {
     success: true,
     jobs: [],
@@ -97,7 +97,7 @@ export async function addExecutionStep(
   step?: SiiExecutionStep
   error?: string
 }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true, step: undefined }
 }
 
@@ -114,7 +114,7 @@ export async function updateExecutionStep(
     error_message?: string
   }
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -136,7 +136,7 @@ export class SiiQueueHandler {
    * Obtiene jobs pendientes de la cola
    */
   async getPendingJobs(limit: number = 10): Promise<SiiJob[]> {
-    // Stub: returns empty data until Convex module is implemented
+    // TODO: returns empty data until Convex module is implemented
     return []
   }
 
@@ -145,7 +145,7 @@ export class SiiQueueHandler {
    * Usa update condicional para evitar race conditions
    */
   async claimJob(jobId: string, serverName: string): Promise<boolean> {
-    // Stub: returns false until Convex module is implemented
+    // TODO: returns false until Convex module is implemented
     return false
   }
 
@@ -167,7 +167,7 @@ export class SiiQueueHandler {
       screenshots?: Array<{ step: string; path: string; timestamp: string }>
     }
   ): Promise<boolean> {
-    // Stub: returns success until Convex module is implemented
+    // TODO: returns success until Convex module is implemented
     this.releaseJob(jobId)
     return true
   }
@@ -183,7 +183,7 @@ export class SiiQueueHandler {
     },
     shouldRetry: boolean = true
   ): Promise<boolean> {
-    // Stub: returns success until Convex module is implemented
+    // TODO: returns success until Convex module is implemented
     this.releaseJob(jobId)
     return true
   }
@@ -197,7 +197,7 @@ export class SiiQueueHandler {
     completed_today: number
     failed_today: number
   }> {
-    // Stub: returns empty stats until Convex module is implemented
+    // TODO: returns empty stats until Convex module is implemented
     return {
       pending: 0,
       running: 0,

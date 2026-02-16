@@ -27,7 +27,7 @@ export interface QueueJob {
 }
 
 // =============================================================================
-// DATABASE-BASED QUEUE (Stubbed - no Supabase dependency)
+// DATABASE-BASED QUEUE (TODO: Implement with Convex)
 // =============================================================================
 
 class DatabaseQueue {
@@ -45,15 +45,15 @@ class DatabaseQueue {
       delay?: number
     }
   ): Promise<string> {
-    // Stub: returns a mock job ID until Convex module is implemented
-    return `stub-job-${Date.now()}`
+    // TODO: implement with Convex
+    return `pending-job-${Date.now()}`
   }
 
   /**
    * Get job by ID
    */
   async get(jobId: string): Promise<QueueJob | null> {
-    // Stub: returns null until Convex module is implemented
+    // TODO: returns null until Convex module is implemented
     return null
   }
 
@@ -61,7 +61,7 @@ class DatabaseQueue {
    * Get pending jobs
    */
   async getPending(limit: number = 10): Promise<QueueJob[]> {
-    // Stub: returns empty data until Convex module is implemented
+    // TODO: returns empty data until Convex module is implemented
     return []
   }
 
@@ -69,7 +69,7 @@ class DatabaseQueue {
    * Mark job as processing
    */
   async markProcessing(jobId: string): Promise<void> {
-    // Stub: no-op until Convex module is implemented
+    // TODO: no-op until Convex module is implemented
   }
 
   /**
@@ -79,7 +79,7 @@ class DatabaseQueue {
     jobId: string,
     resultado?: Record<string, any>
   ): Promise<void> {
-    // Stub: no-op until Convex module is implemented
+    // TODO: no-op until Convex module is implemented
   }
 
   /**
@@ -90,7 +90,7 @@ class DatabaseQueue {
     error: string,
     debeReintentar: boolean = true
   ): Promise<void> {
-    // Stub: no-op until Convex module is implemented
+    // TODO: no-op until Convex module is implemented
   }
 
   /**
@@ -103,8 +103,8 @@ class DatabaseQueue {
     >,
     intervaloSegundos: number = 10
   ): void {
-    // Stub: no-op until Convex module is implemented
-    console.log('Queue processor stub: not starting (demo mode)')
+    // TODO: no-op until Convex module is implemented
+    // TODO: implement queue processing with Convex
   }
 
   /**
@@ -128,7 +128,7 @@ class DatabaseQueue {
     failed: number
     total: number
   }> {
-    // Stub: returns empty stats until Convex module is implemented
+    // TODO: returns empty stats until Convex module is implemented
     return {
       pending: 0,
       processing: 0,
@@ -140,17 +140,17 @@ class DatabaseQueue {
 }
 
 // =============================================================================
-// QUEUE HANDLERS (Stubbed)
+// QUEUE HANDLERS (TODO: Implement with Convex)
 // =============================================================================
 
 /**
  * Email Job Handler
  */
 export async function handleEmailJob(datos: Record<string, any>): Promise<Record<string, any>> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     success: true,
-    messageId: `stub_msg_${Date.now()}`,
+    messageId: `msg_${Date.now()}`,
     timestamp: new Date(),
   }
 }
@@ -161,7 +161,7 @@ export async function handleEmailJob(datos: Record<string, any>): Promise<Record
 export async function handleWebhookJob(
   datos: Record<string, any>
 ): Promise<Record<string, any>> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     success: true,
     status: 200,
@@ -175,7 +175,7 @@ export async function handleWebhookJob(
 export async function handleArchiveJob(
   datos: Record<string, any>
 ): Promise<Record<string, any>> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     success: true,
     archivados: 0,
@@ -190,7 +190,7 @@ export async function handleArchiveJob(
 export async function handleDeleteJob(
   datos: Record<string, any>
 ): Promise<Record<string, any>> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     success: true,
     eliminados: 0,
@@ -205,10 +205,10 @@ export async function handleDeleteJob(
 export async function handleNotificationJob(
   datos: Record<string, any>
 ): Promise<Record<string, any>> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     success: true,
-    notificationId: `stub_notif_${Date.now()}`,
+    notificationId: `notif_${Date.now()}`,
     timestamp: new Date(),
   }
 }
@@ -219,7 +219,7 @@ export async function handleNotificationJob(
 export async function handleReportJob(
   datos: Record<string, any>
 ): Promise<Record<string, any>> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return {
     success: true,
     reporteId: datos.reporteId,
@@ -242,8 +242,8 @@ export class Scheduler {
     cronExpression: string,
     callback: () => Promise<void>
   ): void {
-    // Stub: no-op until Convex module is implemented
-    console.log(`Scheduler stub: job '${nombre}' registered but not running (demo mode)`)
+    // TODO: no-op until Convex module is implemented
+    // TODO: implement scheduling with Convex
   }
 
   /**

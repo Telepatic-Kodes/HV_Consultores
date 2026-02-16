@@ -3,11 +3,11 @@
 import { ConvexHttpClient } from "convex/browser"
 import { api } from "../../convex/_generated/api"
 import type { Id } from "../../convex/_generated/dataModel"
+import { getServerProfileId, getAuthenticatedConvex } from '@/lib/auth-server'
 
 const convex = process.env.NEXT_PUBLIC_CONVEX_URL
   ? new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
   : null
-const DEMO_USER_ID = 'demo-user' as Id<"profiles">
 
 export interface Notificacion {
   id: string
@@ -28,17 +28,18 @@ export interface NotificacionStats {
 // Obtener notificaciones del usuario
 export async function getNotificaciones(limite: number = 10): Promise<Notificacion[]> {
   if (!convex) {
-    return getNotificacionesDemo()
+    return []
   }
 
   try {
+    const profileId = await getServerProfileId()
     const data = await convex.query(api.notifications.listNotifications, {
-      usuario_id: DEMO_USER_ID,
+      usuario_id: profileId,
       limit: limite,
     })
 
     if (!data || data.length === 0) {
-      return getNotificacionesDemo()
+      return []
     }
 
     return data.map((n: any) => ({
@@ -53,23 +54,24 @@ export async function getNotificaciones(limite: number = 10): Promise<Notificaci
     })) as Notificacion[]
   } catch (error) {
     console.error('Error fetching notifications from Convex:', error)
-    return getNotificacionesDemo()
+    return []
   }
 }
 
 // Obtener estadisticas de notificaciones
 export async function getNotificacionStats(): Promise<NotificacionStats> {
   if (!convex) {
-    return { total: 5, noLeidas: 3 }
+    return { total: 0, noLeidas: 0 }
   }
 
   try {
+    const profileId = await getServerProfileId()
     const result = await convex.query(api.notifications.getUnreadCount, {
-      usuario_id: DEMO_USER_ID,
+      usuario_id: profileId,
     })
 
     const allNotifications = await convex.query(api.notifications.listNotifications, {
-      usuario_id: DEMO_USER_ID,
+      usuario_id: profileId,
     })
 
     return {
@@ -78,14 +80,14 @@ export async function getNotificacionStats(): Promise<NotificacionStats> {
     }
   } catch (error) {
     console.error('Error fetching notification stats from Convex:', error)
-    return { total: 5, noLeidas: 3 }
+    return { total: 0, noLeidas: 0 }
   }
 }
 
 // Marcar notificacion como leida
 export async function marcarComoLeida(notificacionId: string): Promise<{ success: boolean }> {
   if (!convex) {
-    return { success: true } // Demo mode
+    return { success: false }
   }
 
   try {
@@ -106,8 +108,9 @@ export async function marcarTodasComoLeidas(): Promise<{ success: boolean }> {
   }
 
   try {
+    const profileId = await getServerProfileId()
     await convex.mutation(api.notifications.markAllAsRead, {
-      usuario_id: DEMO_USER_ID,
+      usuario_id: profileId,
     })
     return { success: true }
   } catch (error) {
@@ -175,58 +178,3 @@ export async function crearNotificacion(
   }
 }
 
-// Notificaciones demo para modo sin autenticacion
-function getNotificacionesDemo(): Notificacion[] {
-  const now = new Date()
-  return [
-    {
-      id: 'demo-1',
-      usuario_id: 'demo',
-      tipo: 'success',
-      titulo: 'Clasificacion completada',
-      mensaje: '45 documentos clasificados automaticamente con 98% de precision.',
-      leida: false,
-      enlace: '/dashboard/clasificador',
-      created_at: new Date(now.getTime() - 5 * 60 * 1000).toISOString()
-    },
-    {
-      id: 'demo-2',
-      usuario_id: 'demo',
-      tipo: 'warning',
-      titulo: 'F29 pendiente de validacion',
-      mensaje: 'El F29 de Empresa ABC SpA tiene diferencias en IVA.',
-      leida: false,
-      enlace: '/dashboard/f29',
-      created_at: new Date(now.getTime() - 30 * 60 * 1000).toISOString()
-    },
-    {
-      id: 'demo-3',
-      usuario_id: 'demo',
-      tipo: 'info',
-      titulo: 'Bot ejecutado exitosamente',
-      mensaje: 'Descarga de libros completada para 12 empresas.',
-      leida: false,
-      enlace: '/dashboard/bots',
-      created_at: new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: 'demo-4',
-      usuario_id: 'demo',
-      tipo: 'success',
-      titulo: 'Nuevo cliente agregado',
-      mensaje: 'Tech Solutions Ltda. ha sido registrado correctamente.',
-      leida: true,
-      enlace: '/dashboard/clientes',
-      created_at: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: 'demo-5',
-      usuario_id: 'demo',
-      tipo: 'error',
-      titulo: 'Error de conexion SII',
-      mensaje: 'No se pudo conectar al portal del SII. Reintentando...',
-      leida: true,
-      created_at: new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString()
-    }
-  ]
-}

@@ -31,7 +31,7 @@ import {
 export async function aggregateDocumentMetrics(
   filter: AnalyticsFilter
 ): Promise<DocumentMetricsSummary> {
-  // Stub: returns empty metrics until Convex module is implemented
+  // TODO: returns empty metrics until Convex module is implemented
   return getEmptyDocumentMetricsSummary();
 }
 
@@ -58,7 +58,7 @@ function getEmptyDocumentMetricsSummary(): DocumentMetricsSummary {
 export async function aggregateAutomationMetrics(
   filter: AnalyticsFilter
 ): Promise<AutomationMetricsSummary> {
-  // Stub: returns empty metrics until Convex module is implemented
+  // TODO: returns empty metrics until Convex module is implemented
   return getEmptyAutomationMetricsSummary();
 }
 
@@ -86,7 +86,7 @@ function getEmptyAutomationMetricsSummary(): AutomationMetricsSummary {
 export async function aggregateTeamMetrics(
   filter: AnalyticsFilter
 ): Promise<TeamMetricsSummary> {
-  // Stub: returns empty metrics until Convex module is implemented
+  // TODO: returns empty metrics until Convex module is implemented
   return getEmptyTeamMetricsSummary();
 }
 
@@ -117,7 +117,7 @@ function getEmptyTeamMetricsSummary(): TeamMetricsSummary {
 export async function aggregateQueueMetrics(
   filter: AnalyticsFilter
 ): Promise<QueueMetricsSummary> {
-  // Stub: returns empty metrics until Convex module is implemented
+  // TODO: returns empty metrics until Convex module is implemented
   return getEmptyQueueMetricsSummary();
 }
 
@@ -157,7 +157,7 @@ function getEmptyQueueMetricsSummary(): QueueMetricsSummary {
 export async function aggregateComplianceMetrics(
   filter: AnalyticsFilter
 ): Promise<ComplianceMetricsSummary> {
-  // Stub: returns default compliance data until Convex module is implemented
+  // TODO: returns default compliance data until Convex module is implemented
   return {
     overallComplianceStatus: 'compliant',
     overallScore: 100,

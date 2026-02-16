@@ -5,6 +5,7 @@ import {
   useNotificacionesRealtime,
   useBotJobsRealtime,
 } from '@/hooks/use-realtime'
+import { useCurrentUser } from '@/hooks/use-auth'
 
 // Tipos
 export interface RealtimeNotificacion {
@@ -53,8 +54,8 @@ interface RealtimeProviderProps {
 }
 
 export function RealtimeProvider({ children }: RealtimeProviderProps) {
-  // Demo mode — no real auth needed
-  const userId = 'demo-user'
+  const { profile } = useCurrentUser()
+  const userId = profile?._id ? String(profile._id) : null
 
   // Local UI state for toast management
   const [displayedNotifications, setDisplayedNotifications] = useState<RealtimeNotificacion[]>([])

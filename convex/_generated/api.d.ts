@@ -30,6 +30,7 @@ import type * as plantillasProceso from "../plantillasProceso.js";
 import type * as procesos from "../procesos.js";
 import type * as profiles from "../profiles.js";
 import type * as scheduledReports from "../scheduledReports.js";
+import type * as seed from "../seed.js";
 import type * as subscriptions from "../subscriptions.js";
 import type * as tareas from "../tareas.js";
 import type * as templates from "../templates.js";
@@ -63,6 +64,7 @@ declare const fullApi: ApiFromModules<{
   procesos: typeof procesos;
   profiles: typeof profiles;
   scheduledReports: typeof scheduledReports;
+  seed: typeof seed;
   subscriptions: typeof subscriptions;
   tareas: typeof tareas;
   templates: typeof templates;

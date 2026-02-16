@@ -2,7 +2,7 @@
 // TODO: Phase 2 - Implement intelligence/analytics module in Convex
 // Tables needed: template_analytics, smart_suggestions, document_insights, document_classifications
 
-const DEMO_USER_ID = 'demo-user'
+import { getServerProfileId } from '@/lib/auth-server'
 
 // ============================================================================
 // TYPES
@@ -73,7 +73,7 @@ export interface DocumentClassification {
 export async function obtenerAnalisisPlantilla(
   plantillaId: string
 ): Promise<{ success: boolean; analytics?: TemplateAnalytics; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, analytics: undefined }
 }
 
@@ -83,7 +83,7 @@ export async function obtenerAnalisisPlantilla(
 export async function obtenerAnalisisPlantillasCliente(
   clienteId: string
 ): Promise<{ success: boolean; analytics?: TemplateAnalytics[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, analytics: [] }
 }
 
@@ -93,7 +93,7 @@ export async function obtenerAnalisisPlantillasCliente(
 export async function recalcularAnalisisPlantilla(
   plantillaId: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -108,7 +108,7 @@ export async function obtenerPlantillasRecomendadas(
   clienteId: string,
   limite: number = 5
 ): Promise<{ success: boolean; recomendaciones?: any[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, recomendaciones: [] }
 }
 
@@ -119,7 +119,7 @@ export async function obtenerSugerenciasInteligentes(
   clienteId: string,
   tipoSugerencia?: string
 ): Promise<{ success: boolean; sugerencias?: SmartSuggestion[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, sugerencias: [] }
 }
 
@@ -138,8 +138,8 @@ export async function crearSugerenciaInteligente(
     contexto?: Record<string, any>
   }
 ): Promise<{ success: boolean; sugerenciaId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, sugerenciaId: 'stub-suggestion-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, sugerenciaId: 'pending-suggestion-id' }
 }
 
 /**
@@ -150,7 +150,7 @@ export async function responderSugerencia(
   aceptada: boolean,
   retroalimentacion?: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -166,7 +166,7 @@ export async function obtenerInsightsRango(
   fechaInicio: string,
   fechaFin: string
 ): Promise<{ success: boolean; insights?: DocumentInsight[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, insights: [] }
 }
 
@@ -176,7 +176,7 @@ export async function obtenerInsightsRango(
 export async function obtenerInsightsMes(
   clienteId: string
 ): Promise<{ success: boolean; insight?: DocumentInsight; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, insight: undefined }
 }
 
@@ -186,7 +186,7 @@ export async function obtenerInsightsMes(
 export async function obtenerInsights30Dias(
   clienteId: string
 ): Promise<{ success: boolean; insights?: DocumentInsight[]; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, insights: [] }
 }
 
@@ -200,7 +200,7 @@ export async function obtenerInsights30Dias(
 export async function obtenerClasificacionDocumento(
   documentoId: string
 ): Promise<{ success: boolean; clasificacion?: DocumentClassification; error?: string }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, clasificacion: undefined }
 }
 
@@ -222,8 +222,8 @@ export async function crearClasificacionDocumento(
     probabilidades?: Record<string, any>
   }
 ): Promise<{ success: boolean; clasificacionId?: string; error?: string }> {
-  // Stub: returns success until Convex module is implemented
-  return { success: true, clasificacionId: 'stub-classification-id' }
+  // TODO: returns success until Convex module is implemented
+  return { success: true, clasificacionId: 'pending-classification-id' }
 }
 
 /**
@@ -234,7 +234,7 @@ export async function actualizarClasificacionConFeedback(
   tipo_real: string,
   retroalimentacion?: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Stub: returns success until Convex module is implemented
+  // TODO: returns success until Convex module is implemented
   return { success: true }
 }
 
@@ -259,7 +259,7 @@ export async function obtenerResumenEstadisticas(
   }
   error?: string
 }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return {
     success: true,
     estadisticas: {
@@ -284,6 +284,6 @@ export async function obtenerTiposDocumentosTendencia(
   tendencias?: Array<{ tipo: string; count: number; crecimiento: number }>
   error?: string
 }> {
-  // Stub: returns empty data until Convex module is implemented
+  // TODO: returns empty data until Convex module is implemented
   return { success: true, tendencias: [] }
 }

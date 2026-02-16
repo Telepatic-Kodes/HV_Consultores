@@ -6,8 +6,9 @@ import { Id } from "../../../../convex/_generated/dataModel"
 import { revalidatePath } from 'next/cache'
 import { generarRespuestaOpenAI, isOpenAIConfigured, type ChatMessage } from '@/lib/openai'
 
+import { getServerProfileId } from '@/lib/auth-server'
+
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
-const DEMO_USER_ID = 'demo-user'
 
 type ChatSesion = {
   id: string
@@ -43,8 +44,9 @@ export interface MensajeConFuentes extends ChatMensaje {
 // Obtener sesiones del usuario
 export async function getSesiones(): Promise<SesionConMensajes[]> {
   try {
+    const profileId = await getServerProfileId()
     const data = await convex.query(api.chat.listChatSesiones, {
-      usuario_id: DEMO_USER_ID as Id<"profiles">,
+      usuario_id: profileId,
       activa: true,
     })
 
@@ -92,7 +94,7 @@ export async function getSesiones(): Promise<SesionConMensajes[]> {
 // Obtener o crear sesion activa
 export async function getOrCreateSesion(sesionId?: string): Promise<SesionConMensajes | null> {
   // Si hay sesionId, intentar obtenerla
-  if (sesionId && sesionId !== 'demo-session') {
+  if (sesionId) {
     try {
       const data = await convex.query(api.chat.getChatSesion, {
         id: sesionId as Id<"chat_sesiones">,
@@ -131,34 +133,11 @@ export async function getOrCreateSesion(sesionId?: string): Promise<SesionConMen
     }
   }
 
-  // Si es sesion demo o no hay Convex URL
-  if (sesionId === 'demo-session' || !process.env.NEXT_PUBLIC_CONVEX_URL) {
-    return {
-      id: 'demo-session',
-      usuario_id: 'demo',
-      titulo: 'Sesion de demostracion',
-      activa: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      mensajes: [{
-        id: 'welcome-msg',
-        sesion_id: 'demo-session',
-        rol: 'assistant',
-        contenido: '!Hola! Soy HV-Chat, tu asistente de inteligencia artificial para consultas contables y tributarias chilenas. Puedo ayudarte con:\n\n- Normativa del SII\n- Formularios F29 y F22\n- Regimen tributario (14A, 14D)\n- IVA, PPM y retenciones\n- Plazos y procedimientos\n\n**Modo Demo**: Inicia sesion para guardar tus conversaciones.\n\nEn que puedo ayudarte hoy?',
-        created_at: new Date().toISOString(),
-        fuentes: null,
-        tokens_input: null,
-        tokens_output: null,
-        modelo_usado: null,
-        latencia_ms: null,
-      }],
-    }
-  }
-
   // Crear nueva sesion para usuario
   try {
+    const profileId = await getServerProfileId()
     const nuevaSesionId = await convex.mutation(api.chat.createChatSesion, {
-      usuario_id: DEMO_USER_ID as Id<"profiles">,
+      usuario_id: profileId,
       titulo: 'Nueva conversacion',
     })
 
@@ -171,7 +150,7 @@ export async function getOrCreateSesion(sesionId?: string): Promise<SesionConMen
 
     return {
       id: nuevaSesionId as string,
-      usuario_id: DEMO_USER_ID,
+      usuario_id: profileId as any as string,
       titulo: 'Nueva conversacion',
       activa: true,
       created_at: new Date().toISOString(),
@@ -180,27 +159,7 @@ export async function getOrCreateSesion(sesionId?: string): Promise<SesionConMen
     }
   } catch (error) {
     console.error('Error creating sesion:', error)
-    // Retornar sesion demo como fallback
-    return {
-      id: 'demo-session',
-      usuario_id: DEMO_USER_ID,
-      titulo: 'Sesion temporal',
-      activa: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      mensajes: [{
-        id: 'welcome-msg',
-        sesion_id: 'demo-session',
-        rol: 'assistant',
-        contenido: '!Hola! Soy HV-Chat, tu asistente para consultas contables y tributarias.\n\nEn que puedo ayudarte hoy?',
-        created_at: new Date().toISOString(),
-        fuentes: null,
-        tokens_input: null,
-        tokens_output: null,
-        modelo_usado: null,
-        latencia_ms: null,
-      }],
-    }
+    return null
   }
 }
 
@@ -209,47 +168,8 @@ export async function enviarMensaje(
   sesionId: string,
   contenido: string
 ): Promise<{ success: boolean; respuesta?: ChatMensaje; error?: string }> {
-  // Basic knowledge for IA context (no Supabase RAG)
+  // Basic knowledge for IA context
   const conocimiento: { titulo: string; contenido: string; categoria: string }[] = []
-
-  // Si es sesion demo, solo generar respuesta sin guardar en DB
-  if (sesionId === 'demo-session') {
-    try {
-      const respuestaData = await generarRespuestaIA(contenido, [], conocimiento)
-
-      const respuestaDemo: ChatMensaje = {
-        id: `demo-${Date.now()}`,
-        sesion_id: 'demo-session',
-        rol: 'assistant',
-        contenido: respuestaData.texto,
-        fuentes: respuestaData.fuentes as any,
-        created_at: new Date().toISOString(),
-        tokens_input: respuestaData.tokens_input,
-        tokens_output: respuestaData.tokens_output,
-        modelo_usado: respuestaData.modelo,
-        latencia_ms: respuestaData.latencia_ms,
-      }
-
-      return { success: true, respuesta: respuestaDemo }
-    } catch (error) {
-      console.error('Error generando respuesta demo:', error)
-      // Fallback a respuestas predefinidas
-      const respuestaFallback = generarRespuestaFallback(contenido, conocimiento)
-      const respuestaDemo: ChatMensaje = {
-        id: `demo-${Date.now()}`,
-        sesion_id: 'demo-session',
-        rol: 'assistant',
-        contenido: respuestaFallback.texto,
-        fuentes: respuestaFallback.fuentes as any,
-        created_at: new Date().toISOString(),
-        tokens_input: null,
-        tokens_output: null,
-        modelo_usado: 'hv-chat-fallback',
-        latencia_ms: null,
-      }
-      return { success: true, respuesta: respuestaDemo }
-    }
-  }
 
   try {
     // Guardar mensaje del usuario via Convex
@@ -273,29 +193,7 @@ export async function enviarMensaje(
       }))
 
     // Generar respuesta con IA
-    let respuestaData: {
-      texto: string
-      fuentes: { titulo: string; contenido: string }[]
-      modelo: string
-      tokens_input: number | null
-      tokens_output: number | null
-      latencia_ms: number | null
-    }
-
-    try {
-      respuestaData = await generarRespuestaIA(contenido, historialFormateado, conocimiento)
-    } catch (error) {
-      console.error('Error generando respuesta IA:', error)
-      // Fallback a respuestas predefinidas
-      const fallback = generarRespuestaFallback(contenido, conocimiento)
-      respuestaData = {
-        ...fallback,
-        modelo: 'hv-chat-fallback',
-        tokens_input: null,
-        tokens_output: null,
-        latencia_ms: null,
-      }
-    }
+    const respuestaData = await generarRespuestaIA(contenido, historialFormateado, conocimiento)
 
     // Guardar respuesta del asistente via Convex
     const respuestaId = await convex.mutation(api.chat.sendChatMensaje, {
@@ -356,17 +254,8 @@ async function generarRespuestaIA(
   tokens_output: number | null
   latencia_ms: number | null
 }> {
-  // Verificar si OpenAI esta configurado
   if (!isOpenAIConfigured()) {
-    console.log('OpenAI no configurado, usando respuestas predefinidas')
-    const fallback = generarRespuestaFallback(pregunta, conocimientoBasico)
-    return {
-      ...fallback,
-      modelo: 'hv-chat-local',
-      tokens_input: null,
-      tokens_output: null,
-      latencia_ms: null,
-    }
+    throw new Error('OpenAI no esta configurado. Configura OPENAI_API_KEY para usar el chat.')
   }
 
   // Use the basic knowledge passed in (no Supabase RAG)
@@ -385,135 +274,13 @@ async function generarRespuestaIA(
   }
 }
 
-// Funcion de fallback para generar respuestas predefinidas (cuando OpenAI no esta disponible)
-function generarRespuestaFallback(
-  pregunta: string,
-  conocimiento: { titulo: string; contenido: string; categoria: string }[]
-): { texto: string; fuentes: any[] } {
-  const preguntaLower = pregunta.toLowerCase()
-
-  // Respuestas predefinidas basadas en palabras clave
-  if (preguntaLower.includes('f29') || preguntaLower.includes('formulario 29')) {
-    return {
-      texto: `El Formulario 29 es la declaracion mensual de IVA y otros impuestos ante el SII. Contiene:
-
-**Debito Fiscal (Codigo 89):** IVA de tus ventas
-**Credito Fiscal (Codigo 538):** IVA de tus compras
-**PPM (Codigo 563):** Pagos Provisionales Mensuales
-
-**Plazos de declaracion:**
-- Contribuyentes con factura electronica: hasta el dia 20
-- Otros contribuyentes: hasta el dia 12
-
-**Importante:** Si tienes credito fiscal mayor al debito, el remanente se acumula para el proximo periodo, actualizado por IPC.`,
-      fuentes: [
-        { titulo: 'Circular SII N 42', contenido: 'Instrucciones sobre F29' },
-        { titulo: 'Manual F29 SII', contenido: 'Procedimientos de declaracion' },
-      ],
-    }
-  }
-
-  if (preguntaLower.includes('ppm') || preguntaLower.includes('pago provisional')) {
-    return {
-      texto: `Los **Pagos Provisionales Mensuales (PPM)** son anticipos del Impuesto a la Renta que deben realizar las empresas.
-
-**Calculo:**
-PPM = Ingresos Brutos x Tasa PPM
-
-**Tasas comunes:**
-- Regimen General: Variable segun resultado anterior
-- Regimen 14D N3: 0.25%
-- Regimen 14D N8: Exento de PPM
-
-**Declaracion:** Se declaran mensualmente en el F29, codigo 563.
-
-**Creditos:** Los PPM pagados se imputan contra el Impuesto de Primera Categoria en la declaracion anual (F22).`,
-      fuentes: [
-        { titulo: 'Art. 84 LIR', contenido: 'Normas sobre PPM' },
-      ],
-    }
-  }
-
-  if (preguntaLower.includes('14d') || preguntaLower.includes('regimen') || preguntaLower.includes('pyme')) {
-    return {
-      texto: `Los regimenes tributarios del articulo 14 de la LIR son:
-
-**14A - Regimen General:**
-- Tributacion completa
-- Credito por IDPC al 65%
-- Sin limites de ventas
-
-**14D N3 - Pro Pyme General:**
-- Hasta 75.000 UF de ventas anuales
-- Tributacion sobre base devengada
-- PPM reducido (0.25%)
-
-**14D N8 - Pro Pyme Transparente:**
-- Hasta 75.000 UF de ventas
-- Sin tributacion a nivel de empresa
-- Socios tributan directamente
-- Exento de PPM
-
-**Recomendacion:** Para determinar el regimen optimo, analiza el nivel de retiros vs utilidades retenidas.`,
-      fuentes: [
-        { titulo: 'Art. 14 LIR', contenido: 'Regimenes tributarios' },
-        { titulo: 'Circular 62/2020', contenido: 'Reforma tributaria' },
-      ],
-    }
-  }
-
-  if (preguntaLower.includes('iva') || preguntaLower.includes('impuesto al valor')) {
-    return {
-      texto: `El **IVA (Impuesto al Valor Agregado)** en Chile:
-
-**Tasa:** 19% sobre el valor neto
-
-**Calculo:**
-- IVA Debito: 19% de tus ventas afectas
-- IVA Credito: 19% de tus compras afectas
-- IVA a Pagar = Debito - Credito
-
-**Operaciones exentas comunes:**
-- Exportaciones
-- Transporte internacional
-- Intereses financieros
-- Arriendos de inmuebles sin muebles
-
-**Documentos:**
-- Factura electronica (afecta)
-- Factura exenta
-- Boleta electronica
-- Nota de credito/debito`,
-      fuentes: [
-        { titulo: 'DL 825', contenido: 'Ley del IVA' },
-      ],
-    }
-  }
-
-  // Respuesta generica
-  return {
-    texto: `Gracias por tu consulta. Para darte una respuesta mas precisa, podrias especificar si tu pregunta esta relacionada con:
-
-1. **Declaraciones mensuales** (F29, IVA, PPM)
-2. **Declaracion anual** (F22, Renta)
-3. **Regimen tributario** (14A, 14D, Pro Pyme)
-4. **Documentos tributarios** (Facturas, Boletas)
-5. **Otro tema contable/tributario**
-
-Tambien puedo ayudarte con consultas sobre la normativa del SII, plazos, y procedimientos especificos.`,
-    fuentes: [],
-  }
-}
-
 // Dar feedback a un mensaje
 export async function darFeedback(
   mensajeId: string,
   rating: 1 | 5,
   comentario?: string
 ): Promise<{ success: boolean }> {
-  // TODO: Implement chat feedback in Convex when available
-  // For now, just return success in demo mode
-  console.log('Feedback received (demo mode):', { mensajeId, rating, comentario })
+  // TODO: Implement chat feedback in Convex
   return { success: true }
 }
 
@@ -528,6 +295,6 @@ export async function eliminarSesion(sesionId: string): Promise<{ success: boole
     return { success: true }
   } catch (error) {
     console.error('Error deleting session:', error)
-    return { success: true } // Return true anyway for demo mode
+    return { success: false }
   }
 }

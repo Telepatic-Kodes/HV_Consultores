@@ -54,87 +54,13 @@ export const AlertRulesManager: React.FC<AlertRulesManagerProps> = ({
   const [showForm, setShowForm] = useState(false)
   const [editingRule, setEditingRule] = useState<AlertRule | null>(null)
 
-  // Mock data for initial load
-  const mockRules: AlertRule[] = [
-    {
-      id: 'rule-1',
-      name: 'High Queue Depth Alert',
-      enabled: true,
-      condition: {
-        metric: 'queueDepth',
-        operator: '>',
-        threshold: 500,
-        duration: 5,
-      },
-      actions: {
-        email: ['admin@example.com'],
-        slack: 'https://hooks.slack.com/services/...',
-        inApp: true,
-      },
-      createdAt: new Date('2026-01-05'),
-      lastTriggered: new Date('2026-01-10 14:30'),
-    },
-    {
-      id: 'rule-2',
-      name: 'High Error Rate',
-      enabled: true,
-      condition: {
-        metric: 'errorRate',
-        operator: '>',
-        threshold: 5,
-        duration: 10,
-      },
-      actions: {
-        email: ['admin@example.com', 'ops@example.com'],
-        inApp: true,
-      },
-      createdAt: new Date('2026-01-03'),
-      lastTriggered: new Date('2026-01-08 09:15'),
-    },
-    {
-      id: 'rule-3',
-      name: 'Compliance Violation Detected',
-      enabled: true,
-      condition: {
-        metric: 'complianceScore',
-        operator: '<',
-        threshold: 80,
-      },
-      actions: {
-        email: ['compliance@example.com'],
-        inApp: true,
-      },
-      createdAt: new Date('2026-01-01'),
-      lastTriggered: new Date('2026-01-09 11:00'),
-    },
-    {
-      id: 'rule-4',
-      name: 'CPU Usage Critical',
-      enabled: false,
-      condition: {
-        metric: 'cpuUsage',
-        operator: '>',
-        threshold: 90,
-        duration: 2,
-      },
-      actions: {
-        email: ['devops@example.com'],
-        slack: 'https://hooks.slack.com/services/...',
-        webhook: 'https://example.com/webhooks/alerts',
-        inApp: true,
-      },
-      createdAt: new Date('2025-12-28'),
-    },
-  ]
-
   useEffect(() => {
     const fetchRules = async () => {
       try {
         setLoading(true)
         setError(null)
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        setRules(mockRules)
+        // TODO: Fetch real alert rules from Convex
+        setRules([])
       } catch (err) {
         console.error('Error fetching rules:', err)
         setError('Failed to load alert rules')

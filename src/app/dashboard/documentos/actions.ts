@@ -81,46 +81,51 @@ function calcularHashArchivo(buffer: Buffer): string {
   return crypto.createHash('sha256').update(buffer).digest('hex')
 }
 
-// Cargar documento (migrado a Convex)
+// Cargar documento (migrado a Convex) — accepts FormData for proper serialization
 export async function cargarDocumento(
-  clienteId: string,
-  tipoDocumento: string,
-  archivoBytes: ArrayBuffer,
-  nombreArchivo: string,
-  metadatos?: {
-    folioDocumento?: string
-    fechaDocumento?: string
-    montoTotal?: number
-  }
+  formData: FormData
 ): Promise<{ success: boolean; documentoId?: string; error?: string }> {
   try {
-    // Convert ArrayBuffer to Buffer
-    const buffer = Buffer.from(archivoBytes)
-    const hashArchivo = calcularHashArchivo(buffer)
+    const clienteId = formData.get('clienteId') as string
+    const tipoDocumento = formData.get('tipoDocumento') as string
+    const archivo = formData.get('archivo') as File | null
+    const folioDocumento = formData.get('folioDocumento') as string | undefined
+    const fechaDocumento = formData.get('fechaDocumento') as string | undefined
+    const montoTotalStr = formData.get('montoTotal') as string | undefined
+
+    if (!clienteId) {
+      return { success: false, error: 'Debes seleccionar un cliente' }
+    }
+    if (!archivo || !(archivo instanceof File)) {
+      return { success: false, error: 'No se recibió el archivo' }
+    }
 
     // Validate file
     const validacion = validarArchivo({
-      name: nombreArchivo,
-      size: buffer.length,
-      type: 'application/pdf',
+      name: archivo.name,
+      size: archivo.size,
+      type: archivo.type || 'application/pdf',
     })
 
     if (!validacion.valido) {
       return { success: false, error: validacion.error }
     }
 
+    // Read bytes for hash
+    const buffer = Buffer.from(await archivo.arrayBuffer())
+    const hashArchivo = calcularHashArchivo(buffer)
+
     if (!convex) throw new Error('Convex client not initialized')
-    // Create document via Convex (simplified - document_cargas table not in current schema)
-    // For now, create as a regular documento
+
     const documentId = await convex.mutation(api.documents.createDocument, {
-      cliente_id: clienteId as any, // Convex ID type
+      cliente_id: clienteId as any,
       tipo_documento: tipoDocumento,
-      folio: metadatos?.folioDocumento || `AUTO-${Date.now()}`,
-      periodo: new Date().toISOString().substring(0, 7), // YYYY-MM
-      fecha_emision: metadatos?.fechaDocumento || new Date().toISOString().split('T')[0],
-      rut_emisor: '00000000-0', // Placeholder
+      folio: folioDocumento || `AUTO-${Date.now()}`,
+      periodo: new Date().toISOString().substring(0, 7),
+      fecha_emision: fechaDocumento || new Date().toISOString().split('T')[0],
+      rut_emisor: '00000000-0',
       es_compra: true,
-      monto_total: metadatos?.montoTotal,
+      monto_total: montoTotalStr ? parseFloat(montoTotalStr) : undefined,
     })
 
     revalidatePath('/dashboard/documentos')
