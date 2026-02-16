@@ -151,7 +151,7 @@ export function NewClientOnboarding() {
     if (cuentaData && clienteId) {
       try {
         await createBankAccount({
-          clienteId: clienteId as any,
+          cliente_id: clienteId as any,
           banco: cuentaData.banco as any,
           tipo_cuenta: cuentaData.tipo_cuenta as any,
           numero_cuenta: cuentaData.numero_cuenta,
@@ -171,10 +171,10 @@ export function NewClientOnboarding() {
     if (credData && clienteId) {
       try {
         await createCredencial({
-          clienteId: clienteId as any,
+          cliente_id: clienteId as any,
           portal: 'SII_MIPYME',
-          usuario: credData.rut_usuario,
-          password: credData.clave,
+          usuario_encriptado: credData.rut_usuario,
+          password_encriptado: credData.clave,
         })
       } catch (err) {
         console.error('Error creating credentials:', err)

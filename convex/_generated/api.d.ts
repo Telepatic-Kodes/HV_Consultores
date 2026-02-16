@@ -16,6 +16,7 @@ import type * as banks from "../banks.js";
 import type * as bots from "../bots.js";
 import type * as chat from "../chat.js";
 import type * as clients from "../clients.js";
+import type * as credenciales from "../credenciales.js";
 import type * as currency from "../currency.js";
 import type * as documents from "../documents.js";
 import type * as f29 from "../f29.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   bots: typeof bots;
   chat: typeof chat;
   clients: typeof clients;
+  credenciales: typeof credenciales;
   currency: typeof currency;
   documents: typeof documents;
   f29: typeof f29;
