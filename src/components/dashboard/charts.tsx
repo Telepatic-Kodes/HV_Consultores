@@ -5,17 +5,13 @@ import {
   Area,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { BentoCard } from './BentoCard'
 import type {
   DocumentosPorDia,
   DocumentosPorTipo,
@@ -36,17 +32,15 @@ const COLORS = {
   gold: '#b8860b',         // Executive Gold
 }
 
-const PIE_COLORS = ['#0f3460', '#1a5091', '#059669', '#d97706', '#6d28d9']
-
 // Grafico de Documentos por Dia (Area)
 export function DocumentosPorDiaChart({ data }: { data: DocumentosPorDia[] }) {
   return (
-    <Card className="border-border/50 shadow-executive">
-      <CardHeader className="pb-2">
+    <BentoCard noPadding>
+      <div className="px-5 pt-5 pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-base">Documentos - Ultimos 7 dias</CardTitle>
-            <CardDescription className="text-xs mt-0.5">Recibidos vs clasificados</CardDescription>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Documentos - Ultimos 7 dias</p>
+            <p className="text-[10px] text-muted-foreground/70 mt-0.5">Recibidos vs clasificados</p>
           </div>
           <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider">
             <span className="flex items-center gap-1.5">
@@ -59,8 +53,8 @@ export function DocumentosPorDiaChart({ data }: { data: DocumentosPorDia[] }) {
             </span>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="px-3 pb-4">
         <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -118,46 +112,35 @@ export function DocumentosPorDiaChart({ data }: { data: DocumentosPorDia[] }) {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </BentoCard>
   )
 }
 
-// Grafico de Documentos por Tipo (Pie)
+// Grafico de Documentos por Tipo (Horizontal Bar)
 export function DocumentosPorTipoChart({ data }: { data: DocumentosPorTipo[] }) {
-  // Calculate percentages for labels
-  const total = data.reduce((sum, d) => sum + d.cantidad, 0)
-  const dataWithPercent = data.map(d => ({
-    ...d,
-    porcentaje: total > 0 ? Math.round((d.cantidad / total) * 100) : 0
-  }))
-
   return (
-    <Card className="border-border/50 shadow-executive">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base">Distribucion por Tipo</CardTitle>
-        <CardDescription className="text-xs mt-0.5">Tipos de documentos procesados</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <BentoCard noPadding>
+      <div className="px-5 pt-5 pb-2">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Distribución por Tipo
+        </p>
+        <p className="text-[10px] text-muted-foreground/70 mt-0.5">Tipos de documentos procesados</p>
+      </div>
+      <div className="px-3 pb-4">
         <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={dataWithPercent}
-                cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
-                paddingAngle={2}
-                dataKey="cantidad"
-                nameKey="tipo"
-                label={(props: any) => `${props.porcentaje || 0}%`}
-                labelLine={false}
-              >
-                {dataWithPercent.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                ))}
-              </Pie>
+            <BarChart data={data} layout="vertical" margin={{ top: 5, right: 15, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+              <YAxis
+                type="category"
+                dataKey="tipo"
+                tick={{ fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
+                width={90}
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: 'hsl(var(--card))',
@@ -165,30 +148,26 @@ export function DocumentosPorTipoChart({ data }: { data: DocumentosPorTipo[] }) 
                   borderRadius: '8px',
                   fontSize: '12px',
                 }}
-                formatter={(value: any, name: any) => [`${value} docs`, name]}
+                formatter={(value: any) => [`${value} docs`]}
               />
-              <Legend
-                wrapperStyle={{ fontSize: '11px' }}
-                iconType="circle"
-                iconSize={8}
-              />
-            </PieChart>
+              <Bar dataKey="cantidad" fill={COLORS.primary} radius={[0, 4, 4, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </BentoCard>
   )
 }
 
 // Grafico de F29 por Mes (Barras)
 export function F29PorMesChart({ data }: { data: F29PorMes[] }) {
   return (
-    <Card className="border-border/50 shadow-executive">
-      <CardHeader className="pb-2">
+    <BentoCard noPadding>
+      <div className="px-5 pt-5 pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-base">F29 - Ultimos 6 meses</CardTitle>
-            <CardDescription className="text-xs mt-0.5">Estado de declaraciones</CardDescription>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">F29 - Ultimos 6 meses</p>
+            <p className="text-[10px] text-muted-foreground/70 mt-0.5">Estado de declaraciones</p>
           </div>
           <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider">
             <span className="flex items-center gap-1.5">
@@ -201,8 +180,8 @@ export function F29PorMesChart({ data }: { data: F29PorMes[] }) {
             </span>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="px-3 pb-4">
         <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -241,8 +220,8 @@ export function F29PorMesChart({ data }: { data: F29PorMes[] }) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </BentoCard>
   )
 }
 
@@ -250,12 +229,12 @@ export function F29PorMesChart({ data }: { data: F29PorMes[] }) {
 export function BotsActividadChart({ data }: { data: BotsActividad[] }) {
   if (data.length === 0) {
     return (
-      <Card className="border-border/50 shadow-executive">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Actividad de Bots</CardTitle>
-          <CardDescription className="text-xs mt-0.5">Ejecuciones ultimos 30 dias</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <BentoCard noPadding>
+        <div className="px-5 pt-5 pb-2">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Actividad de Bots</p>
+          <p className="text-[10px] text-muted-foreground/70 mt-0.5">Ejecuciones ultimos 30 dias</p>
+        </div>
+        <div className="px-3 pb-4">
           <div className="h-[200px] flex flex-col items-center justify-center">
             <div className="h-12 w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-3">
               <svg className="h-6 w-6 text-muted-foreground/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -264,18 +243,18 @@ export function BotsActividadChart({ data }: { data: BotsActividad[] }) {
             </div>
             <p className="text-sm text-muted-foreground">No hay datos de actividad</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BentoCard>
     )
   }
 
   return (
-    <Card className="border-border/50 shadow-executive">
-      <CardHeader className="pb-2">
+    <BentoCard noPadding>
+      <div className="px-5 pt-5 pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-base">Actividad de Bots</CardTitle>
-            <CardDescription className="text-xs mt-0.5">Ejecuciones ultimos 30 dias</CardDescription>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Actividad de Bots</p>
+            <p className="text-[10px] text-muted-foreground/70 mt-0.5">Ejecuciones ultimos 30 dias</p>
           </div>
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider">
             <span className="flex items-center gap-1">
@@ -292,8 +271,8 @@ export function BotsActividadChart({ data }: { data: BotsActividad[] }) {
             </span>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="px-3 pb-4">
         <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -325,8 +304,7 @@ export function BotsActividadChart({ data }: { data: BotsActividad[] }) {
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </BentoCard>
   )
 }
-
