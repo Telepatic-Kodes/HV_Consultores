@@ -1,7 +1,6 @@
 "use client";
 
-import { ConvexAuthNextjsProvider } from "@convex-dev/auth/nextjs";
-import { ConvexReactClient } from "convex/react";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { createContext, useContext, ReactNode } from "react";
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
@@ -17,9 +16,9 @@ export function useConvexAvailable() {
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
   return (
     <ConvexAvailableContext.Provider value={!!convexUrl}>
-      <ConvexAuthNextjsProvider client={convex}>
+      <ConvexProvider client={convex}>
         {children}
-      </ConvexAuthNextjsProvider>
+      </ConvexProvider>
     </ConvexAvailableContext.Provider>
   );
 }

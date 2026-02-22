@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -12,7 +12,6 @@ import {
   MessageSquare,
   BarChart3,
   Settings,
-  LogOut,
   ChevronLeft,
   Building2,
   Upload,
@@ -29,7 +28,6 @@ import {
   TrendingUp,
   ClipboardList,
 } from 'lucide-react'
-import { useAuthActions } from '@convex-dev/auth/react'
 import { useSidebar } from './SidebarContext'
 
 const navigation = [
@@ -60,15 +58,7 @@ const bottomNavigation = [
 
 function SidebarContent() {
   const pathname = usePathname()
-  const router = useRouter()
   const { collapsed, toggleCollapsed, setMobileOpen } = useSidebar()
-  const { signOut } = useAuthActions()
-
-  const handleLogout = async () => {
-    await signOut()
-    router.push('/login')
-  }
-
   const handleNavClick = () => {
     // Close mobile sidebar on navigation
     setMobileOpen(false)
@@ -186,19 +176,6 @@ function SidebarContent() {
             )
           })}
 
-          <button
-            onClick={handleLogout}
-            className={cn(
-              'flex w-full items-center rounded-lg transition-all duration-200',
-              collapsed ? 'justify-center p-3' : 'gap-3 px-3 py-2.5',
-              'text-slate-400 hover:bg-red-500/10 hover:text-red-400'
-            )}
-          >
-            <LogOut className="h-5 w-5 shrink-0" />
-            {!collapsed && (
-              <span className="text-sm font-medium">Cerrar Sesion</span>
-            )}
-          </button>
         </div>
       </div>
 

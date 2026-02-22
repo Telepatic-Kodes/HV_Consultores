@@ -474,12 +474,318 @@ export const seedDemoData = mutation({
       await ctx.db.insert("notificaciones", { usuario_id: profileIds[0], ...notifs[i], leida: i > 0, created_at: isoDate(i) });
     }
 
+    // ═══════════════════════════════════════════════════════
+    // 15. CHAT SESIONES + MENSAJES
+    // ═══════════════════════════════════════════════════════
+    const chatSesion1 = await ctx.db.insert("chat_sesiones", {
+      usuario_id: profileIds[0],
+      titulo: "Consulta F29 noviembre",
+      activa: false,
+      created_at: isoDate(15),
+      updated_at: isoDate(15),
+    });
+    const chatSesion2 = await ctx.db.insert("chat_sesiones", {
+      usuario_id: profileIds[1],
+      titulo: "Clasificación documentos",
+      activa: true,
+      created_at: isoDate(3),
+      updated_at: isoDate(3),
+    });
+
+    const chatMsgs1 = [
+      { rol: "user", contenido: "Cuál es el total del débito fiscal de Los Andes para noviembre 2025?", modelo: null, tin: 0, tout: 0 },
+      { rol: "assistant", contenido: "El débito fiscal de Distribuidora Los Andes SpA para noviembre 2025 es de $253.466. Esto se compone de 3 facturas de venta y 1 boleta electrónica.", modelo: "claude-3-5-sonnet", tin: 245, tout: 89 },
+      { rol: "user", contenido: "Y cuánto es el crédito fiscal del mismo período?", modelo: null, tin: 0, tout: 0 },
+      { rol: "assistant", contenido: "El crédito fiscal de noviembre 2025 para Los Andes es de $98.800, proveniente de 2 facturas de compra. El total a pagar de F29 sería $141.326 (débito $253.466 - crédito $98.800 - PPM $13.340).", modelo: "claude-3-5-sonnet", tin: 312, tout: 120 },
+    ];
+    for (const m of chatMsgs1) {
+      await ctx.db.insert("chat_mensajes", {
+        sesion_id: chatSesion1, rol: m.rol, contenido: m.contenido,
+        modelo_usado: m.modelo ?? undefined, tokens_input: m.tin || undefined, tokens_output: m.tout || undefined,
+        created_at: isoDate(15),
+      });
+    }
+
+    const chatMsgs2 = [
+      { rol: "user", contenido: "Cómo se clasifican las facturas de Cementos Bio-Bio?", modelo: null, tin: 0, tout: 0 },
+      { rol: "assistant", contenido: "Las facturas de Cementos Bio-Bio SA (RUT 79.111.222-3) se clasifican como compras de materiales de construcción. Hay una regla de categorización configurada que aplica la categoría 'materiales' automáticamente usando match exacto por RUT.", modelo: "claude-3-5-sonnet", tin: 198, tout: 95 },
+      { rol: "user", contenido: "Puedo cambiar la categoría de esas facturas?", modelo: null, tin: 0, tout: 0 },
+      { rol: "assistant", contenido: "Sí, puedes editar la regla de categorización en Configuración > Reglas. También puedes reclasificar documentos individuales desde la vista de Documentos del cliente Constructora Pacífico. Al reclasificar, el sistema aprende para futuras clasificaciones.", modelo: "claude-3-5-sonnet", tin: 267, tout: 110 },
+    ];
+    for (const m of chatMsgs2) {
+      await ctx.db.insert("chat_mensajes", {
+        sesion_id: chatSesion2, rol: m.rol, contenido: m.contenido,
+        modelo_usado: m.modelo ?? undefined, tokens_input: m.tin || undefined, tokens_output: m.tout || undefined,
+        created_at: isoDate(3),
+      });
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // 16. PLANTILLAS DE PROCESO
+    // ═══════════════════════════════════════════════════════
+    await ctx.db.insert("plantillas_proceso", {
+      nombre: "Contabilidad Mensual",
+      descripcion: "Flujo estándar de cierre contable mensual",
+      tipo: "contabilidad_mensual",
+      tareas_template: [
+        { titulo: "Importar documentos SII", prioridad: "alta", offset_dias_inicio: 0, offset_dias_limite: 5, checklist: [{ texto: "Descargar libro de ventas", completado: false }, { texto: "Descargar libro de compras", completado: false }] },
+        { titulo: "Clasificar documentos", prioridad: "alta", offset_dias_inicio: 3, offset_dias_limite: 8 },
+        { titulo: "Importar cartola bancaria", prioridad: "media", offset_dias_inicio: 5, offset_dias_limite: 10 },
+        { titulo: "Conciliación bancaria", prioridad: "alta", offset_dias_inicio: 8, offset_dias_limite: 15 },
+        { titulo: "Revisión y ajustes", prioridad: "media", offset_dias_inicio: 12, offset_dias_limite: 18 },
+        { titulo: "Cierre del período", prioridad: "urgente", offset_dias_inicio: 15, offset_dias_limite: 20 },
+      ],
+      created_at: isoDate(60),
+      updated_at: isoDate(60),
+    });
+
+    await ctx.db.insert("plantillas_proceso", {
+      nombre: "Declaración F29",
+      descripcion: "Preparación y envío de formulario F29 mensual",
+      tipo: "declaracion_f29",
+      tareas_template: [
+        { titulo: "Verificar documentos del período", prioridad: "alta", offset_dias_inicio: 0, offset_dias_limite: 3 },
+        { titulo: "Calcular débito y crédito fiscal", prioridad: "alta", offset_dias_inicio: 2, offset_dias_limite: 5 },
+        { titulo: "Calcular PPM", prioridad: "media", offset_dias_inicio: 3, offset_dias_limite: 6 },
+        { titulo: "Validar F29", prioridad: "urgente", offset_dias_inicio: 5, offset_dias_limite: 8 },
+        { titulo: "Enviar a SII", prioridad: "urgente", offset_dias_inicio: 7, offset_dias_limite: 12 },
+      ],
+      created_at: isoDate(60),
+      updated_at: isoDate(60),
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // 17. PLANTILLAS PLAN DE CUENTA
+    // ═══════════════════════════════════════════════════════
+    await ctx.db.insert("plantillas_plan_cuenta", {
+      nombre: "Plan PyME Régimen 14D",
+      regimen: "14D",
+      descripcion: "Plan de cuentas simplificado para PyMEs en régimen 14D",
+      cuentas: [
+        { codigo: "1.0", nombre: "Activos", tipo: "activo", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "1.1", nombre: "Activos Corrientes", tipo: "activo", nivel: 2, es_cuenta_mayor: true },
+        { codigo: "1.1.1", nombre: "Caja", tipo: "activo", nivel: 3, cuenta_padre_codigo: "1.1" },
+        { codigo: "1.1.2", nombre: "Banco", tipo: "activo", nivel: 3, cuenta_padre_codigo: "1.1" },
+        { codigo: "1.1.3", nombre: "Clientes", tipo: "activo", nivel: 3, cuenta_padre_codigo: "1.1" },
+        { codigo: "2.0", nombre: "Pasivos", tipo: "pasivo", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "2.1", nombre: "Proveedores", tipo: "pasivo", nivel: 2, cuenta_padre_codigo: "2.0" },
+        { codigo: "2.2", nombre: "IVA Débito Fiscal", tipo: "pasivo", nivel: 2, cuenta_padre_codigo: "2.0" },
+        { codigo: "3.0", nombre: "Patrimonio", tipo: "patrimonio", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "4.0", nombre: "Ingresos", tipo: "resultado", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "4.1", nombre: "Ventas", tipo: "resultado", nivel: 2, cuenta_padre_codigo: "4.0" },
+        { codigo: "5.0", nombre: "Gastos", tipo: "resultado", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "5.1", nombre: "Costo de Ventas", tipo: "resultado", nivel: 2, cuenta_padre_codigo: "5.0" },
+        { codigo: "5.2", nombre: "Remuneraciones", tipo: "resultado", nivel: 2, cuenta_padre_codigo: "5.0" },
+        { codigo: "5.3", nombre: "Gastos Generales", tipo: "resultado", nivel: 2, cuenta_padre_codigo: "5.0" },
+      ],
+      version: 1,
+      activa: true,
+      created_at: isoDate(90),
+      updated_at: isoDate(90),
+    });
+
+    await ctx.db.insert("plantillas_plan_cuenta", {
+      nombre: "Plan Completo Régimen 14A",
+      regimen: "14A",
+      descripcion: "Plan de cuentas completo para empresas en régimen general 14A",
+      cuentas: [
+        { codigo: "1.0.0.0", nombre: "Activos", tipo: "activo", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "1.1.0.0", nombre: "Activos Corrientes", tipo: "activo", nivel: 2, es_cuenta_mayor: true },
+        { codigo: "1.1.1.0", nombre: "Efectivo y Equivalentes", tipo: "activo", nivel: 3, cuenta_padre_codigo: "1.1.0.0" },
+        { codigo: "1.1.2.0", nombre: "Deudores Comerciales", tipo: "activo", nivel: 3, cuenta_padre_codigo: "1.1.0.0" },
+        { codigo: "1.1.3.0", nombre: "Inventarios", tipo: "activo", nivel: 3, cuenta_padre_codigo: "1.1.0.0" },
+        { codigo: "1.2.0.0", nombre: "Activos No Corrientes", tipo: "activo", nivel: 2, es_cuenta_mayor: true },
+        { codigo: "1.2.1.0", nombre: "Propiedad Planta y Equipo", tipo: "activo", nivel: 3, cuenta_padre_codigo: "1.2.0.0" },
+        { codigo: "2.0.0.0", nombre: "Pasivos", tipo: "pasivo", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "2.1.0.0", nombre: "Pasivos Corrientes", tipo: "pasivo", nivel: 2, es_cuenta_mayor: true },
+        { codigo: "2.1.1.0", nombre: "Acreedores Comerciales", tipo: "pasivo", nivel: 3, cuenta_padre_codigo: "2.1.0.0" },
+        { codigo: "2.1.2.0", nombre: "IVA por Pagar", tipo: "pasivo", nivel: 3, cuenta_padre_codigo: "2.1.0.0" },
+        { codigo: "2.1.3.0", nombre: "PPM por Pagar", tipo: "pasivo", nivel: 3, cuenta_padre_codigo: "2.1.0.0" },
+        { codigo: "3.0.0.0", nombre: "Patrimonio", tipo: "patrimonio", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "3.1.0.0", nombre: "Capital Social", tipo: "patrimonio", nivel: 2, cuenta_padre_codigo: "3.0.0.0" },
+        { codigo: "3.2.0.0", nombre: "Resultados Acumulados", tipo: "patrimonio", nivel: 2, cuenta_padre_codigo: "3.0.0.0" },
+        { codigo: "4.0.0.0", nombre: "Ingresos", tipo: "resultado", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "4.1.0.0", nombre: "Ingresos de Actividades Ordinarias", tipo: "resultado", nivel: 2, cuenta_padre_codigo: "4.0.0.0" },
+        { codigo: "5.0.0.0", nombre: "Costos y Gastos", tipo: "resultado", nivel: 1, es_cuenta_mayor: true },
+        { codigo: "5.1.0.0", nombre: "Costo de Ventas", tipo: "resultado", nivel: 2, cuenta_padre_codigo: "5.0.0.0" },
+        { codigo: "5.2.0.0", nombre: "Gastos de Administración", tipo: "resultado", nivel: 2, cuenta_padre_codigo: "5.0.0.0" },
+        { codigo: "5.3.0.0", nombre: "Gastos de Ventas", tipo: "resultado", nivel: 2, cuenta_padre_codigo: "5.0.0.0" },
+      ],
+      version: 1,
+      activa: true,
+      created_at: isoDate(90),
+      updated_at: isoDate(90),
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // 18. CONFIGURACIÓN SISTEMA
+    // ═══════════════════════════════════════════════════════
+    const configs = [
+      { clave: "iva_rate", valor: 0.19, descripcion: "Tasa de IVA vigente (19%)" },
+      { clave: "ppm_default", valor: 0.01, descripcion: "Tasa PPM por defecto (1%)" },
+      { clave: "moneda_base", valor: "CLP", descripcion: "Moneda base del sistema" },
+      { clave: "periodo_actual", valor: "2026-01", descripcion: "Período contable actual" },
+      { clave: "timezone", valor: "America/Santiago", descripcion: "Zona horaria" },
+      { clave: "sii_ambiente", valor: "certificacion", descripcion: "Ambiente SII (certificacion/produccion)" },
+      { clave: "auto_clasificacion", valor: true, descripcion: "Clasificar documentos automáticamente al importar" },
+      { clave: "umbral_conciliacion", valor: 0.80, descripcion: "Umbral mínimo de confianza para auto-match" },
+    ];
+    for (const c of configs) {
+      await ctx.db.insert("configuracion_sistema", {
+        clave: c.clave,
+        valor: c.valor,
+        descripcion: c.descripcion,
+        updated_by: profileIds[0],
+        updated_at: now,
+      });
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // 19. ALERT RULES
+    // ═══════════════════════════════════════════════════════
+    await ctx.db.insert("alert_rules", {
+      name: "Monto transacción alto",
+      enabled: true,
+      metric: "transaction_amount",
+      operator: "gt",
+      threshold: 10000000,
+      in_app: true,
+      email: ["alertas@hvconsultores.cl"],
+      created_at: isoDate(30),
+      updated_at: isoDate(30),
+    });
+    await ctx.db.insert("alert_rules", {
+      name: "Conciliación pendiente > 5 días",
+      enabled: true,
+      metric: "unmatched_days",
+      operator: "gt",
+      threshold: 5,
+      duration: 86400,
+      in_app: true,
+      created_at: isoDate(30),
+      updated_at: isoDate(30),
+    });
+    await ctx.db.insert("alert_rules", {
+      name: "F29 vencimiento próximo",
+      enabled: true,
+      metric: "f29_deadline_days",
+      operator: "lt",
+      threshold: 3,
+      in_app: true,
+      email: ["contabilidad@hvconsultores.cl"],
+      created_at: isoDate(30),
+      updated_at: isoDate(30),
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // 20. SCHEDULED REPORTS
+    // ═══════════════════════════════════════════════════════
+    await ctx.db.insert("scheduled_reports", {
+      name: "Resumen Semanal",
+      enabled: true,
+      type: "weekly",
+      schedule_time: "08:00",
+      schedule_day_of_week: 1,
+      email: ["carlos@hvconsultores.cl"],
+      dashboards: ["overview", "conciliation"],
+      format: "pdf",
+      include_charts: true,
+      last_sent: isoDate(7),
+      created_at: isoDate(30),
+      updated_at: isoDate(7),
+    });
+    await ctx.db.insert("scheduled_reports", {
+      name: "Cierre Mensual",
+      enabled: true,
+      type: "monthly",
+      schedule_time: "09:00",
+      schedule_day_of_month: 20,
+      email: ["carlos@hvconsultores.cl", "patricia@hvconsultores.cl"],
+      dashboards: ["overview", "f29", "conciliation", "anomalies"],
+      format: "excel",
+      include_charts: true,
+      last_sent: isoDate(30),
+      created_at: isoDate(60),
+      updated_at: isoDate(30),
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // 21. PIPELINE RUNS
+    // ═══════════════════════════════════════════════════════
+    await ctx.db.insert("pipeline_runs", {
+      cliente_id: cliente1,
+      periodo: periodo(2026, 1),
+      estado: "completed",
+      paso_actual: 7,
+      total_pasos: 7,
+      resultado: {
+        transacciones_importadas: 20,
+        transacciones_normalizadas: 20,
+        transacciones_categorizadas: 18,
+        transacciones_matched: 13,
+        alertas_generadas: 1,
+        errores: 0,
+      },
+      iniciado_por: profileIds[0],
+      started_at: isoDate(2),
+      completed_at: isoDate(2),
+      created_at: isoDate(2),
+      updated_at: isoDate(2),
+    });
+    await ctx.db.insert("pipeline_runs", {
+      cliente_id: cliente2,
+      periodo: periodo(2026, 1),
+      estado: "categorize",
+      paso_actual: 3,
+      total_pasos: 7,
+      resultado: {
+        transacciones_importadas: 5,
+        transacciones_normalizadas: 5,
+        transacciones_categorizadas: 0,
+      },
+      iniciado_por: profileIds[1],
+      started_at: isoDate(0),
+      created_at: isoDate(0),
+      updated_at: isoDate(0),
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // 22. AUDIT LOGS
+    // ═══════════════════════════════════════════════════════
+    const auditActions = [
+      { accion: "create", tabla: "clientes", desc: "Creó cliente Café Artesanal Sur SPA", days: 30 },
+      { accion: "update", tabla: "documentos", desc: "Aprobó 12 documentos de Los Andes (nov 2025)", days: 20 },
+      { accion: "create", tabla: "f29_calculos", desc: "Generó F29 diciembre 2025 para Pacífico", days: 15 },
+      { accion: "update", tabla: "conciliaciones", desc: "Confirmó 8 conciliaciones de Los Andes", days: 10 },
+      { accion: "update", tabla: "f29_calculos", desc: "Envió F29 nov 2025 de Café Sur al SII", days: 8 },
+      { accion: "create", tabla: "reglas_categorizacion", desc: "Creó regla para Cementos Bio-Bio", days: 5 },
+      { accion: "update", tabla: "bot_definiciones", desc: "Actualizó configuración del Clasificador", days: 2 },
+    ];
+    for (let i = 0; i < auditActions.length; i++) {
+      const a = auditActions[i];
+      await ctx.db.insert("audit_logs", {
+        accion: a.accion,
+        tabla: a.tabla,
+        usuario_id: profileIds[i % profileIds.length],
+        datos_nuevos: { descripcion: a.desc },
+        created_at: isoDate(a.days),
+      });
+    }
+
     return {
       success: true,
       message: "Datos de demostración cargados exitosamente",
       clientes: 3,
       documentos: docSets.reduce((sum, s) => sum + s.docs.length, 0),
       transacciones: txSets.reduce((sum, s) => sum + s.txs.length, 0),
+      chat_sesiones: 2,
+      plantillas_proceso: 2,
+      plantillas_plan_cuenta: 2,
+      configuracion: configs.length,
+      alert_rules: 3,
+      scheduled_reports: 2,
+      pipeline_runs: 2,
+      audit_logs: auditActions.length,
     };
   },
 });
@@ -489,17 +795,37 @@ export const clearDemoData = mutation({
   args: {},
   handler: async (ctx) => {
     const tables = [
+      // Chat & knowledge (depend on profiles)
+      "chat_feedback", "chat_mensajes", "chat_sesiones", "documentos_conocimiento",
+      // Analytics (standalone)
+      "alert_rules", "scheduled_reports",
+      // System config & audit
+      "configuracion_sistema", "audit_logs",
+      // Plantillas (standalone)
+      "plantillas_proceso", "plantillas_plan_cuenta",
+      // Task comments → tasks → processes
       "comentarios_tarea", "tareas", "procesos",
+      // Bots
       "bot_logs", "bot_jobs", "bot_definiciones",
+      // Anomalies, conciliation
       "alertas_anomalias", "conciliaciones", "patrones_conciliacion",
+      // Banking
       "bancos_transacciones", "bancos_cuentas",
+      // F29
       "f29_validaciones", "f29_codigos", "f29_calculos",
-      "clasificaciones_ml", "feedback_clasificacion", "documentos",
+      // ML
+      "clasificaciones_ml", "feedback_clasificacion",
+      // Documents
+      "documentos",
+      // Accounting
       "cuentas_contables", "planes_cuenta",
+      // Other
       "reglas_categorizacion", "credenciales_portales", "tipos_cambio",
       "pipeline_runs", "notificaciones",
+      // Auth / roles
       "user_roles", "roles",
-      "clientes",
+      // Clients & profiles last (many FKs point here)
+      "clientes", "profiles",
     ] as const;
 
     let totalDeleted = 0;

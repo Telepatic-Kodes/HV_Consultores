@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUserId } from "@convex-dev/auth/server";
 
 // ─── Plan Limits ──────────────────────────────────────────
 export const PLAN_LIMITS = {
@@ -18,12 +17,8 @@ export const PLAN_LIMITS = {
 export const getMySubscription = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("by_userId", (q: any) => q.eq("userId", userId))
       .first();
 
     if (!subscription) {
@@ -65,12 +60,8 @@ export const getByStripeCustomerId = query({
 export const canAddClient = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return { allowed: false, reason: "Not authenticated" };
-
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("by_userId", (q: any) => q.eq("userId", userId))
       .first();
 
     // If subscription exists but status is not active/trialing, treat as free plan
@@ -115,12 +106,8 @@ export const canAddClient = query({
 export const canRunBot = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return { allowed: false, reason: "Not authenticated" };
-
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("by_userId", (q: any) => q.eq("userId", userId))
       .first();
 
     // If subscription exists but status is not active/trialing, treat as free plan
@@ -177,12 +164,8 @@ export const canRunBot = query({
 export const getUsageStats = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return null;
-
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("by_userId", (q: any) => q.eq("userId", userId))
       .first();
 
     const plan = subscription?.plan || "free";

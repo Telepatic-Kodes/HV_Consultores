@@ -1,8 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useCurrentUser } from '@/hooks/use-auth'
 import dynamic from 'next/dynamic'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
@@ -60,29 +57,7 @@ interface AnalyticsDashboardPageProps {
 export default function AnalyticsDashboardPage({
   searchParams,
 }: AnalyticsDashboardPageProps) {
-  const { profile, isLoading } = useCurrentUser()
-  const organizationId = profile?._id ? String(profile._id) : null
-  const router = useRouter()
-
-  if (isLoading) {
-    return <LoadingState />
-  }
-
-  if (!organizationId) {
-    return (
-      <div className='space-y-4'>
-        <h1 className='text-3xl font-bold'>Analytics</h1>
-        <Card className='border-destructive'>
-          <CardContent className='pt-6'>
-            <p className='text-sm text-destructive'>
-              Unable to load analytics. Please log in again.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
+  const organizationId = 'default'
   const activeTab = searchParams?.tab || 'documents'
 
   return (

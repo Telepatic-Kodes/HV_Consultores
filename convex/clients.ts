@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { PLAN_LIMITS } from "./subscriptions";
 
 // ─── QUERIES ───────────────────────────────────────────────
@@ -152,32 +151,6 @@ export const createClient = mutation({
     activo: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    // Backend safeguard: verify subscription limits before creating a client
-    const userId = await getAuthUserId(ctx);
-    if (userId) {
-      const subscription = await ctx.db
-        .query("subscriptions")
-        .withIndex("by_userId", (q: any) => q.eq("userId", userId))
-        .first();
-
-      const isActive =
-        !subscription ||
-        subscription.status === "active" ||
-        subscription.status === "trialing";
-
-      const effectivePlan = isActive ? (subscription?.plan || "free") : "free";
-      const limits = PLAN_LIMITS[effectivePlan as keyof typeof PLAN_LIMITS];
-
-      const allClients = await ctx.db.query("clientes").collect();
-      const activeClients = allClients.filter((c) => c.activo !== false).length;
-
-      if (activeClients >= limits.maxClients) {
-        throw new Error(
-          `Límite de clientes alcanzado (${limits.maxClients}). Actualiza tu plan para agregar más.`
-        );
-      }
-    }
-
     const now = new Date().toISOString();
 
     const clientId = await ctx.db.insert("clientes", {
