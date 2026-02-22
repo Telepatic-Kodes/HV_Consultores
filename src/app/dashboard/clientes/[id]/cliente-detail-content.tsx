@@ -42,6 +42,17 @@ function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(amount)
 }
 
+const DOC_TYPE_LABELS: Record<string, string> = {
+  '33': 'Factura', '34': 'Factura Exenta', '39': 'Boleta',
+  '52': 'Guía Despacho', '56': 'N. Débito', '61': 'N. Crédito',
+}
+
+function formatDocName(doc: { tipo_documento?: string; folio?: string; razon_social_emisor?: string; es_compra?: boolean }): string {
+  const tipo = DOC_TYPE_LABELS[doc.tipo_documento ?? ''] ?? `Doc ${doc.tipo_documento}`
+  const folio = doc.folio ? `#${doc.folio}` : ''
+  return `${tipo} ${folio}`.trim()
+}
+
 function StatusBadge({ status, type }: { status: string; type: 'doc' | 'f29' | 'alert' }) {
   const config: Record<string, { class: string; label: string }> = {
     // Documents
@@ -258,7 +269,7 @@ export function ClienteDetailContent({ overview, clienteId }: Props) {
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                      <TableHead>Nombre</TableHead>
+                      <TableHead>Documento</TableHead>
                       <TableHead>Periodo</TableHead>
                       <TableHead>Tipo</TableHead>
                       <TableHead>Estado</TableHead>
@@ -267,7 +278,7 @@ export function ClienteDetailContent({ overview, clienteId }: Props) {
                   <TableBody>
                     {recentDocs.map((doc: any) => (
                       <TableRow key={doc._id}>
-                        <TableCell className="font-medium">{doc.nombre || doc.nombre_archivo || 'Sin nombre'}</TableCell>
+                        <TableCell className="font-medium">{doc.nombre || doc.nombre_archivo || formatDocName(doc)}</TableCell>
                         <TableCell className="text-muted-foreground font-mono text-xs">{doc.periodo || '-'}</TableCell>
                         <TableCell className="text-muted-foreground text-xs">{doc.tipo_documento || '-'}</TableCell>
                         <TableCell><StatusBadge status={doc.status} type="doc" /></TableCell>

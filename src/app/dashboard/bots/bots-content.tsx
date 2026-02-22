@@ -265,7 +265,7 @@ export function BotsContent({ bots, stats, jobsRecientes, clientes }: BotsConten
               <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
                 {jobsRecientes.map((job) => (
                   <div
-                    key={job.id}
+                    key={job._id || job.id}
                     className={`flex items-start gap-3 p-3 rounded-lg border transition-colors ${
                       job.status === 'completado'
                         ? 'bg-success/5 border-success/20'

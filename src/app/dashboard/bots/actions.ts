@@ -136,14 +136,43 @@ export async function getBotStats(): Promise<BotStats> {
 }
 
 export async function getJobsRecientes(limit: number = 20): Promise<BotJobConDetalles[]> {
-  const jobs = await getBotJobs()
-  return (jobs as any[]).slice(0, limit)
-}
-
-export async function getClientesParaBot(): Promise<any[]> {
   try {
     if (!convex) throw new Error('Convex client not initialized')
-    return await convex.query(api.clients.listClientes, {})
+    const [jobs, bots, clientes] = await Promise.all([
+      convex.query(api.bots.listJobs, {}),
+      convex.query(api.bots.listBotDefiniciones, {}),
+      convex.query(api.clients.listClientes, {}),
+    ])
+    const botMap = new Map((bots as any[]).map(b => [b._id, b]))
+    const clienteMap = new Map((clientes as any[]).map(c => [c._id, c]))
+
+    return (jobs as any[]).slice(0, limit).map((job: any) => {
+      const bot = botMap.get(job.bot_id)
+      const cliente = clienteMap.get(job.cliente_id)
+      return {
+        ...job,
+        id: job._id,
+        bot: bot ? { nombre: bot.nombre } : null,
+        bot_nombre: bot?.nombre,
+        cliente: cliente ? { razon_social: cliente.razon_social, rut: cliente.rut } : null,
+        cliente_nombre: cliente?.razon_social,
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching recent jobs:', error)
+    return []
+  }
+}
+
+export async function getClientesParaBot(): Promise<{ id: string; razon_social: string; rut: string }[]> {
+  try {
+    if (!convex) throw new Error('Convex client not initialized')
+    const clientes = await convex.query(api.clients.listClientes, {})
+    return (clientes as any[]).map(c => ({
+      id: c._id,
+      razon_social: c.razon_social,
+      rut: c.rut,
+    }))
   } catch {
     return []
   }
