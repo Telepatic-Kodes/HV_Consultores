@@ -61,10 +61,10 @@ export default function DocumentosPage() {
   const [stats, setStats] = useState<{
     total: number
     pendiente: number
-    subido: number
-    validado: number
-    enviado: number
-    rechazado: number
+    clasificado: number
+    revisado: number
+    aprobado: number
+    exportado: number
   } | null>(null)
 
   // Advanced filters
@@ -135,27 +135,27 @@ export default function DocumentosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Carga de Documentos</h1>
+          <h1 className="text-3xl font-bold">Documentos Tributarios</h1>
           <p className="text-muted-foreground mt-1">
-            Carga y gestiona tus documentos tributarios con integración Nubox
+            Gestiona facturas, boletas y documentos con integración Nubox
           </p>
         </div>
         {clienteId && (
           <div className="flex gap-2">
             <Link href={`/dashboard/documentos/compliance?cliente_id=${clienteId}`}>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
-                Compliance
+                Cumplimiento
               </Button>
             </Link>
             <Link href={`/dashboard/documentos/intelligence?cliente_id=${clienteId}`}>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <Brain className="h-4 w-4" />
-                Intelligence
+                Inteligencia
               </Button>
             </Link>
             <Link href={`/dashboard/documentos/templates?cliente_id=${clienteId}`}>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <LayoutTemplate className="h-4 w-4" />
                 Plantillas
               </Button>
@@ -165,7 +165,7 @@ export default function DocumentosPage() {
       </div>
 
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Total</CardTitle>
@@ -184,26 +184,26 @@ export default function DocumentosPage() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Validado</CardTitle>
+              <CardTitle className="text-sm font-medium">Clasificado</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.validado}</div>
+              <div className="text-2xl font-bold text-blue-600">{stats.clasificado}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Enviado</CardTitle>
+              <CardTitle className="text-sm font-medium">Aprobado</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{stats.enviado}</div>
+              <div className="text-2xl font-bold text-green-600">{stats.aprobado}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Rechazado</CardTitle>
+              <CardTitle className="text-sm font-medium">Exportado</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">{stats.rechazado}</div>
+              <div className="text-2xl font-bold text-purple-600">{stats.exportado}</div>
             </CardContent>
           </Card>
         </div>
@@ -235,12 +235,47 @@ export default function DocumentosPage() {
         </Card>
       )}
 
-      <Tabs defaultValue="upload" className="w-full">
+      <Tabs defaultValue="list" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="list">Documentos ({stats?.total || 0})</TabsTrigger>
           <TabsTrigger value="upload">Cargar Documento</TabsTrigger>
           <TabsTrigger value="batch">Carga en Lote</TabsTrigger>
-          <TabsTrigger value="list">Documentos ({stats?.total || 0})</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="list" className="mt-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Historial de Documentos</CardTitle>
+                <CardDescription>
+                  {documentosFiltrados.length} de {documentos.length} documentos
+                </CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Link href="/dashboard/documentos/analytics">
+                  <Button size="sm" variant="outline">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Estadísticas
+                  </Button>
+                </Link>
+                <DocumentExportMenu documentos={documentosFiltrados} disabled={documentos.length === 0} />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <DocumentAdvancedFilters
+                onFiltersChange={setFilters}
+                onReset={() => setFilters({
+                  searchTerm: '',
+                  estado: 'all',
+                  tipo: 'all',
+                  nuboxOnly: false,
+                })}
+              />
+
+              <DocumentListView documentos={documentosFiltrados} onRefresh={cargarDatos} />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="upload" className="mt-6">
           <DocumentUploadForm clienteId={clienteId || ''} onSuccess={cargarDatos} />
@@ -256,42 +291,6 @@ export default function DocumentosPage() {
             </CardHeader>
             <CardContent>
               <DocumentBatchUpload clienteId={clienteId || ''} onSuccess={cargarDatos} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="list" className="mt-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Historial de Documentos</CardTitle>
-                <CardDescription>
-                  Gestiona y monitorea tus documentos cargados ({documentosFiltrados.length} de {documentos.length})
-                </CardDescription>
-              </div>
-              <div className="flex gap-2">
-                <Link href="/dashboard/documentos/analytics">
-                  <Button size="sm" variant="outline">
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Analytics
-                  </Button>
-                </Link>
-                <DocumentExportMenu documentos={documentosFiltrados} disabled={documentos.length === 0} />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Advanced Filters */}
-              <DocumentAdvancedFilters
-                onFiltersChange={setFilters}
-                onReset={() => setFilters({
-                  searchTerm: '',
-                  estado: 'all',
-                  tipo: 'all',
-                  nuboxOnly: false,
-                })}
-              />
-
-              <DocumentListView documentos={documentosFiltrados} onRefresh={cargarDatos} />
             </CardContent>
           </Card>
         </TabsContent>

@@ -6,17 +6,17 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { obtenerEstadisticasDocumentos } from '@/app/dashboard/documentos/actions'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
-import { Upload, AlertCircle, CheckCircle2, Send, Clock, TrendingUp } from 'lucide-react'
+import { Upload, AlertCircle, CheckCircle2, Send, Clock } from 'lucide-react'
 import { Loader2 } from 'lucide-react'
 
 export function DocumentStatsWidget() {
   const [stats, setStats] = useState<{
     total: number
     pendiente: number
-    subido: number
-    validado: number
-    enviado: number
-    rechazado: number
+    clasificado: number
+    revisado: number
+    aprobado: number
+    exportado: number
   } | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -53,17 +53,17 @@ export function DocumentStatsWidget() {
 
   const chartData = [
     { name: 'Pendiente', value: stats.pendiente, fill: '#FBBF24' },
-    { name: 'Validado', value: stats.validado, fill: '#34D399' },
-    { name: 'Enviado', value: stats.enviado, fill: '#A78BFA' },
-    { name: 'Rechazado', value: stats.rechazado, fill: '#F87171' },
+    { name: 'Clasificado', value: stats.clasificado, fill: '#60A5FA' },
+    { name: 'Aprobado', value: stats.aprobado, fill: '#34D399' },
+    { name: 'Exportado', value: stats.exportado, fill: '#A78BFA' },
   ]
 
+  const procesados = stats.aprobado + stats.exportado
   const successRate =
-    stats.total > 0 ? Math.round((stats.validado + stats.enviado) / stats.total * 100) : 0
+    stats.total > 0 ? Math.round(procesados / stats.total * 100) : 0
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {/* Total Documents */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Documentos</CardTitle>
@@ -75,19 +75,17 @@ export function DocumentStatsWidget() {
         </CardContent>
       </Card>
 
-      {/* Pending */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Pendiente</CardTitle>
+          <CardTitle className="text-sm font-medium">Pendientes</CardTitle>
           <Clock className="h-4 w-4 text-yellow-600" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-yellow-600">{stats.pendiente}</div>
-          <p className="text-xs text-muted-foreground">esperando aprobación</p>
+          <p className="text-xs text-muted-foreground">por clasificar</p>
         </CardContent>
       </Card>
 
-      {/* Success Rate */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Procesados</CardTitle>
@@ -95,23 +93,21 @@ export function DocumentStatsWidget() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-green-600">{successRate}%</div>
-          <p className="text-xs text-muted-foreground">{stats.validado + stats.enviado} documentos</p>
+          <p className="text-xs text-muted-foreground">{procesados} documentos</p>
         </CardContent>
       </Card>
 
-      {/* Rejected */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Rechazados</CardTitle>
-          <AlertCircle className="h-4 w-4 text-red-600" />
+          <CardTitle className="text-sm font-medium">Clasificados</CardTitle>
+          <AlertCircle className="h-4 w-4 text-blue-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-600">{stats.rechazado}</div>
-          <p className="text-xs text-muted-foreground">requieren acción</p>
+          <div className="text-2xl font-bold text-blue-600">{stats.clasificado}</div>
+          <p className="text-xs text-muted-foreground">listos para revisión</p>
         </CardContent>
       </Card>
 
-      {/* Chart */}
       <Card className="md:col-span-2 lg:col-span-4">
         <CardHeader>
           <CardTitle>Distribución de Documentos</CardTitle>
@@ -147,14 +143,13 @@ export function DocumentStatsWidget() {
         </CardContent>
       </Card>
 
-      {/* Action Card */}
       {stats.pendiente > 0 && (
         <Card className="md:col-span-2 lg:col-span-4 bg-blue-50 border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <div>
               <CardTitle className="text-blue-900">Documentos Pendientes</CardTitle>
               <CardDescription className="text-blue-700">
-                {stats.pendiente} documento{stats.pendiente !== 1 ? 's' : ''} esperando aprobación
+                {stats.pendiente} documento{stats.pendiente !== 1 ? 's' : ''} por clasificar
               </CardDescription>
             </div>
             <Link href="/dashboard/documentos/aprobaciones">

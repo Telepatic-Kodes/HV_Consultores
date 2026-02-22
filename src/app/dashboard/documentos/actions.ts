@@ -143,7 +143,20 @@ export async function obtenerDocumentosCargados(clienteId?: string): Promise<any
     const docs = await convex.query(api.documents.listDocuments, {
       clienteId: clienteId as any,
     })
-    return docs
+    return (docs as any[]).map((d: any) => ({
+      id: d._id,
+      cliente_id: d.cliente_id,
+      nombre_archivo: d.nombre_archivo,
+      tipo_documento: d.tipo_documento,
+      folio_documento: d.folio,
+      fecha_documento: d.fecha_emision,
+      monto_total: d.monto_total,
+      estado: d.status ?? 'pendiente',
+      nubox_documento_id: d.nubox_documento_id,
+      nubox_estado: d.nubox_estado,
+      rut_emisor: d.rut_emisor,
+      razon_social_emisor: d.razon_social_emisor,
+    }))
   } catch (error) {
     console.error('Error fetching documentos:', error)
     return []
@@ -216,10 +229,10 @@ export async function rechazarDocumento(
 export async function obtenerEstadisticasDocumentos(clienteId?: string): Promise<{
   total: number
   pendiente: number
-  subido: number
-  validado: number
-  enviado: number
-  rechazado: number
+  clasificado: number
+  revisado: number
+  aprobado: number
+  exportado: number
 }> {
   try {
     if (!convex) throw new Error('Convex client not initialized')
@@ -230,10 +243,10 @@ export async function obtenerEstadisticasDocumentos(clienteId?: string): Promise
     const stats = {
       total: docs.length,
       pendiente: docs.filter(d => d.status === 'pendiente').length,
-      subido: 0, // Not in current schema
-      validado: docs.filter(d => d.status === 'revisado').length,
-      enviado: docs.filter(d => d.status === 'exportado').length,
-      rechazado: 0, // Not in current schema
+      clasificado: docs.filter(d => d.status === 'clasificado').length,
+      revisado: docs.filter(d => d.status === 'revisado').length,
+      aprobado: docs.filter(d => d.status === 'aprobado').length,
+      exportado: docs.filter(d => d.status === 'exportado').length,
     }
 
     return stats
@@ -242,10 +255,10 @@ export async function obtenerEstadisticasDocumentos(clienteId?: string): Promise
     return {
       total: 0,
       pendiente: 0,
-      subido: 0,
-      validado: 0,
-      enviado: 0,
-      rechazado: 0,
+      clasificado: 0,
+      revisado: 0,
+      aprobado: 0,
+      exportado: 0,
     }
   }
 }

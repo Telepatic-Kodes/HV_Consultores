@@ -29,9 +29,31 @@ import { MoreVertical, Send, CheckCircle, XCircle, Loader2 } from 'lucide-react'
 import { enviarDocumentoANubox, obtenerEstadoNubox } from '@/app/dashboard/documentos/nubox-actions'
 import { cambiarEstadoDocumento } from '@/app/dashboard/documentos/actions'
 
+const DOC_TYPE_LABELS: Record<string, string> = {
+  '33': 'Factura Electrónica',
+  '34': 'Factura Exenta',
+  '39': 'Boleta Electrónica',
+  '41': 'Boleta Exenta',
+  '43': 'Liquidación Factura',
+  '46': 'Factura Compra',
+  '52': 'Guía de Despacho',
+  '56': 'Nota de Débito',
+  '61': 'Nota de Crédito',
+  '110': 'Factura Exportación',
+  '112': 'Nota Crédito Exp.',
+}
+
+function formatDocLabel(doc: DocumentoCarga): string {
+  const tipo = DOC_TYPE_LABELS[doc.tipo_documento] ?? `Doc. Tipo ${doc.tipo_documento}`
+  if (doc.nombre_archivo) return doc.nombre_archivo
+  const folio = doc.folio_documento ? ` #${doc.folio_documento}` : ''
+  const emisor = doc.razon_social_emisor ? ` — ${doc.razon_social_emisor}` : ''
+  return `${tipo}${folio}${emisor}`
+}
+
 interface DocumentoCarga {
   id: string
-  nombre_archivo: string
+  nombre_archivo?: string
   tipo_documento: string
   folio_documento?: string | null
   fecha_documento?: string | null
@@ -50,18 +72,26 @@ interface DocumentListViewProps {
 
 const estadoColors: Record<string, string> = {
   pendiente: 'bg-yellow-100 text-yellow-800',
-  subido: 'bg-blue-100 text-blue-800',
-  validado: 'bg-green-100 text-green-800',
-  enviado_nubox: 'bg-purple-100 text-purple-800',
+  clasificado: 'bg-blue-100 text-blue-800',
+  revisado: 'bg-indigo-100 text-indigo-800',
+  aprobado: 'bg-green-100 text-green-800',
+  exportado: 'bg-purple-100 text-purple-800',
   rechazado: 'bg-red-100 text-red-800',
+  subido: 'bg-sky-100 text-sky-800',
+  validado: 'bg-emerald-100 text-emerald-800',
+  enviado_nubox: 'bg-violet-100 text-violet-800',
 }
 
 const estadoLabels: Record<string, string> = {
   pendiente: 'Pendiente',
+  clasificado: 'Clasificado',
+  revisado: 'Revisado',
+  aprobado: 'Aprobado',
+  exportado: 'Exportado',
+  rechazado: 'Rechazado',
   subido: 'Subido',
   validado: 'Validado',
   enviado_nubox: 'Enviado a Nubox',
-  rechazado: 'Rechazado',
 }
 
 export function DocumentListView({ documentos, onRefresh }: DocumentListViewProps) {
@@ -153,10 +183,7 @@ export function DocumentListView({ documentos, onRefresh }: DocumentListViewProp
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Archivo</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Folio</TableHead>
-              <TableHead>Fecha</TableHead>
+              <TableHead>Documento</TableHead>
               <TableHead>Monto</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Nubox</TableHead>
@@ -166,15 +193,13 @@ export function DocumentListView({ documentos, onRefresh }: DocumentListViewProp
           <TableBody>
             {documentos.map((doc) => (
               <TableRow key={doc.id}>
-                <TableCell className="font-medium text-sm">{doc.nombre_archivo}</TableCell>
-                <TableCell className="text-sm">{doc.tipo_documento}</TableCell>
-                <TableCell className="text-sm">{doc.folio_documento || '-'}</TableCell>
-                <TableCell className="text-sm">
-                  {doc.fecha_documento
-                    ? new Date(doc.fecha_documento).toLocaleDateString('es-CL')
-                    : '-'}
+                <TableCell>
+                  <div className="font-medium text-sm">{formatDocLabel(doc)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {doc.folio_documento ? `Folio ${doc.folio_documento}` : ''}{doc.folio_documento && doc.fecha_documento ? ' · ' : ''}{doc.fecha_documento ? new Date(doc.fecha_documento).toLocaleDateString('es-CL') : ''}
+                  </div>
                 </TableCell>
-                <TableCell className="text-sm text-right">
+                <TableCell className="text-sm text-right font-mono">
                   {doc.monto_total ? `$${doc.monto_total.toLocaleString('es-CL')}` : '-'}
                 </TableCell>
                 <TableCell>
