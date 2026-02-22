@@ -43,14 +43,14 @@ const navigation: NavGroup[] = [
     ],
   },
   {
-    label: 'Documentos',
+    label: 'HV-Class',
     items: [
       { name: 'Documentos', href: '/dashboard/documentos', icon: Upload },
       { name: 'Clasificador IA', href: '/dashboard/clasificador', icon: Brain },
     ],
   },
   {
-    label: 'Tributario',
+    label: 'HV-F29',
     items: [
       { name: 'F29', href: '/dashboard/f29', icon: FileSpreadsheet },
       { name: 'Procesos', href: '/dashboard/procesos', icon: ClipboardList },
@@ -58,14 +58,14 @@ const navigation: NavGroup[] = [
     ],
   },
   {
-    label: 'Automatización',
+    label: 'HV-Bot',
     items: [
       { name: 'Bots RPA', href: '/dashboard/bots', icon: Bot },
       { name: 'SII RPA', href: '/dashboard/sii', icon: Landmark },
     ],
   },
   {
-    label: 'Bancos',
+    label: 'HV-Bancos',
     items: [
       { name: 'Cartolas', href: '/dashboard/bancos', icon: CreditCard },
       { name: 'Conciliación', href: '/dashboard/conciliacion', icon: ArrowLeftRight },
@@ -74,7 +74,7 @@ const navigation: NavGroup[] = [
     ],
   },
   {
-    label: 'Inteligencia',
+    label: 'HV-Chat',
     items: [
       { name: 'Chat IA', href: '/dashboard/chat', icon: MessageSquare },
       { name: 'Alertas', href: '/dashboard/alertas', icon: AlertTriangle },
