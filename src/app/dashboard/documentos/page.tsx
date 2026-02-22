@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -17,10 +16,19 @@ import { DocumentBatchUpload } from '@/components/dashboard/DocumentBatchUpload'
 import { DocumentListView } from '@/components/dashboard/DocumentListView'
 import { DocumentExportMenu } from '@/components/dashboard/DocumentExportMenu'
 import { DocumentAdvancedFilters } from '@/components/dashboard/DocumentAdvancedFilters'
-import { useClientContext } from '@/components/dashboard'
+import { TopNav, useClientContext } from '@/components/dashboard'
 import { obtenerDocumentosCargados, obtenerEstadisticasDocumentos } from './actions'
 import { useSearchParams } from 'next/navigation'
-import { Loader2, BarChart3, LayoutTemplate, Brain, Shield, Building2 } from 'lucide-react'
+import {
+  Loader2,
+  BarChart3,
+  FileText,
+  Clock,
+  CheckCircle2,
+  PackageCheck,
+  FolderOpen,
+  Building2,
+} from 'lucide-react'
 import Link from 'next/link'
 
 interface DocumentoCarga {
@@ -49,6 +57,30 @@ interface FilterCriteria {
   montoMin?: number
   montoMax?: number
   nuboxOnly: boolean
+}
+
+const STAT_CARDS = [
+  { key: 'total', label: 'Total', icon: FileText, color: 'primary' },
+  { key: 'pendiente', label: 'Pendientes', icon: Clock, color: 'amber' },
+  { key: 'clasificado', label: 'Clasificados', icon: FolderOpen, color: 'blue' },
+  { key: 'aprobado', label: 'Aprobados', icon: CheckCircle2, color: 'emerald' },
+  { key: 'exportado', label: 'Exportados', icon: PackageCheck, color: 'violet' },
+] as const
+
+const COLOR_MAP: Record<string, string> = {
+  primary: 'bg-primary/10 ring-primary/20 text-primary',
+  amber: 'bg-amber-500/10 ring-amber-500/20 text-amber-500',
+  blue: 'bg-blue-500/10 ring-blue-500/20 text-blue-500',
+  emerald: 'bg-emerald-500/10 ring-emerald-500/20 text-emerald-500',
+  violet: 'bg-violet-500/10 ring-violet-500/20 text-violet-500',
+}
+
+const VALUE_COLOR: Record<string, string> = {
+  primary: '',
+  amber: 'text-amber-600',
+  blue: 'text-blue-600',
+  emerald: 'text-emerald-600',
+  violet: 'text-violet-600',
 }
 
 export default function DocumentosPage() {
@@ -95,29 +127,18 @@ export default function DocumentosPage() {
 
   // Filter documents
   const documentosFiltrados = documentos.filter((doc) => {
-    // Search filter
     const searchTerm = filters.searchTerm.toLowerCase()
     const matchSearch =
       (doc.nombre_archivo ?? '').toLowerCase().includes(searchTerm) ||
       (doc.folio_documento ?? '').toLowerCase().includes(searchTerm)
-
-    // Status filter
     const matchEstado = filters.estado === 'all' || doc.estado === filters.estado
-
-    // Type filter
     const matchTipo = filters.tipo === 'all' || doc.tipo_documento === filters.tipo
-
-    // Date range filter
     const matchFecha =
       (!filters.fechaInicio || (doc.cargado_en && new Date(doc.cargado_en) >= filters.fechaInicio)) &&
       (!filters.fechaFin || (doc.cargado_en && new Date(doc.cargado_en) <= filters.fechaFin))
-
-    // Amount range filter
     const matchMonto =
       (!filters.montoMin || (doc.monto_total && doc.monto_total >= filters.montoMin)) &&
       (!filters.montoMax || (doc.monto_total && doc.monto_total <= filters.montoMax))
-
-    // Nubox filter
     const matchNubox = !filters.nuboxOnly || !!doc.nubox_documento_id
 
     return matchSearch && matchEstado && matchTipo && matchFecha && matchMonto && matchNubox
@@ -125,176 +146,138 @@ export default function DocumentosPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <>
+        <TopNav title="Documentos Tributarios" subtitle="Gestiona facturas, boletas y documentos con integración Nubox" />
+        <div className="flex items-center justify-center py-24">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Documentos Tributarios</h1>
-          <p className="text-muted-foreground mt-1">
-            Gestiona facturas, boletas y documentos con integración Nubox
-          </p>
-        </div>
-        {clienteId && (
-          <div className="flex gap-2">
-            <Link href={`/dashboard/documentos/compliance?cliente_id=${clienteId}`}>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Cumplimiento
-              </Button>
-            </Link>
-            <Link href={`/dashboard/documentos/intelligence?cliente_id=${clienteId}`}>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                Inteligencia
-              </Button>
-            </Link>
-            <Link href={`/dashboard/documentos/templates?cliente_id=${clienteId}`}>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <LayoutTemplate className="h-4 w-4" />
-                Plantillas
-              </Button>
-            </Link>
+    <>
+      <TopNav title="Documentos Tributarios" subtitle="Gestiona facturas, boletas y documentos con integración Nubox" />
+
+      <main className="p-4 md:p-6 lg:p-8 space-y-6">
+        {/* Stats row */}
+        {stats && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {STAT_CARDS.map(({ key, label, icon: Icon, color }) => (
+              <Card key={key} className="group hover:shadow-executive-md transition-all duration-200">
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-10 w-10 rounded-lg flex items-center justify-center ring-1 group-hover:scale-105 transition-transform ${COLOR_MAP[color]}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className={`text-xl font-bold font-mono ${VALUE_COLOR[color]}`}>
+                        {stats[key as keyof typeof stats]}
+                      </p>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                        {label}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
-      </div>
 
-      {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Total</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Pendiente</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{stats.pendiente}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Clasificado</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{stats.clasificado}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Aprobado</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.aprobado}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Exportado</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{stats.exportado}</div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Client picker when no client is selected */}
-      {!clienteId && clients.length > 0 && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="py-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Selecciona un cliente para cargar documentos:</span>
+        {/* Client picker when no client is selected */}
+        {!clienteId && clients.length > 0 && (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="py-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Selecciona un cliente para cargar documentos:</span>
+                </div>
+                <Select onValueChange={(val) => setActiveClientId(val)}>
+                  <SelectTrigger className="w-full sm:w-[300px] bg-background">
+                    <SelectValue placeholder="Elegir cliente..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients.map((c) => (
+                      <SelectItem key={c._id} value={c._id}>
+                        {c.razon_social} — {c.rut}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <Select onValueChange={(val) => setActiveClientId(val)}>
-                <SelectTrigger className="w-full sm:w-[300px] bg-background">
-                  <SelectValue placeholder="Elegir cliente..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {clients.map((c) => (
-                    <SelectItem key={c._id} value={c._id}>
-                      {c.razon_social} — {c.rut}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        )}
 
-      <Tabs defaultValue="list" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="list">Documentos ({stats?.total || 0})</TabsTrigger>
-          <TabsTrigger value="upload">Cargar Documento</TabsTrigger>
-          <TabsTrigger value="batch">Carga en Lote</TabsTrigger>
-        </TabsList>
+        {/* Main content */}
+        <Tabs defaultValue="list" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="list">Documentos ({stats?.total || 0})</TabsTrigger>
+            <TabsTrigger value="upload">Cargar Documento</TabsTrigger>
+            <TabsTrigger value="batch">Carga en Lote</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="list" className="mt-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Historial de Documentos</CardTitle>
+          <TabsContent value="list" className="mt-6">
+            <Card className="border-border/50 shadow-executive">
+              <CardHeader className="flex flex-row items-center justify-between pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <FileText className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Historial de Documentos</CardTitle>
+                    <CardDescription className="text-xs mt-0.5">
+                      {documentosFiltrados.length} de {documentos.length} documentos
+                    </CardDescription>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Link href="/dashboard/documentos/analytics">
+                    <Button size="sm" variant="outline">
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Estadísticas
+                    </Button>
+                  </Link>
+                  <DocumentExportMenu documentos={documentosFiltrados} disabled={documentos.length === 0} />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <DocumentAdvancedFilters
+                  onFiltersChange={setFilters}
+                  onReset={() => setFilters({
+                    searchTerm: '',
+                    estado: 'all',
+                    tipo: 'all',
+                    nuboxOnly: false,
+                  })}
+                />
+
+                <DocumentListView documentos={documentosFiltrados} onRefresh={cargarDatos} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="upload" className="mt-6">
+            <DocumentUploadForm clienteId={clienteId || ''} onSuccess={cargarDatos} />
+          </TabsContent>
+
+          <TabsContent value="batch" className="mt-6">
+            <Card className="border-border/50 shadow-executive">
+              <CardHeader>
+                <CardTitle>Carga en Lote</CardTitle>
                 <CardDescription>
-                  {documentosFiltrados.length} de {documentos.length} documentos
+                  Carga múltiples documentos a la vez
                 </CardDescription>
-              </div>
-              <div className="flex gap-2">
-                <Link href="/dashboard/documentos/analytics">
-                  <Button size="sm" variant="outline">
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Estadísticas
-                  </Button>
-                </Link>
-                <DocumentExportMenu documentos={documentosFiltrados} disabled={documentos.length === 0} />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <DocumentAdvancedFilters
-                onFiltersChange={setFilters}
-                onReset={() => setFilters({
-                  searchTerm: '',
-                  estado: 'all',
-                  tipo: 'all',
-                  nuboxOnly: false,
-                })}
-              />
-
-              <DocumentListView documentos={documentosFiltrados} onRefresh={cargarDatos} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="upload" className="mt-6">
-          <DocumentUploadForm clienteId={clienteId || ''} onSuccess={cargarDatos} />
-        </TabsContent>
-
-        <TabsContent value="batch" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Carga en Lote</CardTitle>
-              <CardDescription>
-                Carga múltiples documentos a la vez
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <DocumentBatchUpload clienteId={clienteId || ''} onSuccess={cargarDatos} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+              </CardHeader>
+              <CardContent>
+                <DocumentBatchUpload clienteId={clienteId || ''} onSuccess={cargarDatos} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </main>
+    </>
   )
 }
