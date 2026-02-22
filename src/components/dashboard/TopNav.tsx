@@ -1,6 +1,8 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import { Search, Calendar, Menu } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NotificationsDropdown } from './NotificationsDropdown'
@@ -8,15 +10,22 @@ import { ClientSelector } from './ClientSelector'
 import { useSidebar } from './SidebarContext'
 import Link from 'next/link'
 
+export interface TopNavTab {
+  label: string
+  href: string
+}
+
 interface TopNavProps {
   title: string
   subtitle?: string
+  tabs?: TopNavTab[]
 }
 
-export function TopNav({ title, subtitle }: TopNavProps) {
+export function TopNav({ title, subtitle, tabs }: TopNavProps) {
   const { toggleMobile } = useSidebar()
 
   return (
+    <>
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/40 bg-background/80 backdrop-blur-xl px-4 md:px-8">
       <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
         {/* Mobile hamburger */}
@@ -76,5 +85,38 @@ export function TopNav({ title, subtitle }: TopNavProps) {
         </Link>
       </div>
     </header>
+    {tabs && tabs.length > 0 && <TabBar tabs={tabs as TopNavTab[]} />}
+    </>
+  )
+}
+
+function TabBar({ tabs }: { tabs: TopNavTab[] }) {
+  const pathname = usePathname()
+
+  return (
+    <div className="sticky top-16 z-20 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <div className="flex items-center gap-1 px-4 md:px-8 overflow-x-auto scrollbar-hide">
+        {tabs.map((tab) => {
+          const isActive = pathname === tab.href
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={cn(
+                'relative whitespace-nowrap px-3 py-2.5 text-sm font-medium transition-colors',
+                isActive
+                  ? 'text-foreground'
+                  : 'text-muted-foreground hover:text-foreground/80'
+              )}
+            >
+              {tab.label}
+              {isActive && (
+                <div className="absolute bottom-0 left-1 right-1 h-0.5 rounded-full bg-primary" />
+              )}
+            </Link>
+          )
+        })}
+      </div>
+    </div>
   )
 }

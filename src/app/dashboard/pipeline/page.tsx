@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { PipelineRunCard } from '@/components/pipeline'
 import { TopNav } from '@/components/dashboard'
+import { TRIBUTARIO_TABS } from '@/lib/module-tabs'
 
 export default function PipelinePage() {
   const activeRuns = useQuery(api.pipeline.getActivePipelineRuns)
@@ -35,7 +36,7 @@ export default function PipelinePage() {
 
   return (
     <>
-      <TopNav title="Pipeline Automatizado" subtitle="Orquesta el flujo completo: importar, normalizar, categorizar, conciliar, validar" />
+      <TopNav title="Pipeline Automatizado" subtitle="Orquesta el flujo completo: importar, normalizar, categorizar, conciliar, validar" tabs={TRIBUTARIO_TABS} />
       <main className="p-4 md:p-6 lg:p-8 space-y-6">
 
       {/* Global Stats */}

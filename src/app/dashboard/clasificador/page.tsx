@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { TopNav } from '@/components/dashboard'
+import { DOCUMENTOS_TABS } from '@/lib/module-tabs'
 import { ClasificadorContent } from './clasificador-content'
 import { getDocumentosPendientes, getClasificadorStats, getClientes, getCuentasContables } from './actions'
 
@@ -25,6 +26,7 @@ export default async function ClasificadorPage({
       <TopNav
         title="HV-Class"
         subtitle="Clasificación inteligente de documentos tributarios"
+        tabs={DOCUMENTOS_TABS}
       />
 
       <Suspense fallback={<div className="p-6">Cargando...</div>}>

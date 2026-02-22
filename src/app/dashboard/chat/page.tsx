@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { TopNav } from '@/components/dashboard'
+import { INTELIGENCIA_TABS } from '@/lib/module-tabs'
 import { ChatContent } from './chat-content'
 import { getSesiones, getOrCreateSesion } from './actions'
 
@@ -18,6 +19,7 @@ export default async function ChatPage({
       <TopNav
         title="HV-Chat"
         subtitle="Asistente IA para consultas contables"
+        tabs={INTELIGENCIA_TABS}
       />
 
       <Suspense fallback={<div className="p-6">Cargando...</div>}>

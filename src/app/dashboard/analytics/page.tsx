@@ -1,6 +1,8 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { TopNav } from '@/components/dashboard'
+import { INTELIGENCIA_TABS } from '@/lib/module-tabs'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -61,14 +63,9 @@ export default function AnalyticsDashboardPage({
   const activeTab = searchParams?.tab || 'documents'
 
   return (
-    <div className='space-y-6'>
-      <div className='flex flex-col gap-2'>
-        <h1 className='text-3xl font-bold tracking-tight'>Analítica</h1>
-        <p className='text-muted-foreground'>
-          Métricas en tiempo real del sistema de gestión documental
-        </p>
-      </div>
-
+    <>
+      <TopNav title="Analítica" subtitle="Métricas en tiempo real del sistema" tabs={INTELIGENCIA_TABS} />
+      <main className="p-4 md:p-6 lg:p-8 space-y-6">
       <Tabs value={activeTab} defaultValue='documents' className='space-y-6'>
         <TabsList className='grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-7'>
           <TabsTrigger value='documents'>Documentos</TabsTrigger>
@@ -108,7 +105,8 @@ export default function AnalyticsDashboardPage({
           <ReportScheduler organizationId={organizationId} />
         </TabsContent>
       </Tabs>
-    </div>
+      </main>
+    </>
   )
 }
 

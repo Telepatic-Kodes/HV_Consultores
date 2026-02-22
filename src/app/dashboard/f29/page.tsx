@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { TopNav } from '@/components/dashboard'
+import { TRIBUTARIO_TABS } from '@/lib/module-tabs'
 import { F29Content } from './f29-content'
 import { getF29List, getF29Stats, getClientesConDocumentos, getPeriodosDisponibles } from './actions'
 
@@ -22,6 +23,7 @@ export default async function F29Page({
       <TopNav
         title="HV-F29"
         subtitle="Automatización de formularios F29"
+        tabs={TRIBUTARIO_TABS}
       />
 
       <Suspense fallback={<div className="p-6">Cargando...</div>}>

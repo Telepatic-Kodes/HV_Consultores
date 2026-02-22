@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { TopNav } from '@/components/dashboard'
+import { INTELIGENCIA_TABS } from '@/lib/module-tabs'
 import { ReportesContent } from './reportes-content'
 import {
   getMetricasGenerales,
@@ -21,6 +22,7 @@ export default async function ReportesPage() {
       <TopNav
         title="Reportes"
         subtitle="Análisis y métricas del sistema"
+        tabs={INTELIGENCIA_TABS}
       />
 
       <Suspense fallback={<div className="p-6">Cargando...</div>}>

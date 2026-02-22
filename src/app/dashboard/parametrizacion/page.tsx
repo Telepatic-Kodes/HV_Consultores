@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { RulesList, RuleEditor } from '@/components/parametrizacion'
 import { TopNav } from '@/components/dashboard'
+import { BANCOS_TABS } from '@/lib/module-tabs'
 
 export default function ParametrizacionPage() {
   const [ruleEditorOpen, setRuleEditorOpen] = useState(false)
@@ -37,7 +38,7 @@ export default function ParametrizacionPage() {
 
   return (
     <>
-      <TopNav title="Parametrización" subtitle="Gestiona plantillas de plan de cuentas y reglas de categorización" />
+      <TopNav title="Parametrización" subtitle="Gestiona plantillas de plan de cuentas y reglas de categorización" tabs={BANCOS_TABS} />
 
       <main className="p-4 md:p-6 lg:p-8 space-y-6">
       <Tabs defaultValue="plantillas" className="space-y-4">

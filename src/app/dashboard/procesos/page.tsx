@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { TopNav } from '@/components/dashboard'
+import { TRIBUTARIO_TABS } from '@/lib/module-tabs'
 import { ProcesosContent } from './procesos-content'
 import { getProcesos, getProcesoStats, getPlantillas, getClientes } from './actions'
 
@@ -16,6 +17,7 @@ export default async function ProcesosPage() {
       <TopNav
         title="Procesos"
         subtitle="Gestión de procesos y tareas contables"
+        tabs={TRIBUTARIO_TABS}
       />
 
       <Suspense fallback={<div className="p-6">Cargando...</div>}>

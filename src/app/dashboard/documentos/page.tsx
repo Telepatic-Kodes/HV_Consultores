@@ -17,6 +17,7 @@ import { DocumentListView } from '@/components/dashboard/DocumentListView'
 import { DocumentExportMenu } from '@/components/dashboard/DocumentExportMenu'
 import { DocumentAdvancedFilters } from '@/components/dashboard/DocumentAdvancedFilters'
 import { TopNav, useClientContext } from '@/components/dashboard'
+import { DOCUMENTOS_TABS } from '@/lib/module-tabs'
 import { obtenerDocumentosCargados, obtenerEstadisticasDocumentos } from './actions'
 import { useSearchParams } from 'next/navigation'
 import {
@@ -147,7 +148,7 @@ export default function DocumentosPage() {
   if (loading) {
     return (
       <>
-        <TopNav title="Documentos Tributarios" subtitle="Gestiona facturas, boletas y documentos con integración Nubox" />
+        <TopNav title="Documentos Tributarios" subtitle="Gestiona facturas, boletas y documentos con integración Nubox" tabs={DOCUMENTOS_TABS} />
         <div className="flex items-center justify-center py-24">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -157,7 +158,7 @@ export default function DocumentosPage() {
 
   return (
     <>
-      <TopNav title="Documentos Tributarios" subtitle="Gestiona facturas, boletas y documentos con integración Nubox" />
+      <TopNav title="Documentos Tributarios" subtitle="Gestiona facturas, boletas y documentos con integración Nubox" tabs={DOCUMENTOS_TABS} />
 
       <main className="p-4 md:p-6 lg:p-8 space-y-6">
         {/* Stats row */}

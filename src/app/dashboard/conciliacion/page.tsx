@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { TopNav } from '@/components/dashboard'
+import { BANCOS_TABS } from '@/lib/module-tabs'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
@@ -28,7 +29,7 @@ export default function ConciliacionPage() {
 
   return (
     <>
-      <TopNav title="Conciliación Bancaria" subtitle="Concilia automáticamente transacciones bancarias con documentos SII" />
+      <TopNav title="Conciliación Bancaria" subtitle="Concilia automáticamente transacciones bancarias con documentos SII" tabs={BANCOS_TABS} />
       <main className="p-4 md:p-6 lg:p-8 space-y-6">
 
       {/* Global Stats */}

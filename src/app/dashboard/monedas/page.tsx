@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Coins, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { TopNav } from '@/components/dashboard'
+import { BANCOS_TABS } from '@/lib/module-tabs'
 import { ExchangeRateChart, CurrencyConverter, RatesTable } from '@/components/monedas'
 
 export default function MonedasPage() {
@@ -13,7 +14,7 @@ export default function MonedasPage() {
 
   return (
     <>
-      <TopNav title="Tipos de Cambio" subtitle="Monitorea y gestiona tipos de cambio para UF, USD y EUR" />
+      <TopNav title="Tipos de Cambio" subtitle="Monitorea y gestiona tipos de cambio para UF, USD y EUR" tabs={BANCOS_TABS} />
       <main className="p-4 md:p-6 lg:p-8 space-y-6">
 
       {/* Current rates summary */}

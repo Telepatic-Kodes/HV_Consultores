@@ -37,6 +37,7 @@ import {
 import type { BankModuleStats, BankAccount, BankTransaction, TransactionCategory } from '@/lib/bank-rpa'
 import { BANKS } from '@/lib/bank-rpa'
 import { TopNav } from '@/components/dashboard'
+import { BANCOS_TABS } from '@/lib/module-tabs'
 
 // ============================================================================
 // COMPONENTES DE ESTADÍSTICAS
@@ -364,7 +365,7 @@ export default function BancosPage() {
   if (loading) {
     return (
       <>
-        <TopNav title="Cartolas Bancarias" subtitle="Gestiona y parametriza tus cartolas bancarias" />
+        <TopNav title="Cartolas Bancarias" subtitle="Gestiona y parametriza tus cartolas bancarias" tabs={BANCOS_TABS} />
         <div className="flex items-center justify-center py-24">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -374,7 +375,7 @@ export default function BancosPage() {
 
   return (
     <>
-      <TopNav title="Cartolas Bancarias" subtitle="Gestiona y parametriza tus cartolas bancarias" />
+      <TopNav title="Cartolas Bancarias" subtitle="Gestiona y parametriza tus cartolas bancarias" tabs={BANCOS_TABS} />
       <main className="p-4 md:p-6 lg:p-8 space-y-6">
       {/* Action buttons */}
       <div className="flex items-center justify-end gap-2">

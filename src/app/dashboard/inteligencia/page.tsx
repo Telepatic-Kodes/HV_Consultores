@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Brain, TrendingUp, Users, AlertTriangle } from 'lucide-react'
 import { TopNav } from '@/components/dashboard'
+import { INTELIGENCIA_TABS } from '@/lib/module-tabs'
 import { ClientScorecard, CrossClientBenchmark } from '@/components/inteligencia'
 
 export default function InteligenciaPage() {
@@ -27,7 +28,7 @@ export default function InteligenciaPage() {
 
   return (
     <>
-      <TopNav title="Inteligencia Ejecutiva" subtitle="Visión integral del rendimiento contable de todos los clientes" />
+      <TopNav title="Inteligencia Ejecutiva" subtitle="Visión integral del rendimiento contable de todos los clientes" tabs={INTELIGENCIA_TABS} />
       <main className="p-4 md:p-6 lg:p-8 space-y-6">
 
       {/* Global overview */}
