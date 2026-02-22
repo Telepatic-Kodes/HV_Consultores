@@ -479,7 +479,7 @@ export function ClientesContent({ clientes, stats, contadores }: ClientesContent
               {/* Section: Tributario */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-border/30">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Configuracion Tributaria</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Configuración Tributaria</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -686,15 +686,15 @@ function WelcomeEmptyState() {
             <div className="h-9 w-9 mx-auto rounded-lg bg-blue-500/10 flex items-center justify-center mb-2">
               <FileText className="h-4.5 w-4.5 text-blue-500" />
             </div>
-            <p className="text-xs font-semibold text-foreground">Gestion Tributaria</p>
-            <p className="text-xs text-muted-foreground mt-1">F29, documentos y clasificacion IA</p>
+            <p className="text-xs font-semibold text-foreground">Gestión Tributaria</p>
+            <p className="text-xs text-muted-foreground mt-1">F29, documentos y clasificación IA</p>
           </div>
           <div className="p-4 rounded-xl bg-muted/30 border border-border/30">
             <div className="h-9 w-9 mx-auto rounded-lg bg-emerald-500/10 flex items-center justify-center mb-2">
               <Landmark className="h-4.5 w-4.5 text-emerald-500" />
             </div>
-            <p className="text-xs font-semibold text-foreground">Conciliacion Bancaria</p>
-            <p className="text-xs text-muted-foreground mt-1">Match automatico banco-documentos</p>
+            <p className="text-xs font-semibold text-foreground">Conciliación Bancaria</p>
+            <p className="text-xs text-muted-foreground mt-1">Match automático banco-documentos</p>
           </div>
           <div className="p-4 rounded-xl bg-muted/30 border border-border/30">
             <div className="h-9 w-9 mx-auto rounded-lg bg-violet-500/10 flex items-center justify-center mb-2">

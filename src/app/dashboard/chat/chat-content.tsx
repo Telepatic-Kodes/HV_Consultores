@@ -211,7 +211,7 @@ export function ChatContent({ sesiones, sesionActual }: ChatContentProps) {
               </div>
               <div className="ml-auto flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-                <span className="text-xs text-success font-medium">Online</span>
+                <span className="text-xs text-success font-medium">En línea</span>
               </div>
             </div>
           </div>

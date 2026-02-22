@@ -87,7 +87,7 @@ export function MatchConfirmDialog({
             <Label htmlFor="notas-conciliacion">Notas (opcional)</Label>
             <Textarea
               id="notas-conciliacion"
-              placeholder="Agregar notas o comentarios sobre esta conciliacion..."
+              placeholder="Agregar notas o comentarios sobre esta conciliación..."
               value={notas}
               onChange={(e) => setNotas(e.target.value)}
               rows={3}

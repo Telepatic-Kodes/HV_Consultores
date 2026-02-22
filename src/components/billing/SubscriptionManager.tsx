@@ -128,7 +128,7 @@ export function SubscriptionManager({
             <div>
               <CardTitle className="text-base">Plan Actual</CardTitle>
               <CardDescription className="text-xs">
-                Tu suscripcion y facturacion
+                Tu suscripción y facturación
               </CardDescription>
             </div>
           </div>

@@ -117,12 +117,12 @@ export function BatchMatchButton({
             <DialogTitle>
               {state === 'running'
                 ? 'Conciliando transacciones...'
-                : 'Conciliacion completada'}
+                : 'Conciliación completada'}
             </DialogTitle>
             <DialogDescription>
               {state === 'running'
-                ? 'Procesando el matching automatico de todas las transacciones pendientes.'
-                : 'El proceso de conciliacion automatica ha finalizado.'}
+                ? 'Procesando el matching automático de todas las transacciones pendientes.'
+                : 'El proceso de conciliación automática ha finalizado.'}
             </DialogDescription>
           </DialogHeader>
 

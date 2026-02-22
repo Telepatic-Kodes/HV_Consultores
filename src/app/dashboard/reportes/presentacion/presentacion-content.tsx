@@ -185,13 +185,13 @@ export function PresentacionContent({
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <Settings className="h-4 w-4" />
-                Configuración de Slides
+                Configuración de Diapositivas
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label htmlFor="include-title" className="text-sm">
-                  Slide de título
+                  Diapositiva de título
                 </Label>
                 <Switch
                   id="include-title"
@@ -320,7 +320,7 @@ export function PresentacionContent({
                   <span className="font-mono">{data.insights.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total slides</span>
+                  <span className="text-muted-foreground">Total diapositivas</span>
                   <span className="font-mono font-bold">{slides.length}</span>
                 </div>
               </div>

@@ -378,7 +378,7 @@ export function F29Content({
               <div>
                 <CardTitle className="text-base">Validaciones</CardTitle>
                 <CardDescription className="text-xs mt-0.5">
-                  {selectedF29Data ? 'Resultado automatico' : 'Selecciona un F29'}
+                  {selectedF29Data ? 'Resultado automático' : 'Selecciona un F29'}
                 </CardDescription>
               </div>
             </div>

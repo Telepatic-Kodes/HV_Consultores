@@ -215,7 +215,7 @@ export function BotsContent({ bots, stats, jobsRecientes, clientes }: BotsConten
 
                       <div className="mt-4 grid grid-cols-3 gap-3">
                         <div className="bg-muted/30 rounded-lg p-2.5">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">Ultima Ejecucion</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">Última Ejecución</p>
                           <p className="text-xs font-medium font-mono flex items-center gap-1 mt-1">
                             <Clock className="h-3 w-3 text-muted-foreground" />
                             {formatTiempo(bot.ultimo_job?.completed_at || bot.ultimo_job?.started_at)}
@@ -249,7 +249,7 @@ export function BotsContent({ bots, stats, jobsRecientes, clientes }: BotsConten
               </div>
               <div>
                 <CardTitle className="text-base">Historial de Ejecuciones</CardTitle>
-                <CardDescription className="text-xs mt-0.5">Ultimas tareas ejecutadas</CardDescription>
+                <CardDescription className="text-xs mt-0.5">Últimas tareas ejecutadas</CardDescription>
               </div>
             </div>
           </CardHeader>

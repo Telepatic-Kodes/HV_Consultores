@@ -212,7 +212,7 @@ export function ReportesContent({
         <div className="flex items-center gap-3">
           <div className="h-1 w-8 bg-gradient-to-r from-primary to-secondary rounded-full" />
           <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Analytics y Reportes
+            Análisis y Reportes
           </span>
         </div>
       </div>
@@ -232,7 +232,7 @@ export function ReportesContent({
                       Dashboard Ejecutivo
                     </h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      KPIs premium, waterfall, insights automaticos
+                      KPIs premium, waterfall, insights automáticos
                     </p>
                   </div>
                 </div>
@@ -240,7 +240,7 @@ export function ReportesContent({
               </div>
               <div className="mt-4 flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded-full bg-[#0f3460]/10 text-[#0f3460] text-[10px] font-semibold uppercase tracking-wider">
-                  McKinsey Style
+                  Estilo McKinsey
                 </span>
                 <span className="px-2 py-0.5 rounded-full bg-[#d4a418]/10 text-[#d4a418] text-[10px] font-semibold uppercase tracking-wider">
                   Premium
@@ -263,7 +263,7 @@ export function ReportesContent({
                       Presentacion Board
                     </h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Slides profesionales para directorio
+                      Diapositivas profesionales para directorio
                     </p>
                   </div>
                 </div>
@@ -324,7 +324,7 @@ export function ReportesContent({
                   <BarChart3 className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">Evolucion Mensual</CardTitle>
+                  <CardTitle className="text-base">Evolución Mensual</CardTitle>
                   <CardDescription className="text-xs mt-0.5">Documentos procesados vs horas ahorradas</CardDescription>
                 </div>
               </div>
@@ -335,8 +335,8 @@ export function ReportesContent({
                   value={periodoGrafico}
                   onChange={(e) => setPeriodoGrafico(e.target.value)}
                 >
-                  <option value="6">Ultimos 6 meses</option>
-                  <option value="12">Ultimo ano</option>
+                  <option value="6">Últimos 6 meses</option>
+                  <option value="12">Último año</option>
                 </select>
               </div>
             </div>

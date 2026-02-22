@@ -630,7 +630,7 @@ export function ClasificadorContent({
                 </div>
                 <p className="text-muted-foreground font-medium">Selecciona un documento</p>
                 <p className="text-xs text-muted-foreground/70 mt-1">
-                  Elige de la lista para ver las sugerencias de clasificacion
+                  Elige de la lista para ver las sugerencias de clasificación
                 </p>
               </div>
             )}

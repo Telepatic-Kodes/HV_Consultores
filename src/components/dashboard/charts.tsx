@@ -39,7 +39,7 @@ export function DocumentosPorDiaChart({ data }: { data: DocumentosPorDia[] }) {
       <div className="px-5 pt-5 pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Documentos - Ultimos 7 dias</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Documentos - Últimos 7 días</p>
             <p className="text-[10px] text-muted-foreground/70 mt-0.5">Recibidos vs clasificados</p>
           </div>
           <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider">
@@ -166,7 +166,7 @@ export function F29PorMesChart({ data }: { data: F29PorMes[] }) {
       <div className="px-5 pt-5 pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">F29 - Ultimos 6 meses</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">F29 - Últimos 6 meses</p>
             <p className="text-[10px] text-muted-foreground/70 mt-0.5">Estado de declaraciones</p>
           </div>
           <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider">
