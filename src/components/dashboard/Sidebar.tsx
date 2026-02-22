@@ -47,13 +47,13 @@ const navigation = [
   { name: 'Inteligencia', href: '/dashboard/inteligencia', icon: Sparkles },
   { name: 'Alertas', href: '/dashboard/alertas', icon: AlertTriangle },
   { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare },
-  { name: 'Analytics', href: '/dashboard/analytics', icon: TrendingUp },
+  { name: 'Analítica', href: '/dashboard/analytics', icon: TrendingUp },
   { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart3 },
   { name: 'Automatización', href: '/dashboard/documentos/automation', icon: Zap },
 ]
 
 const bottomNavigation = [
-  { name: 'Configuracion', href: '/dashboard/configuracion', icon: Settings },
+  { name: 'Configuración', href: '/dashboard/configuracion', icon: Settings },
 ]
 
 function SidebarContent() {
