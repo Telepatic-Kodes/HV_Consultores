@@ -9,7 +9,6 @@ import {
   Users,
   Brain,
   FileSpreadsheet,
-  Bot,
   Settings,
   ChevronLeft,
   Building2,
@@ -43,13 +42,7 @@ const moduleNavigation: NavItem[] = [
     name: 'Tributario',
     href: '/dashboard/f29',
     icon: FileSpreadsheet,
-    childPaths: ['/dashboard/procesos', '/dashboard/pipeline'],
-  },
-  {
-    name: 'Automatización',
-    href: '/dashboard/bots',
-    icon: Bot,
-    childPaths: ['/dashboard/sii'],
+    childPaths: ['/dashboard/procesos', '/dashboard/pipeline', '/dashboard/bots', '/dashboard/sii'],
   },
   {
     name: 'Bancos',

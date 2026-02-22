@@ -9,9 +9,6 @@ export const TRIBUTARIO_TABS: TopNavTab[] = [
   { label: 'F29', href: '/dashboard/f29' },
   { label: 'Procesos', href: '/dashboard/procesos' },
   { label: 'Pipeline', href: '/dashboard/pipeline' },
-]
-
-export const AUTOMATIZACION_TABS: TopNavTab[] = [
   { label: 'Bots RPA', href: '/dashboard/bots' },
   { label: 'SII RPA', href: '/dashboard/sii' },
 ]

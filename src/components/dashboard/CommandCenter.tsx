@@ -2,10 +2,8 @@ import Link from 'next/link'
 import {
   Upload,
   FileSpreadsheet,
-  Bot,
   CreditCard,
-  TrendingUp,
-  Users,
+  Brain,
   ArrowRight,
 } from 'lucide-react'
 import type { KPIsDashboard } from '@/app/dashboard/actions'
@@ -37,25 +35,14 @@ function buildSections(kpis: KPIsDashboard): Section[] {
     },
     {
       label: 'HV-F29',
-      subtitle: 'Tributario',
-      description: 'Cálculo, validación y envío del F29 mensual al SII',
+      subtitle: 'Tributario & RPA',
+      description: 'F29, procesos tributarios y automatización de portales SII',
       icon: FileSpreadsheet,
       href: '/dashboard/f29',
       gradient: 'from-emerald-500 to-emerald-600',
       tint: 'bg-emerald-500/5 hover:bg-emerald-500/10',
       kpiLabel: 'pendientes de envío',
       kpiValue: kpis.f29Pendientes,
-    },
-    {
-      label: 'HV-Bot',
-      subtitle: 'Automatización',
-      description: 'Descarga automática de certificados y documentos del SII',
-      icon: Bot,
-      href: '/dashboard/bots',
-      gradient: 'from-violet-500 to-violet-600',
-      tint: 'bg-violet-500/5 hover:bg-violet-500/10',
-      kpiLabel: 'ejecuciones este mes',
-      kpiValue: kpis.botsEjecutadosMes,
     },
     {
       label: 'HV-Bancos',
@@ -72,23 +59,12 @@ function buildSections(kpis: KPIsDashboard): Section[] {
       label: 'HV-Chat',
       subtitle: 'Inteligencia',
       description: 'Consulta normativa tributaria y el estado de tus documentos',
-      icon: TrendingUp,
-      href: '/dashboard/chat',
+      icon: Brain,
+      href: '/dashboard/inteligencia',
       gradient: 'from-amber-500 to-amber-600',
       tint: 'bg-amber-500/5 hover:bg-amber-500/10',
       kpiLabel: 'consultas IA',
       kpiValue: kpis.chatConsultasMes,
-    },
-    {
-      label: 'Clientes',
-      subtitle: 'Gestión',
-      description: 'Registro, configuración y seguimiento de tus empresas',
-      icon: Users,
-      href: '/dashboard/clientes',
-      gradient: 'from-sky-500 to-sky-600',
-      tint: 'bg-sky-500/5 hover:bg-sky-500/10',
-      kpiLabel: 'clientes activos',
-      kpiValue: kpis.clientesActivos,
     },
   ]
 }
@@ -105,7 +81,7 @@ export function CommandCenter({ kpis }: CommandCenterProps) {
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-widest mb-4">
         Módulos
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {sections.map((section) => (
           <Link
             key={section.label}

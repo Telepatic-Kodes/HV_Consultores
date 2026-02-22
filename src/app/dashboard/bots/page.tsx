@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { TopNav } from '@/components/dashboard'
-import { AUTOMATIZACION_TABS } from '@/lib/module-tabs'
+import { TRIBUTARIO_TABS } from '@/lib/module-tabs'
 import { BotsContent } from './bots-content'
 import { getBots, getBotStats, getJobsRecientes, getClientesParaBot } from './actions'
 
@@ -17,7 +17,7 @@ export default async function BotsPage() {
       <TopNav
         title="HV-Bot"
         subtitle="RPA para portales gubernamentales"
-        tabs={AUTOMATIZACION_TABS}
+        tabs={TRIBUTARIO_TABS}
       />
 
       <Suspense fallback={<div className="p-6">Cargando...</div>}>

@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { TopNav } from '@/components/dashboard'
-import { AUTOMATIZACION_TABS } from '@/lib/module-tabs'
+import { TRIBUTARIO_TABS } from '@/lib/module-tabs'
 import { SiiDashboardContent } from './components/sii-dashboard'
 import { getSiiStats, getJobsRecientes, getClientesConCredenciales, getScheduledTasks, getBotDefiniciones } from './actions'
 import type { SiiDashboardStats, SiiJob, SiiTaskType } from '@/lib/sii-rpa/types'
@@ -69,7 +69,7 @@ export default async function SiiPage() {
       <TopNav
         title="SII RPA"
         subtitle="Automatización del Portal SII"
-        tabs={AUTOMATIZACION_TABS}
+        tabs={TRIBUTARIO_TABS}
       />
 
       <Suspense fallback={<div className="p-6">Cargando...</div>}>
