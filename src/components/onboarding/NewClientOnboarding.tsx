@@ -5,6 +5,7 @@ import { useMutation } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Building, Scale, BookOpen, Landmark, KeyRound, CheckCircle } from 'lucide-react'
+import { toast } from 'sonner'
 import { StepProgress } from './StepProgress'
 import {
   DatosBasicosStep,
@@ -18,9 +19,9 @@ import {
 const STEPS = [
   { label: 'Datos Básicos', icon: Building },
   { label: 'Régimen', icon: Scale },
-  { label: 'Plan Cuentas', icon: BookOpen },
-  { label: 'Cuenta Bancaria', icon: Landmark },
-  { label: 'Credenciales SII', icon: KeyRound },
+  { label: 'Plan Cuentas', icon: BookOpen, optional: true },
+  { label: 'Cuenta Bancaria', icon: Landmark, optional: true },
+  { label: 'Credenciales SII', icon: KeyRound, optional: true },
   { label: 'Resumen', icon: CheckCircle },
 ]
 
@@ -113,8 +114,10 @@ export function NewClientOnboarding() {
           tasa_ppm: formData.tasa_ppm ? parseFloat(formData.tasa_ppm) : undefined,
         })
       }
+      toast.success('Cliente creado exitosamente')
     } catch (err) {
       console.error('Error creating/updating client:', err)
+      toast.error('Error al crear el cliente')
     }
 
     goForward()
@@ -130,8 +133,10 @@ export function NewClientOnboarding() {
           id: clienteId as any,
           regimen_tributario: regimen as any,
         })
+        toast.success('Régimen tributario configurado')
       } catch (err) {
         console.error('Error updating régimen:', err)
+        toast.error('Error al configurar régimen')
       }
     }
 
@@ -156,8 +161,10 @@ export function NewClientOnboarding() {
           tipo_cuenta: cuentaData.tipo_cuenta as any,
           numero_cuenta: cuentaData.numero_cuenta,
         })
+        toast.success('Cuenta bancaria agregada')
       } catch (err) {
         console.error('Error creating bank account:', err)
+        toast.error('Error al agregar cuenta bancaria')
       }
     }
 
@@ -176,8 +183,10 @@ export function NewClientOnboarding() {
           usuario_encriptado: credData.rut_usuario,
           password_encriptado: credData.clave,
         })
+        toast.success('Credenciales SII guardadas')
       } catch (err) {
         console.error('Error creating credentials:', err)
+        toast.error('Error al guardar credenciales')
       }
     }
 

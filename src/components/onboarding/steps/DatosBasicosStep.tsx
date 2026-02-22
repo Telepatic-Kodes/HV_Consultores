@@ -111,7 +111,7 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
             <Input
               value={form.razon_social}
               onChange={(e) => setForm((p) => ({ ...p, razon_social: e.target.value }))}
-              placeholder="Distribuidora Los Andes SpA"
+              placeholder="Ej: Mi Empresa SpA"
               className="h-11"
               autoFocus
             />
@@ -124,10 +124,11 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
             <Input
               value={form.rut}
               onChange={(e) => setForm((p) => ({ ...p, rut: formatRut(e.target.value) }))}
-              placeholder="76.543.210-K"
+              placeholder="Ej: 76.123.456-7"
               className="h-11 font-mono"
               maxLength={12}
             />
+            <p className="text-[11px] text-muted-foreground/60 mt-1">Formato: XX.XXX.XXX-X</p>
           </div>
 
           <div>
@@ -137,7 +138,7 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
             <Input
               value={form.nombre_fantasia}
               onChange={(e) => setForm((p) => ({ ...p, nombre_fantasia: e.target.value }))}
-              placeholder="Nombre comercial"
+              placeholder="Ej: Nombre comercial (opcional)"
               className="h-11"
             />
           </div>
@@ -149,7 +150,7 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
             <Input
               value={form.giro}
               onChange={(e) => setForm((p) => ({ ...p, giro: e.target.value }))}
-              placeholder="Distribución de alimentos y bebidas"
+              placeholder="Ej: Venta al por mayor de alimentos"
               className="h-11"
             />
           </div>
@@ -166,6 +167,7 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
               placeholder="1.0"
               className="h-11 font-mono"
             />
+            <p className="text-[11px] text-muted-foreground/60 mt-1">Pago Provisional Mensual (generalmente 1%)</p>
           </div>
         </div>
       </div>
@@ -184,7 +186,7 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
             <Input
               value={form.direccion}
               onChange={(e) => setForm((p) => ({ ...p, direccion: e.target.value }))}
-              placeholder="Av. Providencia 1234, Oficina 501"
+              placeholder="Ej: Av. Principal 1234, Of. 501"
               className="h-11"
             />
           </div>
@@ -195,7 +197,7 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
             <Input
               value={form.comuna}
               onChange={(e) => setForm((p) => ({ ...p, comuna: e.target.value }))}
-              placeholder="Providencia"
+              placeholder="Ej: Providencia"
               className="h-11"
             />
           </div>
@@ -206,7 +208,7 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
             <Input
               value={form.region}
               onChange={(e) => setForm((p) => ({ ...p, region: e.target.value }))}
-              placeholder="Metropolitana"
+              placeholder="Ej: Metropolitana"
               className="h-11"
             />
           </div>

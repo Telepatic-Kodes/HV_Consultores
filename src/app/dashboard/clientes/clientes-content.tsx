@@ -26,8 +26,14 @@ import {
   X,
   User,
   Clock,
+  FlaskConical,
+  FileText,
+  Bot,
+  Landmark,
 } from 'lucide-react'
 import Link from 'next/link'
+import { useMutation } from 'convex/react'
+import { api } from '../../../../convex/_generated/api'
 import { crearCliente, actualizarCliente, desactivarCliente } from './actions'
 import type { ClienteConStats, ClienteStats } from './actions'
 import type { Database } from '@/types/database.types'
@@ -270,25 +276,17 @@ export function ClientesContent({ clientes, stats, contadores }: ClientesContent
         </CardHeader>
         <CardContent className="p-0">
           {clientesFiltrados.length === 0 ? (
-            <div className="py-16 text-center">
-              <div className="h-14 w-14 mx-auto rounded-xl bg-muted/50 flex items-center justify-center mb-4">
-                <Building2 className="h-7 w-7 text-muted-foreground/50" />
+            filtro ? (
+              <div className="py-16 text-center">
+                <div className="h-14 w-14 mx-auto rounded-xl bg-muted/50 flex items-center justify-center mb-4">
+                  <Search className="h-7 w-7 text-muted-foreground/50" />
+                </div>
+                <p className="text-muted-foreground font-medium">No se encontraron clientes</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">Intenta con otro termino de busqueda</p>
               </div>
-              <p className="text-muted-foreground font-medium">
-                {filtro ? 'No se encontraron clientes' : 'No hay clientes registrados'}
-              </p>
-              <p className="text-xs text-muted-foreground/70 mt-1">
-                {filtro ? 'Intenta con otro termino de busqueda' : 'Comienza agregando tu primer cliente'}
-              </p>
-              {!filtro && (
-                <Link href="/dashboard/clientes/nuevo">
-                  <Button className="mt-6 shadow-executive">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Agregar primer cliente
-                  </Button>
-                </Link>
-              )}
-            </div>
+            ) : (
+              <WelcomeEmptyState />
+            )
           ) : (
             <Table>
               <TableHeader>
@@ -398,6 +396,8 @@ export function ClientesContent({ clientes, stats, contadores }: ClientesContent
           )}
         </CardContent>
       </Card>
+
+      {/* Welcome Empty State Modal-level component defined below */}
 
       {/* Modal */}
       {showModal && (
@@ -611,5 +611,100 @@ export function ClientesContent({ clientes, stats, contadores }: ClientesContent
         </div>
       )}
     </main>
+  )
+}
+
+function WelcomeEmptyState() {
+  const seedDemoData = useMutation(api.seed.seedDemoData)
+  const [seedLoading, setSeedLoading] = useState(false)
+  const [seedDone, setSeedDone] = useState(false)
+  const router = useRouter()
+
+  const handleSeed = async () => {
+    setSeedLoading(true)
+    try {
+      await seedDemoData()
+      setSeedDone(true)
+      setTimeout(() => router.refresh(), 500)
+    } catch {
+      // data may already exist
+    }
+    setSeedLoading(false)
+  }
+
+  if (seedDone) {
+    return (
+      <div className="py-16 text-center">
+        <div className="h-16 w-16 mx-auto rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4">
+          <CheckCircle className="h-8 w-8 text-emerald-500" />
+        </div>
+        <p className="text-lg font-semibold text-foreground">Datos de ejemplo cargados</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Se crearon 3 empresas con documentos, F29, transacciones y mas. Recargando...
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="py-12 px-6">
+      <div className="max-w-lg mx-auto text-center">
+        <div className="h-16 w-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
+          <Building2 className="h-8 w-8 text-primary" />
+        </div>
+        <h2 className="text-xl font-bold text-foreground">
+          Bienvenido a HV Consultores
+        </h2>
+        <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
+          Comienza registrando tu primer cliente para activar todos los modulos de la plataforma.
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+          <Link href="/dashboard/clientes/nuevo">
+            <Button size="lg" className="shadow-executive">
+              <Plus className="mr-2 h-4 w-4" />
+              Registrar primer cliente
+            </Button>
+          </Link>
+          <Button
+            size="lg"
+            variant="outline"
+            onClick={handleSeed}
+            disabled={seedLoading}
+          >
+            {seedLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FlaskConical className="mr-2 h-4 w-4" />
+            )}
+            Cargar datos de ejemplo
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10">
+          <div className="p-4 rounded-xl bg-muted/30 border border-border/30">
+            <div className="h-9 w-9 mx-auto rounded-lg bg-blue-500/10 flex items-center justify-center mb-2">
+              <FileText className="h-4.5 w-4.5 text-blue-500" />
+            </div>
+            <p className="text-xs font-semibold text-foreground">Gestion Tributaria</p>
+            <p className="text-xs text-muted-foreground mt-1">F29, documentos y clasificacion IA</p>
+          </div>
+          <div className="p-4 rounded-xl bg-muted/30 border border-border/30">
+            <div className="h-9 w-9 mx-auto rounded-lg bg-emerald-500/10 flex items-center justify-center mb-2">
+              <Landmark className="h-4.5 w-4.5 text-emerald-500" />
+            </div>
+            <p className="text-xs font-semibold text-foreground">Conciliacion Bancaria</p>
+            <p className="text-xs text-muted-foreground mt-1">Match automatico banco-documentos</p>
+          </div>
+          <div className="p-4 rounded-xl bg-muted/30 border border-border/30">
+            <div className="h-9 w-9 mx-auto rounded-lg bg-violet-500/10 flex items-center justify-center mb-2">
+              <Bot className="h-4.5 w-4.5 text-violet-500" />
+            </div>
+            <p className="text-xs font-semibold text-foreground">Automatizacion IA</p>
+            <p className="text-xs text-muted-foreground mt-1">Bots RPA y asistente inteligente</p>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

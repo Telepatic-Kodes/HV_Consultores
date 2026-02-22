@@ -90,7 +90,7 @@ export default async function DashboardPage() {
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
 
           {/* Row 1: Hero + 3 Primary KPIs */}
-          <HeroCard resumen={stats.resumen} />
+          <HeroCard resumen={stats.resumen} isEmpty={kpis.clientesActivos === 0} />
           <KPICard
             title="Clientes Activos"
             value={kpis.clientesActivos}

@@ -51,10 +51,13 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold">Resumen</h2>
+      <div className="text-center pb-2">
+        <div className="h-12 w-12 mx-auto rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
+          <Check className="h-6 w-6 text-emerald-500" />
+        </div>
+        <h2 className="text-xl font-semibold">¡Cliente registrado con exito!</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Revisa la configuración del nuevo cliente antes de continuar
+          Revisa la configuracion y decide los proximos pasos
         </p>
       </div>
 
@@ -130,6 +133,8 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
 
       {/* Seed data offer for first-time users */}
       {isFirstClient && !seedDone && (
+        <>
+        <div className="border-t border-border/30 my-2" />
         <Card className="border-primary/30 bg-primary/5">
           <CardContent className="p-5">
             <div className="flex items-start gap-4">
@@ -137,9 +142,9 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
                 <FlaskConical className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-sm">¿Primera vez? Carga datos de ejemplo</h3>
+                <h3 className="font-semibold text-sm">¿Quieres explorar la plataforma?</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Agrega 3 empresas chilenas con documentos, F29, transacciones y más para explorar todos los flujos.
+                  Esto creara 3 empresas ficticias con documentos tributarios, F29, transacciones bancarias y conciliaciones para que puedas probar todos los modulos.
                 </p>
                 <Button
                   size="sm"
@@ -167,6 +172,7 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
             </div>
           </CardContent>
         </Card>
+        </>
       )}
 
       {seedDone && (
@@ -187,7 +193,7 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
             </Button>
           </Link>
           <Link href={clienteId ? `/dashboard/clientes/${clienteId}` : '/dashboard/clientes'}>
-            <Button className="shadow-executive">
+            <Button size="lg" className="shadow-executive">
               Ir al Dashboard del Cliente
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

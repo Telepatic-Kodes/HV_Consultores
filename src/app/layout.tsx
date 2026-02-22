@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { DM_Sans, Playfair_Display, JetBrains_Mono } from 'next/font/google'
-import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server"
 import { ConvexClientProvider } from '@/providers/convex-provider'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 // Executive body font - clean, modern, professional
@@ -63,14 +63,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ConvexAuthNextjsServerProvider>
-      <html lang="es" suppressHydrationWarning>
-        <body className={`${dmSans.variable} ${playfair.variable} ${jetbrainsMono.variable} font-sans`}>
-          <ConvexClientProvider>
-            {children}
-          </ConvexClientProvider>
-        </body>
-      </html>
-    </ConvexAuthNextjsServerProvider>
+    <html lang="es" suppressHydrationWarning>
+      <body className={`${dmSans.variable} ${playfair.variable} ${jetbrainsMono.variable} font-sans`}>
+        <ConvexClientProvider>
+          {children}
+          <Toaster position="top-right" richColors closeButton />
+        </ConvexClientProvider>
+      </body>
+    </html>
   )
 }

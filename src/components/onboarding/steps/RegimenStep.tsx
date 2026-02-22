@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Check } from 'lucide-react'
+import { Check, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const REGIMENES = [
@@ -49,6 +49,10 @@ export function RegimenStep({ data, onNext, onBack }: RegimenStepProps) {
         <p className="text-sm text-muted-foreground mt-1">
           Selecciona el régimen tributario del cliente. Esto determinará el plan de cuentas sugerido.
         </p>
+        <div className="flex items-start gap-2 mt-3 p-3 rounded-lg bg-blue-50 border border-blue-100 text-blue-700 text-xs">
+          <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+          <span>Si no estas seguro, el régimen mas comun para PyMEs es <strong>14D - Pro PyME Simplificado</strong>. Consulta con tu contador para confirmar.</span>
+        </div>
       </div>
 
       <div className="grid gap-3">
@@ -80,7 +84,14 @@ export function RegimenStep({ data, onNext, onBack }: RegimenStepProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-sm">{regimen.nombre}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-sm">{regimen.nombre}</h3>
+                    {regimen.value === '14D' && (
+                      <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                        Más común
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground mt-1">{regimen.descripcion}</p>
                   <p className="text-xs text-primary/80 font-medium mt-2">
                     Ideal para: {regimen.ideal}

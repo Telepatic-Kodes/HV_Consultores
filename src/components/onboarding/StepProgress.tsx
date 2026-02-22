@@ -5,7 +5,7 @@ import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface StepProgressProps {
-  steps: { label: string; icon: LucideIcon }[]
+  steps: { label: string; icon: LucideIcon; optional?: boolean }[]
   currentStep: number
 }
 
@@ -46,6 +46,11 @@ export function StepProgress({ steps, currentStep }: StepProgressProps) {
                 >
                   {step.label}
                 </span>
+                {step.optional && !isCompleted && (
+                  <span className="text-[10px] text-muted-foreground/60 font-normal">
+                    Opcional
+                  </span>
+                )}
               </div>
 
               {/* Connector line */}
