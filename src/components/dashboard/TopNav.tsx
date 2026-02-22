@@ -1,12 +1,12 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Search, Calendar, Menu } from 'lucide-react'
+import { Search, Calendar, Menu, Building2, ArrowLeftRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NotificationsDropdown } from './NotificationsDropdown'
-import { ClientSelector } from './ClientSelector'
+import { useClientContext } from './ClientContext'
 import { useSidebar } from './SidebarContext'
 import Link from 'next/link'
 
@@ -63,13 +63,11 @@ export function TopNav({ title, subtitle, tabs }: TopNavProps) {
           />
         </div>
 
-        {/* Client selector — large screens only */}
-        <div className="hidden lg:block">
-          <ClientSelector />
-        </div>
+        {/* Active client badge */}
+        <ActiveClientBadge />
 
-        {/* Divider — large screens only */}
-        <div className="hidden lg:block h-6 w-px bg-border/60" />
+        {/* Divider */}
+        <div className="hidden sm:block h-6 w-px bg-border/60" />
 
         {/* Notifications */}
         <NotificationsDropdown />
@@ -87,6 +85,28 @@ export function TopNav({ title, subtitle, tabs }: TopNavProps) {
     </header>
     {tabs && tabs.length > 0 && <TabBar tabs={tabs as TopNavTab[]} />}
     </>
+  )
+}
+
+function ActiveClientBadge() {
+  const { activeClient, clearActiveClient } = useClientContext()
+
+  if (!activeClient) return null
+
+  return (
+    <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-border/50 bg-muted/30 px-2.5 py-1.5">
+      <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
+      <span className="text-xs font-medium truncate max-w-[140px]">
+        {activeClient.razon_social}
+      </span>
+      <button
+        onClick={clearActiveClient}
+        className="ml-0.5 p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        title="Cambiar cliente"
+      >
+        <ArrowLeftRight className="h-3 w-3" />
+      </button>
+    </div>
   )
 }
 
