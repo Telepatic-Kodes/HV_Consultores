@@ -87,7 +87,7 @@ export async function getBankModuleStats(): Promise<ActionResult<BankModuleStats
 export async function getBankAccounts(clienteId?: string): Promise<ActionResult<BankAccount[]>> {
   try {
     // TODO: cartolas_cuentas_bancarias not in Convex yet
-    console.log('getBankAccounts for client:', clienteId)
+    // cartolas_cuentas_bancarias not in Convex yet
     return { success: true, data: [] }
   } catch (error) {
     console.error('Error getting bank accounts:', error)
