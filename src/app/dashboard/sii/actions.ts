@@ -158,11 +158,13 @@ export async function getJobsRecientes(): Promise<SIIJob[]> {
   return getSIIJobs()
 }
 
-export async function getClientesConCredenciales(): Promise<any[]> {
+export async function getClientesConCredenciales(): Promise<{ id: string; nombre: string; rut: string; credencial_id: string; validacion_exitosa: boolean }[]> {
   try {
     if (!convex) throw new Error('Convex client not initialized')
     const clientes = await convex.query(api.clients.listClientes, {})
-    return clientes.filter((c: any) => c.activo)
+    return (clientes as any[])
+      .filter((c: any) => c.activo !== false)
+      .map((c: any) => ({ id: c._id, nombre: c.razon_social, rut: c.rut, credencial_id: c._id, validacion_exitosa: false }))
   } catch {
     return []
   }

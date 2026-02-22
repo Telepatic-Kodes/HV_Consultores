@@ -304,11 +304,13 @@ export async function getProductividadContadores(): Promise<any[]> {
   }
 }
 
-export async function getClientesParaReportes(): Promise<any[]> {
+export async function getClientesParaReportes(): Promise<{ id: string; rut: string; razon_social: string }[]> {
   try {
     if (!convex) throw new Error('Convex client not initialized')
     const clientes = await convex.query(api.clients.listClientes, {})
-    return clientes.filter((c: any) => c.activo)
+    return (clientes as any[])
+      .filter((c: any) => c.activo !== false)
+      .map((c: any) => ({ id: c._id, rut: c.rut, razon_social: c.razon_social }))
   } catch {
     return []
   }
