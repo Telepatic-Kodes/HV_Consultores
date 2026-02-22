@@ -47,6 +47,14 @@ const tipoDocumentoLabels: Record<string, string> = {
   'NOTA_DEBITO': 'Nota Débito',
   'FACTURA_COMPRA': 'Fact. Compra',
   'GUIA_DESPACHO': 'Guía Despacho',
+  '33': 'Factura',
+  '34': 'Fact. Exenta',
+  '39': 'Boleta',
+  '41': 'Boleta Exenta',
+  '46': 'Fact. Compra',
+  '52': 'Guía Despacho',
+  '56': 'Nota Débito',
+  '61': 'Nota Crédito',
 }
 
 export function ClasificadorContent({
