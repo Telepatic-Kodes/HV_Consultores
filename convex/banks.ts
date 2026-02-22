@@ -419,7 +419,15 @@ export const createBankAccount = mutation({
       v.literal("bancochile"),
       v.literal("bancoestado"),
       v.literal("santander"),
-      v.literal("bci")
+      v.literal("bci"),
+      v.literal("itau"),
+      v.literal("scotiabank"),
+      v.literal("security"),
+      v.literal("bice"),
+      v.literal("falabella"),
+      v.literal("ripley"),
+      v.literal("consorcio"),
+      v.literal("internacional")
     ),
     tipo_cuenta: v.union(
       v.literal("corriente"),

@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
+import { REGIONES, getComunasByRegion } from '@/lib/chile-locations'
 
 interface DatosBasicosData {
   razon_social: string
@@ -19,6 +20,7 @@ interface DatosBasicosData {
 interface DatosBasicosStepProps {
   data: DatosBasicosData | null
   onNext: (data: DatosBasicosData) => void
+  isSubmitting?: boolean
 }
 
 function formatRut(value: string): string {
@@ -46,7 +48,7 @@ function validateRut(rut: string): boolean {
   return dv === dvExpected
 }
 
-export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
+export function DatosBasicosStep({ data, onNext, isSubmitting }: DatosBasicosStepProps) {
   const [form, setForm] = useState<DatosBasicosData>(
     data ?? {
       razon_social: '',
@@ -192,31 +194,41 @@ export function DatosBasicosStep({ data, onNext }: DatosBasicosStepProps) {
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-              Comuna
+              Región
             </label>
-            <Input
-              value={form.comuna}
-              onChange={(e) => setForm((p) => ({ ...p, comuna: e.target.value }))}
-              placeholder="Ej: Providencia"
-              className="h-11"
-            />
+            <select
+              className="w-full h-11 rounded-lg border border-border/50 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              value={form.region}
+              onChange={(e) => setForm((p) => ({ ...p, region: e.target.value, comuna: '' }))}
+            >
+              <option value="">Seleccionar región...</option>
+              {REGIONES.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-              Región
+              Comuna
             </label>
-            <Input
-              value={form.region}
-              onChange={(e) => setForm((p) => ({ ...p, region: e.target.value }))}
-              placeholder="Ej: Metropolitana"
-              className="h-11"
-            />
+            <select
+              className="w-full h-11 rounded-lg border border-border/50 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors disabled:opacity-50"
+              value={form.comuna}
+              onChange={(e) => setForm((p) => ({ ...p, comuna: e.target.value }))}
+              disabled={!form.region}
+            >
+              <option value="">{form.region ? 'Seleccionar comuna...' : 'Primero selecciona una región'}</option>
+              {getComunasByRegion(form.region).map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
 
       <div className="flex justify-end pt-4">
-        <Button type="submit" className="shadow-executive">
+        <Button type="submit" className="shadow-executive" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Siguiente
         </Button>
       </div>

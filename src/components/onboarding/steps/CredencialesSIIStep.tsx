@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, Loader2 } from 'lucide-react'
 
 interface CredencialesData {
   rut_usuario: string
@@ -14,9 +14,10 @@ interface CredencialesSIIStepProps {
   data: CredencialesData | null
   onNext: (data: CredencialesData | null) => void
   onBack: () => void
+  isSubmitting?: boolean
 }
 
-export function CredencialesSIIStep({ data, onNext, onBack }: CredencialesSIIStepProps) {
+export function CredencialesSIIStep({ data, onNext, onBack, isSubmitting }: CredencialesSIIStepProps) {
   const [form, setForm] = useState<CredencialesData>(
     data ?? { rut_usuario: '', clave: '' }
   )
@@ -86,9 +87,10 @@ export function CredencialesSIIStep({ data, onNext, onBack }: CredencialesSIISte
           </Button>
           <Button
             onClick={() => isValid && onNext(form)}
-            disabled={!isValid}
+            disabled={!isValid || isSubmitting}
             className="shadow-executive"
           >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Siguiente
           </Button>
         </div>

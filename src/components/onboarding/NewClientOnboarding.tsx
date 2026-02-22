@@ -53,6 +53,7 @@ export function NewClientOnboarding() {
   const [currentStep, setCurrentStep] = useState(0)
   const [direction, setDirection] = useState(1)
   const [clienteId, setClienteId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [data, setData] = useState<OnboardingData>({
     datosBasicos: null,
     regimen: null,
@@ -79,6 +80,7 @@ export function NewClientOnboarding() {
   // Step 1: Datos Básicos — creates the client in Convex
   const handleDatosBasicos = useCallback(async (formData: NonNullable<OnboardingData['datosBasicos']>) => {
     setData((prev) => ({ ...prev, datosBasicos: formData }))
+    setIsSubmitting(true)
 
     try {
       if (!clienteId) {
@@ -115,32 +117,35 @@ export function NewClientOnboarding() {
         })
       }
       toast.success('Cliente creado exitosamente')
+      goForward()
     } catch (err) {
       console.error('Error creating/updating client:', err)
       toast.error('Error al crear el cliente')
+    } finally {
+      setIsSubmitting(false)
     }
-
-    goForward()
   }, [clienteId, createCliente, updateCliente, goForward])
 
   // Step 2: Régimen Tributario
   const handleRegimen = useCallback(async (regimen: string) => {
     setData((prev) => ({ ...prev, regimen }))
+    setIsSubmitting(true)
 
-    if (clienteId) {
-      try {
+    try {
+      if (clienteId) {
         await updateCliente({
           id: clienteId as any,
           regimen_tributario: regimen as any,
         })
         toast.success('Régimen tributario configurado')
-      } catch (err) {
-        console.error('Error updating régimen:', err)
-        toast.error('Error al configurar régimen')
       }
+      goForward()
+    } catch (err) {
+      console.error('Error updating régimen:', err)
+      toast.error('Error al configurar régimen')
+    } finally {
+      setIsSubmitting(false)
     }
-
-    goForward()
   }, [clienteId, updateCliente, goForward])
 
   // Step 3: Plan de Cuentas
@@ -152,9 +157,10 @@ export function NewClientOnboarding() {
   // Step 4: Cuenta Bancaria
   const handleCuentaBancaria = useCallback(async (cuentaData: OnboardingData['cuentaBancaria']) => {
     setData((prev) => ({ ...prev, cuentaBancaria: cuentaData }))
+    setIsSubmitting(true)
 
-    if (cuentaData && clienteId) {
-      try {
+    try {
+      if (cuentaData && clienteId) {
         await createBankAccount({
           cliente_id: clienteId as any,
           banco: cuentaData.banco as any,
@@ -162,21 +168,23 @@ export function NewClientOnboarding() {
           numero_cuenta: cuentaData.numero_cuenta,
         })
         toast.success('Cuenta bancaria agregada')
-      } catch (err) {
-        console.error('Error creating bank account:', err)
-        toast.error('Error al agregar cuenta bancaria')
       }
+      goForward()
+    } catch (err) {
+      console.error('Error creating bank account:', err)
+      toast.error('Error al agregar cuenta bancaria')
+    } finally {
+      setIsSubmitting(false)
     }
-
-    goForward()
   }, [clienteId, createBankAccount, goForward])
 
   // Step 5: Credenciales SII
   const handleCredenciales = useCallback(async (credData: OnboardingData['credenciales']) => {
     setData((prev) => ({ ...prev, credenciales: credData }))
+    setIsSubmitting(true)
 
-    if (credData && clienteId) {
-      try {
+    try {
+      if (credData && clienteId) {
         await createCredencial({
           cliente_id: clienteId as any,
           portal: 'SII_MIPYME',
@@ -184,13 +192,14 @@ export function NewClientOnboarding() {
           password_encriptado: credData.clave,
         })
         toast.success('Credenciales SII guardadas')
-      } catch (err) {
-        console.error('Error creating credentials:', err)
-        toast.error('Error al guardar credenciales')
       }
+      goForward()
+    } catch (err) {
+      console.error('Error creating credentials:', err)
+      toast.error('Error al guardar credenciales')
+    } finally {
+      setIsSubmitting(false)
     }
-
-    goForward()
   }, [clienteId, createCredencial, goForward])
 
   const renderStep = () => {
@@ -200,6 +209,7 @@ export function NewClientOnboarding() {
           <DatosBasicosStep
             data={data.datosBasicos}
             onNext={handleDatosBasicos}
+            isSubmitting={isSubmitting}
           />
         )
       case 1:
@@ -208,6 +218,7 @@ export function NewClientOnboarding() {
             data={data.regimen}
             onNext={handleRegimen}
             onBack={() => goBack()}
+            isSubmitting={isSubmitting}
           />
         )
       case 2:
@@ -224,6 +235,7 @@ export function NewClientOnboarding() {
             data={data.cuentaBancaria}
             onNext={handleCuentaBancaria}
             onBack={() => goBack()}
+            isSubmitting={isSubmitting}
           />
         )
       case 4:
@@ -232,6 +244,7 @@ export function NewClientOnboarding() {
             data={data.credenciales}
             onNext={handleCredenciales}
             onBack={() => goBack()}
+            isSubmitting={isSubmitting}
           />
         )
       case 5:

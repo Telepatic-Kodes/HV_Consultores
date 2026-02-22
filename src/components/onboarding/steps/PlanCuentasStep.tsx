@@ -59,7 +59,7 @@ export function PlanCuentasStep({ regimen, onNext, onBack }: PlanCuentasStepProp
         </p>
       </div>
 
-      <Card>
+      <Card className="ring-1 ring-border/50 shadow-executive">
         <CardContent className="p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">

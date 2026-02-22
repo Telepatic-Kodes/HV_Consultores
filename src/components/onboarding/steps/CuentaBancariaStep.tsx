@@ -3,12 +3,21 @@
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 
 const BANCOS = [
   { value: 'bancoestado', label: 'Banco Estado' },
-  { value: 'bancochile', label: 'Banco Chile' },
+  { value: 'bancochile', label: 'Banco de Chile' },
   { value: 'santander', label: 'Santander' },
   { value: 'bci', label: 'BCI' },
+  { value: 'itau', label: 'Itaú' },
+  { value: 'scotiabank', label: 'Scotiabank' },
+  { value: 'security', label: 'Banco Security' },
+  { value: 'bice', label: 'Banco BICE' },
+  { value: 'falabella', label: 'Banco Falabella' },
+  { value: 'ripley', label: 'Banco Ripley' },
+  { value: 'consorcio', label: 'Banco Consorcio' },
+  { value: 'internacional', label: 'Banco Internacional' },
 ] as const
 
 const TIPOS_CUENTA = [
@@ -27,9 +36,10 @@ interface CuentaBancariaStepProps {
   data: CuentaBancariaData | null
   onNext: (data: CuentaBancariaData | null) => void
   onBack: () => void
+  isSubmitting?: boolean
 }
 
-export function CuentaBancariaStep({ data, onNext, onBack }: CuentaBancariaStepProps) {
+export function CuentaBancariaStep({ data, onNext, onBack, isSubmitting }: CuentaBancariaStepProps) {
   const [form, setForm] = useState<CuentaBancariaData>(
     data ?? { banco: '', tipo_cuenta: '', numero_cuenta: '' }
   )
@@ -111,9 +121,10 @@ export function CuentaBancariaStep({ data, onNext, onBack }: CuentaBancariaStepP
           </Button>
           <Button
             onClick={() => isValid && onNext(form)}
-            disabled={!isValid}
+            disabled={!isValid || isSubmitting}
             className="shadow-executive"
           >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Siguiente
           </Button>
         </div>

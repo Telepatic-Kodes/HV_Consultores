@@ -80,7 +80,15 @@ const bancoCode = v.union(
   v.literal("bancochile"),
   v.literal("bancoestado"),
   v.literal("santander"),
-  v.literal("bci")
+  v.literal("bci"),
+  v.literal("itau"),
+  v.literal("scotiabank"),
+  v.literal("security"),
+  v.literal("bice"),
+  v.literal("falabella"),
+  v.literal("ripley"),
+  v.literal("consorcio"),
+  v.literal("internacional")
 );
 
 const procesoTipo = v.union(

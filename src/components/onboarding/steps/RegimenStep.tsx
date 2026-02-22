@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Check, Info } from 'lucide-react'
+import { Check, Info, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const REGIMENES = [
@@ -37,9 +37,10 @@ interface RegimenStepProps {
   data: string | null
   onNext: (regimen: string) => void
   onBack: () => void
+  isSubmitting?: boolean
 }
 
-export function RegimenStep({ data, onNext, onBack }: RegimenStepProps) {
+export function RegimenStep({ data, onNext, onBack, isSubmitting }: RegimenStepProps) {
   const [selected, setSelected] = useState(data ?? '')
 
   return (
@@ -51,7 +52,7 @@ export function RegimenStep({ data, onNext, onBack }: RegimenStepProps) {
         </p>
         <div className="flex items-start gap-2 mt-3 p-3 rounded-lg bg-blue-50 border border-blue-100 text-blue-700 text-xs">
           <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-          <span>Si no estas seguro, el régimen mas comun para PyMEs es <strong>14D - Pro PyME Simplificado</strong>. Consulta con tu contador para confirmar.</span>
+          <span>Si no estás seguro, el régimen más común para PyMEs es <strong>14D - Pro PyME Simplificado</strong>. Consulta con tu contador para confirmar.</span>
         </div>
       </div>
 
@@ -60,10 +61,10 @@ export function RegimenStep({ data, onNext, onBack }: RegimenStepProps) {
           <Card
             key={regimen.value}
             className={cn(
-              'cursor-pointer transition-all duration-200 hover:shadow-md',
+              'cursor-pointer transition-all duration-200 hover:shadow-executive-md',
               selected === regimen.value
-                ? 'ring-2 ring-primary border-primary bg-primary/5'
-                : 'hover:border-primary/30'
+                ? 'ring-2 ring-primary border-primary bg-primary/5 shadow-executive'
+                : 'ring-1 ring-border/50 hover:border-primary/30'
             )}
             onClick={() => setSelected(regimen.value)}
           >
@@ -109,9 +110,10 @@ export function RegimenStep({ data, onNext, onBack }: RegimenStepProps) {
         </Button>
         <Button
           onClick={() => selected && onNext(selected)}
-          disabled={!selected}
+          disabled={!selected || isSubmitting}
           className="shadow-executive"
         >
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Siguiente
         </Button>
       </div>

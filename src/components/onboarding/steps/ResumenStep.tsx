@@ -33,10 +33,18 @@ function StatusBadge({ configured }: { configured: boolean }) {
 }
 
 const BANCO_LABELS: Record<string, string> = {
-  bancochile: 'Banco Chile',
+  bancochile: 'Banco de Chile',
   bancoestado: 'Banco Estado',
   santander: 'Santander',
   bci: 'BCI',
+  itau: 'Itaú',
+  scotiabank: 'Scotiabank',
+  security: 'Banco Security',
+  bice: 'Banco BICE',
+  falabella: 'Banco Falabella',
+  ripley: 'Banco Ripley',
+  consorcio: 'Banco Consorcio',
+  internacional: 'Banco Internacional',
 }
 
 export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
@@ -55,14 +63,14 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
         <div className="h-12 w-12 mx-auto rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
           <Check className="h-6 w-6 text-emerald-500" />
         </div>
-        <h2 className="text-xl font-semibold">¡Cliente registrado con exito!</h2>
+        <h2 className="text-xl font-semibold">¡Cliente registrado con éxito!</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Revisa la configuracion y decide los proximos pasos
+          Revisa la configuración y decide los próximos pasos
         </p>
       </div>
 
       {/* Client info summary */}
-      <Card>
+      <Card className="ring-1 ring-border/50 shadow-executive">
         <CardContent className="p-5 space-y-4">
           <h3 className="font-semibold text-sm border-b border-border/30 pb-2">
             Datos de la Empresa
@@ -99,7 +107,7 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
       </Card>
 
       {/* Configuration checklist */}
-      <Card>
+      <Card className="ring-1 ring-border/50 shadow-executive">
         <CardContent className="p-5 space-y-3">
           <h3 className="font-semibold text-sm border-b border-border/30 pb-2">
             Configuración
@@ -144,7 +152,7 @@ export function ResumenStep({ data, clienteId, onBack }: ResumenStepProps) {
               <div className="flex-1">
                 <h3 className="font-semibold text-sm">¿Quieres explorar la plataforma?</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Esto creara 3 empresas ficticias con documentos tributarios, F29, transacciones bancarias y conciliaciones para que puedas probar todos los modulos.
+                  Esto creará 3 empresas ficticias con documentos tributarios, F29, transacciones bancarias y conciliaciones para que puedas probar todos los módulos.
                 </p>
                 <Button
                   size="sm"
