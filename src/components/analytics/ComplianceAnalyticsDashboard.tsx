@@ -96,13 +96,13 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
           } as AnalyticsFilter),
         })
 
-        if (!response.ok) throw new Error('Failed to fetch compliance metrics')
+        if (!response.ok) throw new Error('Error al obtener métricas de cumplimiento')
 
         const data = await response.json()
         setMetrics(data.data)
       } catch (err) {
         console.error('Error fetching metrics:', err)
-        setError('Failed to load compliance analytics')
+        setError('Error al cargar analítica de cumplimiento')
       } finally {
         setLoading(false)
       }
@@ -117,7 +117,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
     return (
       <Card className='border-destructive'>
         <CardContent className='pt-6'>
-          <p className='text-sm text-destructive'>{error || 'No data available'}</p>
+          <p className='text-sm text-destructive'>{error || 'Sin datos disponibles'}</p>
         </CardContent>
       </Card>
     )
@@ -129,21 +129,21 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-3xl font-bold tracking-tight'>
-            Compliance & Audit Reports
+            Cumplimiento y Reportes de Auditoría
           </h2>
           <p className='text-muted-foreground'>
-            GDPR, HIPAA, SOC2, and ISO 27001 compliance tracking
+            Seguimiento de cumplimiento GDPR, HIPAA, SOC2 e ISO 27001
           </p>
         </div>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Select period' />
+            <SelectValue placeholder='Seleccionar período' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='7d'>Last 7 days</SelectItem>
-            <SelectItem value='30d'>Last 30 days</SelectItem>
-            <SelectItem value='90d'>Last 90 days</SelectItem>
-            <SelectItem value='1y'>Last year</SelectItem>
+            <SelectItem value='7d'>Últimos 7 días</SelectItem>
+            <SelectItem value='30d'>Últimos 30 días</SelectItem>
+            <SelectItem value='90d'>Últimos 90 días</SelectItem>
+            <SelectItem value='1y'>Último año</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -153,7 +153,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <Shield className='h-5 w-5 text-blue-600' />
-            Overall Compliance Score
+            Puntaje General de Cumplimiento
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -165,10 +165,10 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
               <span className='text-lg text-muted-foreground'>/100</span>
               <p className='text-sm text-muted-foreground'>
                 {metrics.overallScore >= 90
-                  ? '✓ Excellent'
+                  ? '✓ Excelente'
                   : metrics.overallScore >= 75
-                    ? '⚠ Good'
-                    : '✗ Needs Attention'}
+                    ? '⚠ Bueno'
+                    : '✗ Requiere Atención'}
               </p>
             </div>
           </div>
@@ -195,7 +195,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
       {/* Compliance Radar Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className='text-lg'>Framework Compliance Radar</CardTitle>
+          <CardTitle className='text-lg'>Radar de Cumplimiento por Marco</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width='100%' height={350}>
@@ -209,7 +209,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
               <PolarAngleAxis dataKey='name' />
               <PolarRadiusAxis angle={90} domain={[0, 100]} />
               <Radar
-                name='Compliance Score'
+                name='Puntaje de Cumplimiento'
                 dataKey='score'
                 stroke='#3b82f6'
                 fill='#3b82f6'
@@ -234,13 +234,13 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
             <CardContent className='space-y-4'>
               <div>
                 <div className='flex items-center justify-between mb-2'>
-                  <span className='text-sm text-muted-foreground'>Last Audit</span>
+                  <span className='text-sm text-muted-foreground'>Última Auditoría</span>
                   <span className='text-sm font-medium'>
                     {new Date(framework.lastAudit).toLocaleDateString()}
                   </span>
                 </div>
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm text-muted-foreground'>Next Audit</span>
+                  <span className='text-sm text-muted-foreground'>Próxima Auditoría</span>
                   <span className='text-sm font-medium'>
                     {new Date(framework.nextAudit).toLocaleDateString()}
                   </span>
@@ -249,13 +249,13 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
 
               <div className='border-t pt-4'>
                 <div className='flex items-center justify-between mb-2'>
-                  <span className='text-sm font-medium'>Issues Found</span>
+                  <span className='text-sm font-medium'>Problemas Encontrados</span>
                   <span className='text-lg font-bold text-red-600'>
                     {framework.issues}
                   </span>
                 </div>
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm font-medium'>Resolved</span>
+                  <span className='text-sm font-medium'>Resueltos</span>
                   <span className='text-lg font-bold text-green-600'>
                     {framework.resolved}
                   </span>
@@ -271,7 +271,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
                 />
               </div>
               <p className='text-xs text-muted-foreground'>
-                {framework.resolved} of {framework.issues} issues resolved
+                {framework.resolved} de {framework.issues} problemas resueltos
               </p>
             </CardContent>
           </Card>
@@ -283,7 +283,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <AlertTriangle className='h-5 w-5 text-amber-600' />
-            Recent Violations & Findings
+            Violaciones y Hallazgos Recientes
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -301,8 +301,8 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
                       </div>
                       <p className='mt-2 text-sm font-medium'>{violation.description}</p>
                       <p className='mt-1 text-xs text-muted-foreground'>
-                        Detected: {new Date(violation.detectedDate).toLocaleDateString()}
-                        {violation.resolvedDate && ` • Resolved: ${new Date(violation.resolvedDate).toLocaleDateString()}`}
+                        Detectado: {new Date(violation.detectedDate).toLocaleDateString()}
+                        {violation.resolvedDate && ` • Resuelto: ${new Date(violation.resolvedDate).toLocaleDateString()}`}
                       </p>
                     </div>
                   </div>
@@ -313,8 +313,8 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
             <div className='flex items-center justify-center py-8'>
               <div className='text-center'>
                 <CheckCircle className='h-12 w-12 text-green-500 mx-auto mb-2' />
-                <p className='text-sm font-medium'>No violations found</p>
-                <p className='text-xs text-muted-foreground'>Your organization is in good standing</p>
+                <p className='text-sm font-medium'>No se encontraron violaciones</p>
+                <p className='text-xs text-muted-foreground'>Su organización está en buen estado</p>
               </div>
             </div>
           )}
@@ -325,7 +325,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
       {metrics.violationTrendLast30Days && metrics.violationTrendLast30Days.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Violation Trend (Last 30 Days)</CardTitle>
+            <CardTitle className='text-lg'>Tendencia de Violaciones (Últimos 30 Días)</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width='100%' height={300}>
@@ -347,7 +347,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
                   type='monotone'
                   dataKey='count'
                   stroke='#ef4444'
-                  name='New Violations'
+                  name='Nuevas Violaciones'
                   dot={false}
                 />
               </LineChart>
@@ -359,13 +359,13 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
       {/* Control Implementation Status */}
       <Card>
         <CardHeader>
-          <CardTitle className='text-lg'>Control Implementation Status</CardTitle>
+          <CardTitle className='text-lg'>Estado de Implementación de Controles</CardTitle>
         </CardHeader>
         <CardContent>
           <div className='space-y-4'>
             <div>
               <div className='flex items-center justify-between mb-2'>
-                <span className='text-sm font-medium'>Total Controls</span>
+                <span className='text-sm font-medium'>Controles Totales</span>
                 <span className='text-sm font-bold'>{metrics.controlStatus.total}</span>
               </div>
               <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
@@ -378,7 +378,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
 
             <div>
               <div className='flex items-center justify-between mb-2'>
-                <span className='text-sm font-medium'>Implemented</span>
+                <span className='text-sm font-medium'>Implementados</span>
                 <span className='text-sm font-bold'>{metrics.controlStatus.implemented}</span>
               </div>
               <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
@@ -393,7 +393,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
 
             <div>
               <div className='flex items-center justify-between mb-2'>
-                <span className='text-sm font-medium'>Tested</span>
+                <span className='text-sm font-medium'>Probados</span>
                 <span className='text-sm font-bold'>{metrics.controlStatus.tested}</span>
               </div>
               <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
@@ -408,7 +408,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
 
             <div>
               <div className='flex items-center justify-between mb-2'>
-                <span className='text-sm font-medium'>Compliant</span>
+                <span className='text-sm font-medium'>En Cumplimiento</span>
                 <span className='text-sm font-bold'>{metrics.controlStatus.compliant}</span>
               </div>
               <div className='h-2 w-full overflow-hidden rounded-full bg-muted'>
@@ -429,7 +429,7 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <TrendingUp className='h-5 w-5 text-blue-600' />
-            Compliance Insights
+            Perspectivas de Cumplimiento
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -437,13 +437,13 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
             <div className='flex items-start gap-3'>
               <span className='text-green-500 mt-1'>✓</span>
               <div>
-                <p className='text-sm font-medium'>Overall Score Status</p>
+                <p className='text-sm font-medium'>Estado del Puntaje General</p>
                 <p className='text-xs text-muted-foreground'>
                   {metrics.overallScore >= 90
-                    ? 'Your organization maintains excellent compliance across all frameworks.'
+                    ? 'Su organización mantiene un excelente cumplimiento en todos los marcos.'
                     : metrics.overallScore >= 75
-                      ? 'Good compliance status. Focus on addressing remaining findings.'
-                      : 'Action required. Multiple frameworks need attention.'}
+                      ? 'Buen estado de cumplimiento. Enfóquese en resolver los hallazgos restantes.'
+                      : 'Acción requerida. Múltiples marcos necesitan atención.'}
                 </p>
               </div>
             </div>
@@ -451,11 +451,11 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
             <div className='flex items-start gap-3'>
               <span className='text-blue-500 mt-1'>ℹ</span>
               <div>
-                <p className='text-sm font-medium'>Upcoming Audits</p>
+                <p className='text-sm font-medium'>Próximas Auditorías</p>
                 <p className='text-xs text-muted-foreground'>
                   {metrics.frameworks.some(f => new Date(f.nextAudit) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
-                    ? 'You have audits scheduled within the next 30 days.'
-                    : 'No audits scheduled in the next 30 days.'}
+                    ? 'Tiene auditorías programadas dentro de los próximos 30 días.'
+                    : 'No hay auditorías programadas en los próximos 30 días.'}
                 </p>
               </div>
             </div>
@@ -463,11 +463,11 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
             <div className='flex items-start gap-3'>
               <span className='text-amber-500 mt-1'>⚠</span>
               <div>
-                <p className='text-sm font-medium'>Active Violations</p>
+                <p className='text-sm font-medium'>Violaciones Activas</p>
                 <p className='text-xs text-muted-foreground'>
                   {metrics.recentViolations.some(v => !v.resolvedDate)
-                    ? `${metrics.recentViolations.filter(v => !v.resolvedDate).length} unresolved violation(s) require immediate attention.`
-                    : 'All violations have been resolved.'}
+                    ? `${metrics.recentViolations.filter(v => !v.resolvedDate).length} violación(es) sin resolver requieren atención inmediata.`
+                    : 'Todas las violaciones han sido resueltas.'}
                 </p>
               </div>
             </div>
@@ -475,10 +475,10 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
             <div className='flex items-start gap-3'>
               <span className='text-purple-500 mt-1'>→</span>
               <div>
-                <p className='text-sm font-medium'>Control Implementation</p>
+                <p className='text-sm font-medium'>Implementación de Controles</p>
                 <p className='text-xs text-muted-foreground'>
-                  {Math.round((metrics.controlStatus.compliant / metrics.controlStatus.total) * 100)}% of controls are fully compliant.
-                  {metrics.controlStatus.compliant < metrics.controlStatus.total && ' Consider prioritizing remaining controls.'}
+                  {Math.round((metrics.controlStatus.compliant / metrics.controlStatus.total) * 100)}% de los controles están en total cumplimiento.
+                  {metrics.controlStatus.compliant < metrics.controlStatus.total && ' Considere priorizar los controles restantes.'}
                 </p>
               </div>
             </div>
@@ -489,12 +489,12 @@ export const ComplianceAnalyticsDashboard: React.FC<ComplianceAnalyticsDashboard
       {/* Export Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Export Compliance Report</CardTitle>
+          <CardTitle>Exportar Reporte de Cumplimiento</CardTitle>
         </CardHeader>
         <CardContent className='flex gap-2'>
-          <Button variant='outline'>Export as PDF</Button>
-          <Button variant='outline'>Export as Excel</Button>
-          <Button variant='outline'>Export Audit Trail</Button>
+          <Button variant='outline'>Exportar PDF</Button>
+          <Button variant='outline'>Exportar Excel</Button>
+          <Button variant='outline'>Exportar Registro de Auditoría</Button>
         </CardContent>
       </Card>
     </div>
@@ -531,7 +531,7 @@ const ComplianceScoreCard: React.FC<ComplianceScoreCardProps> = ({
             <p className='text-sm text-muted-foreground'>{framework}</p>
             <p className='text-2xl font-bold'>{score}</p>
             <p className={`text-xs font-medium ${statusColor}`}>
-              {statusIcon} {status.replace('-', ' ')}
+              {statusIcon} {status === 'compliant' ? 'cumple' : status === 'non-compliant' ? 'no cumple' : 'en progreso'}
             </p>
           </div>
           <Shield className='h-5 w-5 text-muted-foreground' />
@@ -555,7 +555,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
 
   return (
     <span className={`text-xs font-semibold px-2 py-1 rounded-full ${styles[status]}`}>
-      {status.replace('-', ' ')}
+      {status === 'compliant' ? 'cumple' : status === 'non-compliant' ? 'no cumple' : 'en progreso'}
     </span>
   )
 }
@@ -574,7 +574,7 @@ const SeverityBadge: React.FC<SeverityBadgeProps> = ({ severity }) => {
 
   return (
     <span className={`text-xs font-semibold px-2 py-1 rounded ${styles[severity]}`}>
-      {severity} severity
+      {severity === 'high' ? 'alta' : severity === 'medium' ? 'media' : 'baja'} severidad
     </span>
   )
 }

@@ -250,7 +250,7 @@ export function ConfiguracionContent({
                   </div>
                   <div>
                     <CardTitle className="text-base">Perfil de Usuario</CardTitle>
-                    <CardDescription className="text-xs">Actualiza tu informacion personal</CardDescription>
+                    <CardDescription className="text-xs">Actualiza tu información personal</CardDescription>
                   </div>
                 </div>
               </CardHeader>

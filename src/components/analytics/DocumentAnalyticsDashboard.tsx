@@ -53,21 +53,21 @@ export const DocumentAnalyticsDashboard: React.FC<
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-3xl font-bold tracking-tight'>
-            Document Analytics
+            Analítica de Documentos
           </h2>
           <p className='text-muted-foreground'>
-            Real-time document metrics and insights
+            Métricas en tiempo real de documentos
           </p>
         </div>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Select period' />
+            <SelectValue placeholder='Seleccionar período' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='7d'>Last 7 days</SelectItem>
-            <SelectItem value='30d'>Last 30 days</SelectItem>
-            <SelectItem value='90d'>Last 90 days</SelectItem>
-            <SelectItem value='1y'>Last year</SelectItem>
+            <SelectItem value='7d'>Últimos 7 días</SelectItem>
+            <SelectItem value='30d'>Últimos 30 días</SelectItem>
+            <SelectItem value='90d'>Últimos 90 días</SelectItem>
+            <SelectItem value='1y'>Último año</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -75,26 +75,26 @@ export const DocumentAnalyticsDashboard: React.FC<
       {/* Key Metrics */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
         <MetricCard
-          title='Total Documents'
+          title='Total Documentos'
           value={metrics.totalDocuments}
           icon={FileText}
           color='primary'
         />
         <MetricCard
-          title='Active Documents'
+          title='Documentos Activos'
           value={metrics.activeDocuments}
           icon={TrendingUp}
           color='success'
         />
         <MetricCard
-          title='Storage Used'
+          title='Almacenamiento Usado'
           value={`${metrics.storageUsedGB.toFixed(2)} GB`}
           icon={Archive}
           color='warning'
         />
         <MetricCard
-          title='Avg Document Age'
-          value={`${metrics.averageDocumentAge} days`}
+          title='Edad Promedio'
+          value={`${metrics.averageDocumentAge} días`}
           icon={Trash2}
           color='danger'
         />
@@ -105,7 +105,7 @@ export const DocumentAnalyticsDashboard: React.FC<
         {/* Upload Trend */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Upload Trend</CardTitle>
+            <CardTitle className='text-lg'>Tendencia de Carga</CardTitle>
           </CardHeader>
           <CardContent>
             {metrics.uploadTrendLast7Days.length > 0 ? (
@@ -140,7 +140,7 @@ export const DocumentAnalyticsDashboard: React.FC<
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <p className='text-sm text-muted-foreground'>No data available</p>
+              <p className='text-sm text-muted-foreground'>Sin datos disponibles</p>
             )}
           </CardContent>
         </Card>
@@ -148,7 +148,7 @@ export const DocumentAnalyticsDashboard: React.FC<
         {/* Documents by Status */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Documents by Status</CardTitle>
+            <CardTitle className='text-lg'>Documentos por Estado</CardTitle>
           </CardHeader>
           <CardContent>
             {metrics.documentsByStatus.length > 0 ? (
@@ -171,7 +171,7 @@ export const DocumentAnalyticsDashboard: React.FC<
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <p className='text-sm text-muted-foreground'>No data available</p>
+              <p className='text-sm text-muted-foreground'>Sin datos disponibles</p>
             )}
           </CardContent>
         </Card>
@@ -182,7 +182,7 @@ export const DocumentAnalyticsDashboard: React.FC<
         {/* Top Document Types */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Top Document Types</CardTitle>
+            <CardTitle className='text-lg'>Tipos Principales</CardTitle>
           </CardHeader>
           <CardContent>
             {metrics.documentsByType.length > 0 ? (
@@ -196,7 +196,7 @@ export const DocumentAnalyticsDashboard: React.FC<
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className='text-sm text-muted-foreground'>No data available</p>
+              <p className='text-sm text-muted-foreground'>Sin datos disponibles</p>
             )}
           </CardContent>
         </Card>
@@ -204,7 +204,7 @@ export const DocumentAnalyticsDashboard: React.FC<
         {/* Document Age Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Document Age Distribution</CardTitle>
+            <CardTitle className='text-lg'>Distribución por Antigüedad</CardTitle>
           </CardHeader>
           <CardContent>
             {metrics.documentsByAge.length > 0 ? (
@@ -223,7 +223,7 @@ export const DocumentAnalyticsDashboard: React.FC<
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className='text-sm text-muted-foreground'>No data available</p>
+              <p className='text-sm text-muted-foreground'>Sin datos disponibles</p>
             )}
           </CardContent>
         </Card>
@@ -232,12 +232,12 @@ export const DocumentAnalyticsDashboard: React.FC<
       {/* Export Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Export Analytics</CardTitle>
+          <CardTitle>Exportar Analítica</CardTitle>
         </CardHeader>
         <CardContent className='flex gap-2'>
-          <Button variant='outline'>Export as PDF</Button>
-          <Button variant='outline'>Export as Excel</Button>
-          <Button variant='outline'>Export as CSV</Button>
+          <Button variant='outline'>Exportar PDF</Button>
+          <Button variant='outline'>Exportar Excel</Button>
+          <Button variant='outline'>Exportar CSV</Button>
         </CardContent>
       </Card>
     </div>

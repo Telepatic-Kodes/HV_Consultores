@@ -65,7 +65,7 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
         setSchedules([])
       } catch (err) {
         console.error('Error fetching schedules:', err)
-        setError('Failed to load report schedules')
+        setError('Error al cargar programaciones de reportes')
       } finally {
         setLoading(false)
       }
@@ -104,7 +104,7 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
   }
 
   const handleSendNow = (id: string) => {
-    alert('Report sent successfully!')
+    alert('Reporte enviado exitosamente!')
     const updated = schedules.map((s) =>
       s.id === id ? { ...s, lastSent: new Date() } : s
     )
@@ -129,34 +129,34 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-3xl font-bold tracking-tight'>
-            Report Schedules
+            Programación de Reportes
           </h2>
           <p className='text-muted-foreground'>
-            Automate analytics report delivery
+            Automatice el envío de reportes analíticos
           </p>
         </div>
         <Button onClick={() => setShowForm(true)} className='gap-2'>
           <Plus className='h-4 w-4' />
-          New Report Schedule
+          Nueva Programación
         </Button>
       </div>
 
       {/* Stats */}
       <div className='grid gap-4 md:grid-cols-3'>
         <StatCard
-          title='Total Schedules'
+          title='Total Programaciones'
           value={schedules.length}
           icon={Calendar}
           color='primary'
         />
         <StatCard
-          title='Enabled'
+          title='Habilitadas'
           value={schedules.filter((s) => s.enabled).length}
           icon={Clock}
           color='success'
         />
         <StatCard
-          title='Recently Sent'
+          title='Enviados Recientemente'
           value={schedules.filter((s) => s.lastSent).length}
           icon={Send}
           color='info'
@@ -166,7 +166,7 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
       {/* Schedules List */}
       <Card>
         <CardHeader>
-          <CardTitle>Report Schedules</CardTitle>
+          <CardTitle>Programaciones de Reportes</CardTitle>
         </CardHeader>
         <CardContent>
           {schedules.length > 0 ? (
@@ -186,9 +186,9 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
             <div className='flex items-center justify-center py-12'>
               <div className='text-center'>
                 <FileText className='h-12 w-12 text-muted-foreground mx-auto mb-2' />
-                <p className='text-sm font-medium'>No report schedules configured</p>
+                <p className='text-sm font-medium'>No hay programaciones de reportes configuradas</p>
                 <p className='text-xs text-muted-foreground'>
-                  Create your first report schedule to automate delivery
+                  Cree su primera programación de reporte para automatizar el envío
                 </p>
               </div>
             </div>
@@ -201,7 +201,7 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
         <Card className='border-blue-200 bg-blue-50'>
           <CardHeader>
             <CardTitle>
-              {editingSchedule ? 'Edit Report Schedule' : 'Create Report Schedule'}
+              {editingSchedule ? 'Editar Programación de Reporte' : 'Crear Programación de Reporte'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -220,26 +220,26 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
       {/* Delivery Channels Info */}
       <Card>
         <CardHeader>
-          <CardTitle className='text-lg'>Supported Delivery Channels</CardTitle>
+          <CardTitle className='text-lg'>Canales de Entrega Soportados</CardTitle>
         </CardHeader>
         <CardContent>
           <div className='grid gap-4 md:grid-cols-3'>
             <div className='border rounded-lg p-3'>
               <p className='font-semibold text-sm mb-1'>📧 Email</p>
               <p className='text-xs text-muted-foreground'>
-                Send reports directly to email addresses. Supports multiple recipients.
+                Envíe reportes directamente a direcciones de email. Soporta múltiples destinatarios.
               </p>
             </div>
             <div className='border rounded-lg p-3'>
               <p className='font-semibold text-sm mb-1'>💬 Slack</p>
               <p className='text-xs text-muted-foreground'>
-                Post reports to Slack channels with webhooks. Notifications included.
+                Publique reportes en canales de Slack con webhooks. Notificaciones incluidas.
               </p>
             </div>
             <div className='border rounded-lg p-3'>
               <p className='font-semibold text-sm mb-1'>🔗 Webhook</p>
               <p className='text-xs text-muted-foreground'>
-                Send reports via custom webhooks for third-party integrations.
+                Envíe reportes mediante webhooks personalizados para integraciones de terceros.
               </p>
             </div>
           </div>
@@ -249,24 +249,24 @@ export const ReportScheduler: React.FC<ReportSchedulerProps> = ({
       {/* Export Formats */}
       <Card>
         <CardHeader>
-          <CardTitle className='text-lg'>Available Export Formats</CardTitle>
+          <CardTitle className='text-lg'>Formatos de Exportación Disponibles</CardTitle>
         </CardHeader>
         <CardContent>
           <div className='grid gap-4 md:grid-cols-3'>
             <FormatCard
               format='PDF'
-              description='Professional PDF with formatted charts and tables'
-              bestFor='Executive reports, archives'
+              description='PDF profesional con gráficos y tablas formateadas'
+              bestFor='Reportes ejecutivos, archivos'
             />
             <FormatCard
               format='Excel'
-              description='Spreadsheet format with multiple sheets per dashboard'
-              bestFor='Data analysis, further processing'
+              description='Formato de hoja de cálculo con múltiples hojas por dashboard'
+              bestFor='Análisis de datos, procesamiento adicional'
             />
             <FormatCard
               format='HTML'
-              description='Interactive HTML that can be viewed in browser'
-              bestFor='Email delivery, web sharing'
+              description='HTML interactivo que se puede ver en el navegador'
+              bestFor='Envío por email, compartir en web'
             />
           </div>
         </CardContent>
@@ -330,12 +330,12 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
 }) => {
   const getFrequencyLabel = () => {
     if (schedule.type === 'daily') {
-      return `Daily at ${schedule.schedule.time}`
+      return `Diario a las ${schedule.schedule.time}`
     } else if (schedule.type === 'weekly') {
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-      return `Every ${days[schedule.schedule.dayOfWeek || 0]} at ${schedule.schedule.time}`
+      const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+      return `Cada ${days[schedule.schedule.dayOfWeek || 0]} a las ${schedule.schedule.time}`
     } else {
-      return `Monthly on day ${schedule.schedule.dayOfMonth} at ${schedule.schedule.time}`
+      return `Mensual el día ${schedule.schedule.dayOfMonth} a las ${schedule.schedule.time}`
     }
   }
 
@@ -352,7 +352,7 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
                   : 'bg-gray-100 text-gray-800'
               }`}
             >
-              {schedule.type.charAt(0).toUpperCase() + schedule.type.slice(1)}
+              {schedule.type === 'daily' ? 'Diario' : schedule.type === 'weekly' ? 'Semanal' : 'Mensual'}
             </div>
           </div>
 
@@ -382,12 +382,12 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
           </div>
 
           <p className='mt-2 text-xs text-muted-foreground'>
-            Dashboards: {schedule.dashboards.join(', ')} {schedule.includeCharts && '(with charts)'}
+            Dashboards: {schedule.dashboards.join(', ')} {schedule.includeCharts && '(con gráficos)'}
           </p>
 
           {schedule.lastSent && (
             <p className='mt-1 text-xs text-muted-foreground'>
-              Last sent: {new Date(schedule.lastSent).toLocaleString()}
+              Último envío: {new Date(schedule.lastSent).toLocaleString()}
             </p>
           )}
         </div>
@@ -397,7 +397,7 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
             variant='outline'
             size='sm'
             onClick={() => onSendNow(schedule.id)}
-            title='Send report now'
+            title='Enviar reporte ahora'
           >
             <Send className='h-4 w-4' />
           </Button>
@@ -406,7 +406,7 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
             size='sm'
             onClick={() => onToggle(schedule.id)}
           >
-            {schedule.enabled ? 'Disable' : 'Enable'}
+            {schedule.enabled ? 'Deshabilitar' : 'Habilitar'}
           </Button>
           <Button
             variant='outline'
@@ -463,11 +463,11 @@ const ReportScheduleForm: React.FC<ReportScheduleFormProps> = ({
 
   const handleSave = () => {
     if (!formData.name.trim()) {
-      alert('Schedule name is required')
+      alert('El nombre de la programación es requerido')
       return
     }
     if (formData.recipients.email?.length === 0 && !formData.recipients.slack && !formData.recipients.webhook) {
-      alert('At least one recipient is required')
+      alert('Se requiere al menos un destinatario')
       return
     }
     onSave(formData)
@@ -476,19 +476,19 @@ const ReportScheduleForm: React.FC<ReportScheduleFormProps> = ({
   return (
     <div className='space-y-4'>
       <div>
-        <label className='text-sm font-medium'>Report Name</label>
+        <label className='text-sm font-medium'>Nombre del Reporte</label>
         <input
           type='text'
           className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder='e.g., Daily Operations Summary'
+          placeholder='ej., Resumen Diario de Operaciones'
         />
       </div>
 
       <div className='grid gap-4 md:grid-cols-2'>
         <div>
-          <label className='text-sm font-medium'>Frequency</label>
+          <label className='text-sm font-medium'>Frecuencia</label>
           <select
             className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
             value={formData.type}
@@ -499,14 +499,14 @@ const ReportScheduleForm: React.FC<ReportScheduleFormProps> = ({
               })
             }
           >
-            <option value='daily'>Daily</option>
-            <option value='weekly'>Weekly</option>
-            <option value='monthly'>Monthly</option>
+            <option value='daily'>Diario</option>
+            <option value='weekly'>Semanal</option>
+            <option value='monthly'>Mensual</option>
           </select>
         </div>
 
         <div>
-          <label className='text-sm font-medium'>Time</label>
+          <label className='text-sm font-medium'>Hora</label>
           <input
             type='time'
             className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
@@ -523,7 +523,7 @@ const ReportScheduleForm: React.FC<ReportScheduleFormProps> = ({
 
       <div className='grid gap-4 md:grid-cols-2'>
         <div>
-          <label className='text-sm font-medium'>Format</label>
+          <label className='text-sm font-medium'>Formato</label>
           <select
             className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
             value={formData.format}
@@ -541,7 +541,7 @@ const ReportScheduleForm: React.FC<ReportScheduleFormProps> = ({
         </div>
 
         <div>
-          <label className='text-sm font-medium'>Include Charts</label>
+          <label className='text-sm font-medium'>Incluir Gráficos</label>
           <select
             className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
             value={formData.includeCharts ? 'yes' : 'no'}
@@ -552,17 +552,17 @@ const ReportScheduleForm: React.FC<ReportScheduleFormProps> = ({
               })
             }
           >
-            <option value='yes'>Yes</option>
+            <option value='yes'>Sí</option>
             <option value='no'>No</option>
           </select>
         </div>
       </div>
 
       <div className='border-t pt-4'>
-        <p className='text-sm font-medium mb-3'>Recipients</p>
+        <p className='text-sm font-medium mb-3'>Destinatarios</p>
         <div className='space-y-3'>
           <div>
-            <label className='text-xs text-muted-foreground'>Email (comma separated)</label>
+            <label className='text-xs text-muted-foreground'>Email (separados por coma)</label>
             <input
               type='text'
               className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
@@ -596,17 +596,17 @@ const ReportScheduleForm: React.FC<ReportScheduleFormProps> = ({
                 })
               }
             />
-            Send to Slack channel
+            Enviar a canal de Slack
           </label>
         </div>
       </div>
 
       <div className='flex gap-2 justify-end pt-4 border-t'>
         <Button variant='outline' onClick={onCancel}>
-          Cancel
+          Cancelar
         </Button>
         <Button onClick={handleSave}>
-          {schedule ? 'Update Schedule' : 'Create Schedule'}
+          {schedule ? 'Actualizar Programación' : 'Crear Programación'}
         </Button>
       </div>
     </div>
@@ -630,7 +630,7 @@ const FormatCard: React.FC<FormatCardProps> = ({
       <p className='font-semibold text-sm mb-1'>{format}</p>
       <p className='text-xs text-muted-foreground mb-2'>{description}</p>
       <p className='text-xs'>
-        <span className='font-medium'>Best for:</span> {bestFor}
+        <span className='font-medium'>Ideal para:</span> {bestFor}
       </p>
     </div>
   )

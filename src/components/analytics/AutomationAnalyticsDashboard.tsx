@@ -55,21 +55,21 @@ export const AutomationAnalyticsDashboard: React.FC<
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-3xl font-bold tracking-tight'>
-            Automation Analytics
+            Analítica de Automatización
           </h2>
           <p className='text-muted-foreground'>
-            Rule performance and automation ROI analysis
+            Rendimiento de reglas y análisis de ROI de automatización
           </p>
         </div>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Select period' />
+            <SelectValue placeholder='Seleccionar período' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='7d'>Last 7 days</SelectItem>
-            <SelectItem value='30d'>Last 30 days</SelectItem>
-            <SelectItem value='90d'>Last 90 days</SelectItem>
-            <SelectItem value='1y'>Last year</SelectItem>
+            <SelectItem value='7d'>Últimos 7 días</SelectItem>
+            <SelectItem value='30d'>Últimos 30 días</SelectItem>
+            <SelectItem value='90d'>Últimos 90 días</SelectItem>
+            <SelectItem value='1y'>Último año</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -77,47 +77,47 @@ export const AutomationAnalyticsDashboard: React.FC<
       {/* Key Metrics */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
         <MetricCard
-          title='Active Rules'
+          title='Reglas Activas'
           value={metrics.activeRules}
           icon={Zap}
           color='primary'
           trend={{
             direction: metrics.activeRules > 5 ? 'up' : 'stable',
             value: '+2',
-            period: 'vs last month',
+            period: 'vs mes anterior',
           }}
         />
         <MetricCard
-          title='Success Rate'
+          title='Tasa de Éxito'
           value={`${metrics.overallSuccessRate}%`}
           icon={CheckCircle2}
           color='success'
           trend={{
             direction: metrics.overallSuccessRate > 85 ? 'up' : 'down',
             value: '2.5%',
-            period: 'improvement',
+            period: 'mejora',
           }}
         />
         <MetricCard
-          title='Avg Execution Time'
+          title='Tiempo Promedio Ejecución'
           value={`${metrics.averageExecutionTimeMs}ms`}
           icon={Clock}
           color='warning'
           trend={{
             direction: 'down',
             value: '15%',
-            period: 'faster',
+            period: 'más rápido',
           }}
         />
         <MetricCard
-          title='Hours Saved/Month'
+          title='Horas Ahorradas/Mes'
           value={Math.round(metrics.hoursPerMonthSaved)}
           icon={TrendingUp}
           color='success'
           trend={{
             direction: 'up',
             value: '+8h',
-            period: 'vs last month',
+            period: 'vs mes anterior',
           }}
         />
       </div>
@@ -127,7 +127,7 @@ export const AutomationAnalyticsDashboard: React.FC<
         {/* Execution Trend */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Execution Trend</CardTitle>
+            <CardTitle className='text-lg'>Tendencia de Ejecución</CardTitle>
           </CardHeader>
           <CardContent>
             {metrics.executionTrendLast7Days.length > 0 ? (
@@ -153,20 +153,20 @@ export const AutomationAnalyticsDashboard: React.FC<
                     }}
                   />
                   <Legend />
-                  <Bar dataKey='successCount' fill='#10b981' name='Successful' />
-                  <Bar dataKey='failureCount' fill='#ef4444' name='Failed' />
+                  <Bar dataKey='successCount' fill='#10b981' name='Exitosas' />
+                  <Bar dataKey='failureCount' fill='#ef4444' name='Fallidas' />
                   <Line
                     type='monotone'
                     dataKey='executions'
                     stroke='#3b82f6'
-                    name='Total Executions'
+                    name='Total Ejecuciones'
                     yAxisId='right'
                   />
                   <YAxis yAxisId='right' orientation='right' />
                 </ComposedChart>
               </ResponsiveContainer>
             ) : (
-              <p className='text-sm text-muted-foreground'>No data available</p>
+              <p className='text-sm text-muted-foreground'>Sin datos disponibles</p>
             )}
           </CardContent>
         </Card>
@@ -174,14 +174,14 @@ export const AutomationAnalyticsDashboard: React.FC<
         {/* Success Rate Distribution */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Success Rate Distribution</CardTitle>
+            <CardTitle className='text-lg'>Distribución Tasa de Éxito</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width='100%' height={300}>
               <AreaChart
                 data={[
-                  { name: 'Success Rate', value: metrics.overallSuccessRate },
-                  { name: 'Failure Rate', value: 100 - metrics.overallSuccessRate },
+                  { name: 'Tasa de Éxito', value: metrics.overallSuccessRate },
+                  { name: 'Tasa de Fallo', value: 100 - metrics.overallSuccessRate },
                 ]}
                 layout='vertical'
               >
@@ -207,7 +207,7 @@ export const AutomationAnalyticsDashboard: React.FC<
         {/* Top Performing Rules */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Top Performing Rules</CardTitle>
+            <CardTitle className='text-lg'>Reglas con Mejor Rendimiento</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='space-y-4'>
@@ -222,7 +222,7 @@ export const AutomationAnalyticsDashboard: React.FC<
                             {rule.ruleName}
                           </p>
                           <p className='text-xs text-muted-foreground'>
-                            {rule.executionCount} executions
+                            {rule.executionCount} ejecuciones
                           </p>
                         </div>
                       </div>
@@ -239,7 +239,7 @@ export const AutomationAnalyticsDashboard: React.FC<
                   </div>
                 ))
               ) : (
-                <p className='text-sm text-muted-foreground'>No data available</p>
+                <p className='text-sm text-muted-foreground'>Sin datos disponibles</p>
               )}
             </div>
           </CardContent>
@@ -248,7 +248,7 @@ export const AutomationAnalyticsDashboard: React.FC<
         {/* Worst Performing Rules */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Rules Needing Attention</CardTitle>
+            <CardTitle className='text-lg'>Reglas que Requieren Atención</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='space-y-4'>
@@ -263,7 +263,7 @@ export const AutomationAnalyticsDashboard: React.FC<
                             {rule.ruleName}
                           </p>
                           <p className='text-xs text-muted-foreground'>
-                            Last error: {rule.lastError}
+                            Último error: {rule.lastError}
                           </p>
                         </div>
                       </div>
@@ -280,7 +280,7 @@ export const AutomationAnalyticsDashboard: React.FC<
                   </div>
                 ))
               ) : (
-                <p className='text-sm text-muted-foreground'>All rules performing well</p>
+                <p className='text-sm text-muted-foreground'>Todas las reglas funcionan correctamente</p>
               )}
             </div>
           </CardContent>
@@ -291,7 +291,7 @@ export const AutomationAnalyticsDashboard: React.FC<
       <div className='grid gap-6 md:grid-cols-2'>
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Execution by Job Type</CardTitle>
+            <CardTitle className='text-lg'>Ejecución por Tipo de Tarea</CardTitle>
           </CardHeader>
           <CardContent>
             {metrics.topPerformingRules.length > 0 ? (
@@ -308,12 +308,12 @@ export const AutomationAnalyticsDashboard: React.FC<
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey='success' fill='#10b981' name='Successful' />
+                  <Bar dataKey='success' fill='#10b981' name='Exitosas' />
                   <Bar dataKey='count' fill='#cbd5e1' name='Total' />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className='text-sm text-muted-foreground'>No data available</p>
+              <p className='text-sm text-muted-foreground'>Sin datos disponibles</p>
             )}
           </CardContent>
         </Card>
@@ -321,7 +321,7 @@ export const AutomationAnalyticsDashboard: React.FC<
         {/* ROI & Time Saved */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Automation ROI</CardTitle>
+            <CardTitle className='text-lg'>ROI de Automatización</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='space-y-4'>
@@ -331,37 +331,37 @@ export const AutomationAnalyticsDashboard: React.FC<
                     {Math.round(metrics.hoursPerMonthSaved)}
                   </span>
                   <span className='text-lg text-muted-foreground'>
-                    hours saved/month
+                    horas ahorradas/mes
                   </span>
                 </div>
                 <p className='mt-2 text-sm text-muted-foreground'>
-                  Equivalent to {Math.round((metrics.hoursPerMonthSaved / 160) * 100)}% of an FTE
+                  Equivalente al {Math.round((metrics.hoursPerMonthSaved / 160) * 100)}% de un FTE
                 </p>
               </div>
 
               <div className='space-y-2'>
                 <div className='flex justify-between text-sm'>
-                  <span className='text-muted-foreground'>Annually:</span>
+                  <span className='text-muted-foreground'>Anualmente:</span>
                   <span className='font-bold'>
-                    {Math.round(metrics.hoursPerMonthSaved * 12)} hours
+                    {Math.round(metrics.hoursPerMonthSaved * 12)} horas
                   </span>
                 </div>
                 <div className='flex justify-between text-sm'>
-                  <span className='text-muted-foreground'>Cost Savings:</span>
+                  <span className='text-muted-foreground'>Ahorro en Costos:</span>
                   <span className='font-bold text-green-600'>
                     ${Math.round(metrics.hoursPerMonthSaved * 12 * 50)}
                   </span>
                 </div>
                 <div className='flex justify-between text-sm'>
-                  <span className='text-muted-foreground'>Rules Running:</span>
+                  <span className='text-muted-foreground'>Reglas Activas:</span>
                   <span className='font-bold'>{metrics.activeRules}</span>
                 </div>
               </div>
 
               <div className='mt-4 border-t pt-4'>
                 <p className='text-xs text-muted-foreground'>
-                  Based on {metrics.overallSuccessRate}% success rate and average
-                  execution time of {metrics.averageExecutionTimeMs}ms per task.
+                  Basado en {metrics.overallSuccessRate}% de tasa de éxito y tiempo
+                  promedio de ejecución de {metrics.averageExecutionTimeMs}ms por tarea.
                 </p>
               </div>
             </div>
@@ -373,7 +373,7 @@ export const AutomationAnalyticsDashboard: React.FC<
       {metrics.errorTrendAnalysis.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Error Analysis</CardTitle>
+            <CardTitle className='text-lg'>Análisis de Errores</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width='100%' height={300}>
@@ -394,7 +394,7 @@ export const AutomationAnalyticsDashboard: React.FC<
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <AlertCircle className='h-5 w-5 text-amber-500' />
-            Recommendations
+            Recomendaciones
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -402,29 +402,29 @@ export const AutomationAnalyticsDashboard: React.FC<
             <li className='flex gap-2'>
               <span className='text-amber-500'>▸</span>
               <span>
-                Review and optimize rules with success rate below 80% for better
-                performance
+                Revisar y optimizar reglas con tasa de éxito inferior al 80% para mejorar
+                el rendimiento
               </span>
             </li>
             <li className='flex gap-2'>
               <span className='text-amber-500'>▸</span>
               <span>
-                Consider increasing automation rule coverage - currently saving{' '}
-                {Math.round(metrics.hoursPerMonthSaved)} hours/month
+                Considerar aumentar la cobertura de reglas de automatización - actualmente ahorrando{' '}
+                {Math.round(metrics.hoursPerMonthSaved)} horas/mes
               </span>
             </li>
             <li className='flex gap-2'>
               <span className='text-amber-500'>▸</span>
               <span>
-                Webhook integrations have highest latency - optimize for better
-                performance
+                Las integraciones webhook tienen la mayor latencia - optimizar para mejorar
+                el rendimiento
               </span>
             </li>
             <li className='flex gap-2'>
               <span className='text-amber-500'>▸</span>
               <span>
-                Email automation rules are most reliable - continue using similar
-                patterns
+                Las reglas de automatización por email son las más confiables - continuar usando
+                patrones similares
               </span>
             </li>
           </ul>
@@ -434,12 +434,12 @@ export const AutomationAnalyticsDashboard: React.FC<
       {/* Export Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Export Analytics</CardTitle>
+          <CardTitle>Exportar Analítica</CardTitle>
         </CardHeader>
         <CardContent className='flex gap-2'>
-          <Button variant='outline'>Export as PDF</Button>
-          <Button variant='outline'>Export as Excel</Button>
-          <Button variant='outline'>Export as CSV</Button>
+          <Button variant='outline'>Exportar PDF</Button>
+          <Button variant='outline'>Exportar Excel</Button>
+          <Button variant='outline'>Exportar CSV</Button>
         </CardContent>
       </Card>
     </div>

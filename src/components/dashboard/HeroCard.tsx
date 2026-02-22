@@ -64,7 +64,7 @@ function EmptyDashboardActions() {
 
   return (
     <div className="mt-4 space-y-3">
-      <p className="text-sm text-muted-foreground">La plataforma esta vacia. Elige como empezar:</p>
+      <p className="text-sm text-muted-foreground">La plataforma está vacía. Elige como empezar:</p>
       <div className="flex flex-col gap-2">
         <Link href="/dashboard/clientes/nuevo">
           <Button size="sm" className="w-full shadow-executive">

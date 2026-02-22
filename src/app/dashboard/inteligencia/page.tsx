@@ -5,6 +5,7 @@ import { api } from '../../../../convex/_generated/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Brain, TrendingUp, Users, AlertTriangle } from 'lucide-react'
+import { TopNav } from '@/components/dashboard'
 import { ClientScorecard, CrossClientBenchmark } from '@/components/inteligencia'
 
 export default function InteligenciaPage() {
@@ -25,19 +26,9 @@ export default function InteligenciaPage() {
     })) ?? []
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Brain className="h-5 w-5 text-primary" />
-          </div>
-          Inteligencia Ejecutiva
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Visión integral del rendimiento contable de todos los clientes
-        </p>
-      </div>
+    <>
+      <TopNav title="Inteligencia Ejecutiva" subtitle="Visión integral del rendimiento contable de todos los clientes" />
+      <main className="p-4 md:p-6 lg:p-8 space-y-6">
 
       {/* Global overview */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -80,7 +71,7 @@ export default function InteligenciaPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pipelines OK</CardTitle>
+            <CardTitle className="text-sm font-medium">Pipelines Exitosos</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
@@ -126,6 +117,7 @@ export default function InteligenciaPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+      </main>
+    </>
   )
 }

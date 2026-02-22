@@ -84,7 +84,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <TopNav title="Dashboard" />
+      <TopNav title="Panel Principal" />
 
       <main className="p-4 md:p-6 lg:p-8">
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -99,7 +99,7 @@ export default async function DashboardPage() {
             color="blue"
           />
           <KPICard
-            title="Docs del Mes"
+            title="Documentos del Mes"
             value={kpis.documentosMes}
             description="Procesados este mes"
             icon={<FileText className="h-5 w-5" />}

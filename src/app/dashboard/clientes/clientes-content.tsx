@@ -410,7 +410,7 @@ export function ClientesContent({ clientes, stats, contadores }: ClientesContent
                   {editando ? 'Editar Cliente' : 'Nuevo Cliente'}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {editando ? 'Modifica los datos del cliente' : 'Completa la informacion del nuevo cliente'}
+                  {editando ? 'Modifica los datos del cliente' : 'Completa la información del nuevo cliente'}
                 </p>
               </div>
               <button

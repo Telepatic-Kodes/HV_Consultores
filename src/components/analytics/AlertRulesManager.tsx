@@ -63,7 +63,7 @@ export const AlertRulesManager: React.FC<AlertRulesManagerProps> = ({
         setRules([])
       } catch (err) {
         console.error('Error fetching rules:', err)
-        setError('Failed to load alert rules')
+        setError('Error al cargar reglas de alerta')
       } finally {
         setLoading(false)
       }
@@ -119,34 +119,34 @@ export const AlertRulesManager: React.FC<AlertRulesManagerProps> = ({
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-3xl font-bold tracking-tight'>
-            Alert Rules
+            Reglas de Alerta
           </h2>
           <p className='text-muted-foreground'>
-            Configure alerts for metrics and thresholds
+            Configure alertas para métricas y umbrales
           </p>
         </div>
         <Button onClick={() => setShowForm(true)} className='gap-2'>
           <Plus className='h-4 w-4' />
-          New Alert Rule
+          Nueva Regla de Alerta
         </Button>
       </div>
 
       {/* Stats */}
       <div className='grid gap-4 md:grid-cols-3'>
         <StatCard
-          title='Total Rules'
+          title='Total de Reglas'
           value={rules.length}
           icon={Bell}
           color='primary'
         />
         <StatCard
-          title='Enabled'
+          title='Habilitadas'
           value={rules.filter((r) => r.enabled).length}
           icon={CheckCircle}
           color='success'
         />
         <StatCard
-          title='Recently Triggered'
+          title='Activadas Recientemente'
           value={rules.filter((r) => r.lastTriggered).length}
           icon={AlertCircle}
           color='warning'
@@ -156,7 +156,7 @@ export const AlertRulesManager: React.FC<AlertRulesManagerProps> = ({
       {/* Rules List */}
       <Card>
         <CardHeader>
-          <CardTitle>Active Alert Rules</CardTitle>
+          <CardTitle>Reglas de Alerta Activas</CardTitle>
         </CardHeader>
         <CardContent>
           {rules.length > 0 ? (
@@ -175,9 +175,9 @@ export const AlertRulesManager: React.FC<AlertRulesManagerProps> = ({
             <div className='flex items-center justify-center py-12'>
               <div className='text-center'>
                 <Bell className='h-12 w-12 text-muted-foreground mx-auto mb-2' />
-                <p className='text-sm font-medium'>No alert rules configured</p>
+                <p className='text-sm font-medium'>No hay reglas de alerta configuradas</p>
                 <p className='text-xs text-muted-foreground'>
-                  Create your first alert rule to get started
+                  Cree su primera regla de alerta para comenzar
                 </p>
               </div>
             </div>
@@ -190,7 +190,7 @@ export const AlertRulesManager: React.FC<AlertRulesManagerProps> = ({
         <Card className='border-blue-200 bg-blue-50'>
           <CardHeader>
             <CardTitle>
-              {editingRule ? 'Edit Alert Rule' : 'Create Alert Rule'}
+              {editingRule ? 'Editar Regla de Alerta' : 'Crear Regla de Alerta'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -209,29 +209,29 @@ export const AlertRulesManager: React.FC<AlertRulesManagerProps> = ({
       {/* Best Practices */}
       <Card>
         <CardHeader>
-          <CardTitle className='text-lg'>Alert Best Practices</CardTitle>
+          <CardTitle className='text-lg'>Mejores Prácticas de Alertas</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className='space-y-2 text-sm text-muted-foreground'>
             <li className='flex items-start gap-2'>
               <span className='text-blue-600 mt-1'>✓</span>
-              <span>Set duration thresholds to avoid alert fatigue from temporary spikes</span>
+              <span>Establezca umbrales de duración para evitar fatiga por picos temporales</span>
             </li>
             <li className='flex items-start gap-2'>
               <span className='text-blue-600 mt-1'>✓</span>
-              <span>Use multiple notification channels for critical alerts</span>
+              <span>Use múltiples canales de notificación para alertas críticas</span>
             </li>
             <li className='flex items-start gap-2'>
               <span className='text-blue-600 mt-1'>✓</span>
-              <span>Test alerts before enabling in production</span>
+              <span>Pruebe las alertas antes de habilitarlas en producción</span>
             </li>
             <li className='flex items-start gap-2'>
               <span className='text-blue-600 mt-1'>✓</span>
-              <span>Review and adjust thresholds based on historical data</span>
+              <span>Revise y ajuste los umbrales basándose en datos históricos</span>
             </li>
             <li className='flex items-start gap-2'>
               <span className='text-blue-600 mt-1'>✓</span>
-              <span>Keep alert descriptions clear and actionable</span>
+              <span>Mantenga las descripciones de alerta claras y accionables</span>
             </li>
           </ul>
         </CardContent>
@@ -293,11 +293,11 @@ const RuleCard: React.FC<RuleCardProps> = ({
 }) => {
   const getOperatorLabel = (op: string) => {
     const labels: Record<string, string> = {
-      '>': 'Greater than',
-      '<': 'Less than',
-      '=': 'Equals',
-      '>=': 'Greater than or equal',
-      '<=': 'Less than or equal',
+      '>': 'Mayor que',
+      '<': 'Menor que',
+      '=': 'Igual a',
+      '>=': 'Mayor o igual que',
+      '<=': 'Menor o igual que',
     }
     return labels[op] || op
   }
@@ -315,15 +315,15 @@ const RuleCard: React.FC<RuleCardProps> = ({
                   : 'bg-gray-100 text-gray-800'
               }`}
             >
-              {rule.enabled ? 'Enabled' : 'Disabled'}
+              {rule.enabled ? 'Habilitada' : 'Deshabilitada'}
             </div>
           </div>
 
           <div className='mt-2 text-sm text-muted-foreground'>
             <p>
-              Alert when {rule.condition.metric} is {getOperatorLabel(rule.condition.operator)}{' '}
+              Alertar cuando {rule.condition.metric} sea {getOperatorLabel(rule.condition.operator)}{' '}
               <span className='font-semibold'>{rule.condition.threshold}</span>
-              {rule.condition.duration && ` for ${rule.condition.duration} minutes`}
+              {rule.condition.duration && ` durante ${rule.condition.duration} minutos`}
             </p>
           </div>
 
@@ -345,14 +345,14 @@ const RuleCard: React.FC<RuleCardProps> = ({
             )}
             {rule.actions.inApp && (
               <span className='inline-flex items-center gap-1 text-xs bg-cyan-100 text-cyan-800 px-2 py-1 rounded'>
-                🔔 In-App
+                🔔 En App
               </span>
             )}
           </div>
 
           {rule.lastTriggered && (
             <p className='mt-2 text-xs text-muted-foreground'>
-              Last triggered: {new Date(rule.lastTriggered).toLocaleString()}
+              Última activación: {new Date(rule.lastTriggered).toLocaleString()}
             </p>
           )}
         </div>
@@ -363,7 +363,7 @@ const RuleCard: React.FC<RuleCardProps> = ({
             size='sm'
             onClick={() => onToggle(rule.id)}
           >
-            {rule.enabled ? 'Disable' : 'Enable'}
+            {rule.enabled ? 'Deshabilitar' : 'Habilitar'}
           </Button>
           <Button
             variant='outline'
@@ -418,7 +418,7 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
 
   const handleSave = () => {
     if (!formData.name.trim()) {
-      alert('Rule name is required')
+      alert('El nombre de la regla es requerido')
       return
     }
     onSave(formData)
@@ -427,19 +427,19 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
   return (
     <div className='space-y-4'>
       <div>
-        <label className='text-sm font-medium'>Rule Name</label>
+        <label className='text-sm font-medium'>Nombre de la Regla</label>
         <input
           type='text'
           className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder='e.g., High Queue Depth Alert'
+          placeholder='ej., Alerta de Cola Profunda'
         />
       </div>
 
       <div className='grid gap-4 md:grid-cols-3'>
         <div>
-          <label className='text-sm font-medium'>Metric</label>
+          <label className='text-sm font-medium'>Métrica</label>
           <select
             className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
             value={formData.condition.metric}
@@ -450,16 +450,16 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
               })
             }
           >
-            <option value='queueDepth'>Queue Depth</option>
-            <option value='errorRate'>Error Rate</option>
-            <option value='latency'>Latency (p95)</option>
-            <option value='cpuUsage'>CPU Usage</option>
-            <option value='complianceScore'>Compliance Score</option>
+            <option value='queueDepth'>Profundidad de Cola</option>
+            <option value='errorRate'>Tasa de Error</option>
+            <option value='latency'>Latencia (p95)</option>
+            <option value='cpuUsage'>Uso de CPU</option>
+            <option value='complianceScore'>Puntaje de Cumplimiento</option>
           </select>
         </div>
 
         <div>
-          <label className='text-sm font-medium'>Operator</label>
+          <label className='text-sm font-medium'>Operador</label>
           <select
             className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
             value={formData.condition.operator}
@@ -473,16 +473,16 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
               })
             }
           >
-            <option value='>'>&gt; Greater than</option>
-            <option value='<'>&lt; Less than</option>
-            <option value='='>=  Equals</option>
-            <option value='>='>&gt;= Greater than or equal</option>
-            <option value='<='>&lt;= Less than or equal</option>
+            <option value='>'>&gt; Mayor que</option>
+            <option value='<'>&lt; Menor que</option>
+            <option value='='>=  Igual a</option>
+            <option value='>='>&gt;= Mayor o igual que</option>
+            <option value='<='>&lt;= Menor o igual que</option>
           </select>
         </div>
 
         <div>
-          <label className='text-sm font-medium'>Threshold</label>
+          <label className='text-sm font-medium'>Umbral</label>
           <input
             type='number'
             className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
@@ -501,7 +501,7 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
       </div>
 
       <div>
-        <label className='text-sm font-medium'>Duration (minutes, optional)</label>
+        <label className='text-sm font-medium'>Duración (minutos, opcional)</label>
         <input
           type='number'
           className='w-full mt-1 px-3 py-2 border rounded-md text-sm'
@@ -515,12 +515,12 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
               },
             })
           }
-          placeholder='Alert if threshold exceeded for X minutes'
+          placeholder='Alertar si se supera el umbral por X minutos'
         />
       </div>
 
       <div className='border-t pt-4'>
-        <p className='text-sm font-medium mb-3'>Notification Channels</p>
+        <p className='text-sm font-medium mb-3'>Canales de Notificación</p>
         <div className='space-y-2'>
           <label className='flex items-center gap-2 text-sm'>
             <input
@@ -533,7 +533,7 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
                 })
               }
             />
-            In-App Notification
+            Notificación en la App
           </label>
           <label className='flex items-center gap-2 text-sm'>
             <input
@@ -549,7 +549,7 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
                 })
               }
             />
-            Email Notification
+            Notificación por Email
           </label>
           <label className='flex items-center gap-2 text-sm'>
             <input
@@ -565,17 +565,17 @@ const AlertRuleForm: React.FC<AlertRuleFormProps> = ({
                 })
               }
             />
-            Slack Notification
+            Notificación por Slack
           </label>
         </div>
       </div>
 
       <div className='flex gap-2 justify-end pt-4 border-t'>
         <Button variant='outline' onClick={onCancel}>
-          Cancel
+          Cancelar
         </Button>
         <Button onClick={handleSave}>
-          {rule ? 'Update Rule' : 'Create Rule'}
+          {rule ? 'Actualizar Regla' : 'Crear Regla'}
         </Button>
       </div>
     </div>

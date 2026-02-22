@@ -98,7 +98,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
         setMetrics(data.data)
       } catch (err) {
         console.error('Error fetching metrics:', err)
-        setError('Failed to load team analytics')
+        setError('Error al cargar analítica de equipo')
       } finally {
         setLoading(false)
       }
@@ -113,7 +113,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
     return (
       <Card className='border-destructive'>
         <CardContent className='pt-6'>
-          <p className='text-sm text-destructive'>{error || 'No data available'}</p>
+          <p className='text-sm text-destructive'>{error || 'Sin datos disponibles'}</p>
         </CardContent>
       </Card>
     )
@@ -125,21 +125,21 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-3xl font-bold tracking-tight'>
-            Team Analytics
+            Analítica de Equipo
           </h2>
           <p className='text-muted-foreground'>
-            User activity, productivity, and collaboration metrics
+            Actividad de usuarios, productividad y métricas de colaboración
           </p>
         </div>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Select period' />
+            <SelectValue placeholder='Seleccionar período' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='7d'>Last 7 days</SelectItem>
-            <SelectItem value='30d'>Last 30 days</SelectItem>
-            <SelectItem value='90d'>Last 90 days</SelectItem>
-            <SelectItem value='1y'>Last year</SelectItem>
+            <SelectItem value='7d'>Últimos 7 días</SelectItem>
+            <SelectItem value='30d'>Últimos 30 días</SelectItem>
+            <SelectItem value='90d'>Últimos 90 días</SelectItem>
+            <SelectItem value='1y'>Último año</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -147,32 +147,32 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
       {/* Key Metrics */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
         <MetricCard
-          title='Active Users'
+          title='Usuarios Activos'
           value={metrics.activeUsers}
           icon={Users}
           color='primary'
-          subtitle='users with activity'
+          subtitle='usuarios con actividad'
         />
         <MetricCard
-          title='Peak Activity Hour'
+          title='Hora Pico de Actividad'
           value={`${metrics.peakActivityHour}:00`}
           icon={Clock}
           color='success'
-          subtitle='most productive'
+          subtitle='más productivo'
         />
         <MetricCard
-          title='Shared Documents'
+          title='Documentos Compartidos'
           value={metrics.collaborationMetrics.sharedDocumentsLast30Days}
           icon={Share2}
           color='warning'
-          subtitle='this period'
+          subtitle='este período'
         />
         <MetricCard
-          title='Total Comments'
+          title='Total Comentarios'
           value={metrics.collaborationMetrics.totalComments}
           icon={MessageSquare}
           color='info'
-          subtitle='team collaboration'
+          subtitle='colaboración del equipo'
         />
       </div>
 
@@ -181,7 +181,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
         {/* Activity Trend */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Team Activity Trend</CardTitle>
+            <CardTitle className='text-lg'>Tendencia de Actividad del Equipo</CardTitle>
           </CardHeader>
           <CardContent>
             {metrics.activityTrendLast7Days.length > 0 ? (
@@ -205,7 +205,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
                       borderRadius: '8px',
                       color: '#fff',
                     }}
-                    formatter={(value) => `${value} active users`}
+                    formatter={(value) => `${value} usuarios activos`}
                   />
                   <Area
                     type='monotone'
@@ -213,12 +213,12 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
                     stroke='#3b82f6'
                     fill='#3b82f6'
                     fillOpacity={0.2}
-                    name='Active Users'
+                    name='Usuarios Activos'
                   />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <p className='text-sm text-muted-foreground'>No data available</p>
+              <p className='text-sm text-muted-foreground'>Sin datos disponibles</p>
             )}
           </CardContent>
         </Card>
@@ -226,7 +226,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
         {/* Top Performers */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Top Performers</CardTitle>
+            <CardTitle className='text-lg'>Mejores Colaboradores</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='space-y-4'>
@@ -262,7 +262,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
                   </div>
                 ))
               ) : (
-                <p className='text-sm text-muted-foreground'>No user data available</p>
+                <p className='text-sm text-muted-foreground'>Sin datos de usuarios disponibles</p>
               )}
             </div>
           </CardContent>
@@ -274,7 +274,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
         {/* Department Performance */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Department Comparison</CardTitle>
+            <CardTitle className='text-lg'>Comparación por Departamento</CardTitle>
           </CardHeader>
           <CardContent>
             {metrics.departmentBreakdown.length > 0 ? (
@@ -285,18 +285,18 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey='userCount' fill='#3b82f6' name='Users' />
+                  <Bar dataKey='userCount' fill='#3b82f6' name='Usuarios' />
                   <Bar
                     dataKey='activityScore'
                     fill='#10b981'
-                    name='Activity Score'
+                    name='Puntaje de Actividad'
                   />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
               <div className='flex h-64 items-center justify-center'>
                 <p className='text-sm text-muted-foreground'>
-                  Department data not yet available
+                  Datos de departamento aún no disponibles
                 </p>
               </div>
             )}
@@ -306,7 +306,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
         {/* Collaboration Metrics */}
         <Card>
           <CardHeader>
-            <CardTitle className='text-lg'>Collaboration Overview</CardTitle>
+            <CardTitle className='text-lg'>Resumen de Colaboración</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='space-y-4'>
@@ -318,7 +318,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
                   <span className='text-lg text-muted-foreground'>/100</span>
                 </div>
                 <p className='mt-1 text-sm text-muted-foreground'>
-                  Team collaboration score
+                  Puntaje de colaboración del equipo
                 </p>
               </div>
 
@@ -327,7 +327,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
                   <div className='flex items-center gap-2'>
                     <Share2 className='h-4 w-4 text-blue-500' />
                     <span className='text-sm text-muted-foreground'>
-                      Shared Documents
+                      Documentos Compartidos
                     </span>
                   </div>
                   <span className='font-bold'>
@@ -339,7 +339,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
                   <div className='flex items-center gap-2'>
                     <MessageSquare className='h-4 w-4 text-green-500' />
                     <span className='text-sm text-muted-foreground'>
-                      Total Comments
+                      Total Comentarios
                     </span>
                   </div>
                   <span className='font-bold'>
@@ -351,7 +351,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
                   <div className='flex items-center gap-2'>
                     <Clock className='h-4 w-4 text-amber-500' />
                     <span className='text-sm text-muted-foreground'>
-                      Avg Session Duration
+                      Duración Promedio de Sesión
                     </span>
                   </div>
                   <span className='font-bold'>{metrics.averageSessionDuration} min</span>
@@ -367,7 +367,7 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <TrendingUp className='h-5 w-5 text-green-500' />
-            Productivity Insights
+            Perspectivas de Productividad
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -375,11 +375,11 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
             <div className='flex items-start gap-3'>
               <span className='text-green-500'>✓</span>
               <div>
-                <p className='text-sm font-medium'>Peak Productivity Hours</p>
+                <p className='text-sm font-medium'>Horas Pico de Productividad</p>
                 <p className='text-xs text-muted-foreground'>
-                  Team is most active during {metrics.peakActivityHour}:00-
-                  {metrics.peakActivityHour + 1}:00. Consider scheduling important
-                  meetings during this window.
+                  El equipo es más activo entre las {metrics.peakActivityHour}:00-
+                  {metrics.peakActivityHour + 1}:00. Considere agendar reuniones
+                  importantes en esta franja horaria.
                 </p>
               </div>
             </div>
@@ -387,10 +387,10 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
             <div className='flex items-start gap-3'>
               <span className='text-blue-500'>✓</span>
               <div>
-                <p className='text-sm font-medium'>Session Duration</p>
+                <p className='text-sm font-medium'>Duración de Sesión</p>
                 <p className='text-xs text-muted-foreground'>
-                  Average session length is {metrics.averageSessionDuration} minutes,
-                  indicating good engagement and focus time.
+                  La duración promedio de sesión es de {metrics.averageSessionDuration} minutos,
+                  lo que indica buen compromiso y tiempo de concentración.
                 </p>
               </div>
             </div>
@@ -398,10 +398,10 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
             <div className='flex items-start gap-3'>
               <span className='text-purple-500'>✓</span>
               <div>
-                <p className='text-sm font-medium'>Collaboration Score</p>
+                <p className='text-sm font-medium'>Puntaje de Colaboración</p>
                 <p className='text-xs text-muted-foreground'>
-                  Team collaboration score of {metrics.collaborationMetrics.averageCollaborationScore}/100 with{' '}
-                  {metrics.collaborationMetrics.sharedDocumentsLast30Days} shared documents shows strong teamwork.
+                  Puntaje de colaboración del equipo de {metrics.collaborationMetrics.averageCollaborationScore}/100 con{' '}
+                  {metrics.collaborationMetrics.sharedDocumentsLast30Days} documentos compartidos demuestra buen trabajo en equipo.
                 </p>
               </div>
             </div>
@@ -409,11 +409,11 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
             <div className='flex items-start gap-3'>
               <span className='text-amber-500'>✓</span>
               <div>
-                <p className='text-sm font-medium'>Top Performer Recognition</p>
+                <p className='text-sm font-medium'>Reconocimiento al Mejor Colaborador</p>
                 <p className='text-xs text-muted-foreground'>
-                  {metrics.topPerformers[0]?.userName || 'User'} leads the team with{' '}
-                  {metrics.topPerformers[0]?.actionCount} actions. Consider recognizing
-                  high performers.
+                  {metrics.topPerformers[0]?.userName || 'Usuario'} lidera el equipo con{' '}
+                  {metrics.topPerformers[0]?.actionCount} acciones. Considere reconocer
+                  a los mejores colaboradores.
                 </p>
               </div>
             </div>
@@ -424,12 +424,12 @@ export const TeamAnalyticsDashboard: React.FC<TeamAnalyticsDashboardProps> = ({
       {/* Export Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Export Analytics</CardTitle>
+          <CardTitle>Exportar Analítica</CardTitle>
         </CardHeader>
         <CardContent className='flex gap-2'>
-          <Button variant='outline'>Export as PDF</Button>
-          <Button variant='outline'>Export as Excel</Button>
-          <Button variant='outline'>Export as CSV</Button>
+          <Button variant='outline'>Exportar PDF</Button>
+          <Button variant='outline'>Exportar Excel</Button>
+          <Button variant='outline'>Exportar CSV</Button>
         </CardContent>
       </Card>
     </div>

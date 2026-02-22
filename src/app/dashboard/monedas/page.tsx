@@ -5,25 +5,16 @@ import { api } from '../../../../convex/_generated/api'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Coins, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { TopNav } from '@/components/dashboard'
 import { ExchangeRateChart, CurrencyConverter, RatesTable } from '@/components/monedas'
 
 export default function MonedasPage() {
   const latestRates = useQuery(api.currency.getAllLatestRates)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Coins className="h-5 w-5 text-primary" />
-          </div>
-          Tipos de Cambio
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Monitorea y gestiona tipos de cambio para UF, USD y EUR
-        </p>
-      </div>
+    <>
+      <TopNav title="Tipos de Cambio" subtitle="Monitorea y gestiona tipos de cambio para UF, USD y EUR" />
+      <main className="p-4 md:p-6 lg:p-8 space-y-6">
 
       {/* Current rates summary */}
       {latestRates && Object.keys(latestRates).length > 0 && (
@@ -65,6 +56,7 @@ export default function MonedasPage() {
 
       {/* Historical table */}
       <RatesTable />
-    </div>
+      </main>
+    </>
   )
 }
