@@ -18,7 +18,7 @@ export function TopNav({ title, subtitle }: TopNavProps) {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/40 bg-background/80 backdrop-blur-xl px-4 md:px-8">
-      <div className="flex items-center gap-3 md:gap-4">
+      <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
         {/* Mobile hamburger */}
         <button
           onClick={toggleMobile}
@@ -28,39 +28,39 @@ export function TopNav({ title, subtitle }: TopNavProps) {
         </button>
 
         {/* Vertical accent line — desktop only */}
-        <div className="hidden sm:block h-10 w-0.5 bg-gradient-to-b from-primary to-secondary rounded-full" />
+        <div className="hidden sm:block h-10 w-0.5 shrink-0 bg-gradient-to-b from-primary to-secondary rounded-full" />
 
-        <div>
-          <h1 className="text-base md:text-lg font-semibold tracking-tight text-foreground">
+        <div className="min-w-0">
+          <h1 className="text-base md:text-lg font-semibold tracking-tight text-foreground truncate">
             {title}
           </h1>
           {subtitle && (
-            <div className="hidden sm:flex items-center gap-2 mt-0.5">
-              <Calendar className="h-3 w-3 text-muted-foreground/60" />
-              <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <div className="hidden sm:flex items-center gap-2 mt-0.5 min-w-0">
+              <Calendar className="h-3 w-3 shrink-0 text-muted-foreground/60" />
+              <p className="text-xs text-muted-foreground truncate">{subtitle}</p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-3">
-        {/* Search — desktop only */}
-        <div className="relative hidden md:block">
+      <div className="flex items-center gap-2 md:gap-3 shrink-0">
+        {/* Search — large screens only */}
+        <div className="relative hidden lg:block">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
           <Input
             type="search"
-            placeholder="Buscar clientes, documentos..."
-            className="w-72 pl-10 h-9 bg-muted/30 border-transparent focus:border-primary/30 focus:bg-background"
+            placeholder="Buscar..."
+            className="w-48 xl:w-64 pl-10 h-9 bg-muted/30 border-transparent focus:border-primary/30 focus:bg-background"
           />
         </div>
 
-        {/* Client selector — desktop only */}
-        <div className="hidden md:block">
+        {/* Client selector — large screens only */}
+        <div className="hidden lg:block">
           <ClientSelector />
         </div>
 
-        {/* Divider — desktop only */}
-        <div className="hidden md:block h-6 w-px bg-border/60" />
+        {/* Divider — large screens only */}
+        <div className="hidden lg:block h-6 w-px bg-border/60" />
 
         {/* Notifications */}
         <NotificationsDropdown />

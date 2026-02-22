@@ -15,6 +15,7 @@ import {
   BarChart3,
 } from 'lucide-react'
 import { PipelineRunCard } from '@/components/pipeline'
+import { TopNav } from '@/components/dashboard'
 
 export default function PipelinePage() {
   const activeRuns = useQuery(api.pipeline.getActivePipelineRuns)
@@ -33,21 +34,9 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Workflow className="h-5 w-5 text-primary" />
-            </div>
-            Pipeline Automatizado
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Orquesta el flujo completo: importar, normalizar, categorizar, conciliar, validar
-          </p>
-        </div>
-      </div>
+    <>
+      <TopNav title="Pipeline Automatizado" subtitle="Orquesta el flujo completo: importar, normalizar, categorizar, conciliar, validar" />
+      <main className="p-4 md:p-6 lg:p-8 space-y-6">
 
       {/* Global Stats */}
       {stats && (
@@ -161,6 +150,7 @@ export default function PipelinePage() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </main>
+    </>
   )
 }

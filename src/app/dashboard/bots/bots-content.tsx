@@ -73,7 +73,7 @@ export function BotsContent({ bots, stats, jobsRecientes, clientes }: BotsConten
       <div className="flex items-center gap-3">
         <div className="h-1 w-8 bg-gradient-to-r from-primary to-secondary rounded-full" />
         <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Automatizacion RPA
+          Automatización RPA
         </span>
       </div>
 

@@ -66,7 +66,7 @@ const tabs: { id: TabType; icon: typeof User; label: string }[] = [
   { id: 'facturacion', icon: CreditCard, label: 'Facturación' },
   { id: 'notificaciones', icon: Bell, label: 'Notificaciones' },
   { id: 'seguridad', icon: Shield, label: 'Seguridad' },
-  { id: 'api', icon: Key, label: 'API Keys' },
+  { id: 'api', icon: Key, label: 'Claves API' },
   { id: 'integraciones', icon: Database, label: 'Integraciones' },
   { id: 'demo', icon: FlaskConical, label: 'Datos Demo' },
 ]

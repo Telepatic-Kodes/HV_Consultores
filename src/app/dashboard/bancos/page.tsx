@@ -22,6 +22,7 @@ import {
   BarChart3,
   Settings,
   Filter,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -35,6 +36,7 @@ import {
 } from './actions'
 import type { BankModuleStats, BankAccount, BankTransaction, TransactionCategory } from '@/lib/bank-rpa'
 import { BANKS } from '@/lib/bank-rpa'
+import { TopNav } from '@/components/dashboard'
 
 // ============================================================================
 // COMPONENTES DE ESTADÍSTICAS
@@ -361,32 +363,29 @@ export default function BancosPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <>
+        <TopNav title="Cartolas Bancarias" subtitle="Gestiona y parametriza tus cartolas bancarias" />
+        <div className="flex items-center justify-center py-24">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Cartolas Bancarias</h1>
-          <p className="text-muted-foreground">
-            Gestiona y parametriza tus cartolas bancarias
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={loadData}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Actualizar
-          </Button>
-          <Button>
-            <Upload className="h-4 w-4 mr-2" />
-            Subir Cartola
-          </Button>
-        </div>
+    <>
+      <TopNav title="Cartolas Bancarias" subtitle="Gestiona y parametriza tus cartolas bancarias" />
+      <main className="p-4 md:p-6 lg:p-8 space-y-6">
+      {/* Action buttons */}
+      <div className="flex items-center justify-end gap-2">
+        <Button variant="outline" onClick={loadData}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Actualizar
+        </Button>
+        <Button>
+          <Upload className="h-4 w-4 mr-2" />
+          Subir Cartola
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -508,6 +507,7 @@ export default function BancosPage() {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+      </main>
+    </>
   )
 }

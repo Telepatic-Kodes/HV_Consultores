@@ -16,6 +16,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { RulesList, RuleEditor } from '@/components/parametrizacion'
+import { TopNav } from '@/components/dashboard'
 
 export default function ParametrizacionPage() {
   const [ruleEditorOpen, setRuleEditorOpen] = useState(false)
@@ -35,22 +36,10 @@ export default function ParametrizacionPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Settings2 className="h-5 w-5 text-primary" />
-            </div>
-            Parametrización
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Gestiona plantillas de plan de cuentas y reglas de categorización
-          </p>
-        </div>
-      </div>
+    <>
+      <TopNav title="Parametrización" subtitle="Gestiona plantillas de plan de cuentas y reglas de categorización" />
 
+      <main className="p-4 md:p-6 lg:p-8 space-y-6">
       <Tabs defaultValue="plantillas" className="space-y-4">
         <TabsList>
           <TabsTrigger value="plantillas" className="flex items-center gap-1.5">
@@ -203,6 +192,7 @@ export default function ParametrizacionPage() {
           setEditingRule(null)
         }}
       />
-    </div>
+      </main>
+    </>
   )
 }

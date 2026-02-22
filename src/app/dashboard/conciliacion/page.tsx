@@ -18,6 +18,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { TopNav } from '@/components/dashboard'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
@@ -26,21 +27,9 @@ export default function ConciliacionPage() {
   const clientStats = useQuery(api.matching.getClientsWithMatchingStats)
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <ArrowLeftRight className="h-5 w-5 text-primary" />
-            </div>
-            Conciliación Bancaria
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Concilia automáticamente transacciones bancarias con documentos SII
-          </p>
-        </div>
-      </div>
+    <>
+      <TopNav title="Conciliación Bancaria" subtitle="Concilia automáticamente transacciones bancarias con documentos SII" />
+      <main className="p-4 md:p-6 lg:p-8 space-y-6">
 
       {/* Global Stats */}
       {clientStats && clientStats.length > 0 && (
@@ -147,7 +136,7 @@ export default function ConciliacionPage() {
                           <p className="font-semibold">{item.totalTransacciones}</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-green-600">Matched</p>
+                          <p className="text-green-600">Conciliado</p>
                           <p className="font-semibold text-green-600">{item.matched}</p>
                         </div>
                         <div className="text-center">
@@ -165,6 +154,7 @@ export default function ConciliacionPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </main>
+    </>
   )
 }

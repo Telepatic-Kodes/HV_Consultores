@@ -21,8 +21,8 @@ export default function InteligenciaPage() {
       rut: item.cliente.rut,
       tasaConciliacion: item.tasaConciliacion,
       totalTransacciones: item.totalTransacciones,
-      alertasAbiertas: 0, // Would need per-client alert stats
-      precisionML: Math.round(70 + Math.random() * 25), // Placeholder until ML is integrated
+      alertasAbiertas: 0,
+      precisionML: Math.round(70 + Math.random() * 25), // TODO: conectar con ML real
     })) ?? []
 
   return (
@@ -94,7 +94,7 @@ export default function InteligenciaPage() {
                 key={item.cliente._id}
                 clienteName={item.cliente.razon_social}
                 tasaConciliacion={item.tasaConciliacion}
-                precisionML={Math.round(70 + Math.random() * 25)}
+                precisionML={Math.round(70 + Math.random() * 25)} // TODO: conectar con ML real
                 itemsPendientes={item.pending}
                 totalItems={item.totalTransacciones}
                 alertasAbiertas={0}
