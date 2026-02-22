@@ -150,6 +150,15 @@ export async function reintentarSIIJob(
 
 // --- Backward-compatible exports for page components ---
 
+export async function getBotDefiniciones(): Promise<any[]> {
+  try {
+    if (!convex) throw new Error('Convex client not initialized')
+    return await convex.query(api.bots.listBotDefiniciones, {})
+  } catch {
+    return []
+  }
+}
+
 export async function getSiiStats(): Promise<SIIJobStats> {
   return getSIIJobStats()
 }

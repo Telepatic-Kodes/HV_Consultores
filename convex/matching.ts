@@ -322,7 +322,6 @@ export const getClientsWithMatchingStats = query({
         .collect();
 
       const total = transactions.length;
-      if (total === 0) continue;
 
       const matched = transactions.filter(
         (t) => t.estado_conciliacion === "matched"
@@ -337,7 +336,7 @@ export const getClientsWithMatchingStats = query({
         totalTransacciones: total,
         matched,
         pending,
-        tasaConciliacion: Math.round((matched / total) * 100),
+        tasaConciliacion: total > 0 ? Math.round((matched / total) * 100) : 0,
       });
     }
 

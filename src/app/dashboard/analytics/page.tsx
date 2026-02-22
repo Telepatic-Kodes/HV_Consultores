@@ -65,19 +65,19 @@ export default function AnalyticsDashboardPage({
       <div className='flex flex-col gap-2'>
         <h1 className='text-3xl font-bold tracking-tight'>Analytics</h1>
         <p className='text-muted-foreground'>
-          Real-time insights into your document management system performance
+          Métricas en tiempo real del sistema de gestión documental
         </p>
       </div>
 
       <Tabs value={activeTab} defaultValue='documents' className='space-y-6'>
         <TabsList className='grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-7'>
-          <TabsTrigger value='documents'>Documents</TabsTrigger>
-          <TabsTrigger value='automation'>Automation</TabsTrigger>
-          <TabsTrigger value='team'>Team</TabsTrigger>
-          <TabsTrigger value='queue'>Queue</TabsTrigger>
-          <TabsTrigger value='compliance'>Compliance</TabsTrigger>
-          <TabsTrigger value='alerts'>Alerts</TabsTrigger>
-          <TabsTrigger value='reports'>Reports</TabsTrigger>
+          <TabsTrigger value='documents'>Documentos</TabsTrigger>
+          <TabsTrigger value='automation'>Automatización</TabsTrigger>
+          <TabsTrigger value='team'>Equipo</TabsTrigger>
+          <TabsTrigger value='queue'>Cola</TabsTrigger>
+          <TabsTrigger value='compliance'>Cumplimiento</TabsTrigger>
+          <TabsTrigger value='alerts'>Alertas</TabsTrigger>
+          <TabsTrigger value='reports'>Reportes</TabsTrigger>
         </TabsList>
 
         <TabsContent value='documents'>
