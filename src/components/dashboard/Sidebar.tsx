@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import type { LucideIcon } from 'lucide-react'
 import {
   LayoutDashboard,
   Users,
@@ -15,7 +16,6 @@ import {
   ChevronLeft,
   Building2,
   Upload,
-  Zap,
   Landmark,
   CreditCard,
   ArrowLeftRight,
@@ -23,33 +23,65 @@ import {
   Coins,
   Workflow,
   AlertTriangle,
-  Sparkles,
   X,
   TrendingUp,
   ClipboardList,
 } from 'lucide-react'
 import { useSidebar } from './SidebarContext'
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Clientes', href: '/dashboard/clientes', icon: Users },
-  { name: 'Documentos', href: '/dashboard/documentos', icon: Upload },
-  { name: 'Clasificador', href: '/dashboard/clasificador', icon: Brain },
-  { name: 'F29', href: '/dashboard/f29', icon: FileSpreadsheet },
-  { name: 'Bots', href: '/dashboard/bots', icon: Bot },
-  { name: 'SII RPA', href: '/dashboard/sii', icon: Landmark },
-  { name: 'Bancos', href: '/dashboard/bancos', icon: CreditCard },
-  { name: 'Conciliación', href: '/dashboard/conciliacion', icon: ArrowLeftRight },
-  { name: 'Parametrización', href: '/dashboard/parametrizacion', icon: Settings2 },
-  { name: 'Monedas', href: '/dashboard/monedas', icon: Coins },
-  { name: 'Pipeline', href: '/dashboard/pipeline', icon: Workflow },
-  { name: 'Procesos', href: '/dashboard/procesos', icon: ClipboardList },
-  { name: 'Inteligencia', href: '/dashboard/inteligencia', icon: Sparkles },
-  { name: 'Alertas', href: '/dashboard/alertas', icon: AlertTriangle },
-  { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare },
-  { name: 'Analítica', href: '/dashboard/analytics', icon: TrendingUp },
-  { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart3 },
-  { name: 'Automatización', href: '/dashboard/documentos/automation', icon: Zap },
+interface NavGroup {
+  label: string
+  items: { name: string; href: string; icon: LucideIcon }[]
+}
+
+const navigation: NavGroup[] = [
+  {
+    label: 'General',
+    items: [
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'Clientes', href: '/dashboard/clientes', icon: Users },
+    ],
+  },
+  {
+    label: 'Documentos',
+    items: [
+      { name: 'Documentos', href: '/dashboard/documentos', icon: Upload },
+      { name: 'Clasificador IA', href: '/dashboard/clasificador', icon: Brain },
+    ],
+  },
+  {
+    label: 'Tributario',
+    items: [
+      { name: 'F29', href: '/dashboard/f29', icon: FileSpreadsheet },
+      { name: 'Procesos', href: '/dashboard/procesos', icon: ClipboardList },
+      { name: 'Pipeline', href: '/dashboard/pipeline', icon: Workflow },
+    ],
+  },
+  {
+    label: 'Automatización',
+    items: [
+      { name: 'Bots RPA', href: '/dashboard/bots', icon: Bot },
+      { name: 'SII RPA', href: '/dashboard/sii', icon: Landmark },
+    ],
+  },
+  {
+    label: 'Bancos',
+    items: [
+      { name: 'Cartolas', href: '/dashboard/bancos', icon: CreditCard },
+      { name: 'Conciliación', href: '/dashboard/conciliacion', icon: ArrowLeftRight },
+      { name: 'Parametrización', href: '/dashboard/parametrizacion', icon: Settings2 },
+      { name: 'Monedas', href: '/dashboard/monedas', icon: Coins },
+    ],
+  },
+  {
+    label: 'Inteligencia',
+    items: [
+      { name: 'Chat IA', href: '/dashboard/chat', icon: MessageSquare },
+      { name: 'Alertas', href: '/dashboard/alertas', icon: AlertTriangle },
+      { name: 'Analítica', href: '/dashboard/analytics', icon: TrendingUp },
+      { name: 'Reportes', href: '/dashboard/reportes', icon: BarChart3 },
+    ],
+  },
 ]
 
 const bottomNavigation = [
@@ -97,57 +129,55 @@ function SidebarContent() {
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-6">
-        <div className={cn(
-          'mb-4',
-          collapsed ? 'px-0' : 'px-2'
-        )}>
-          {!collapsed && (
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-              Menu Principal
-            </span>
-          )}
-        </div>
-
-        <div className="space-y-1">
-          {navigation.map((item, index) => {
-            const isActive = pathname === item.href
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={handleNavClick}
-                className={cn(
-                  'group flex items-center rounded-lg transition-all duration-200',
-                  collapsed ? 'justify-center p-3' : 'gap-3 px-3 py-2.5',
-                  isActive
-                    ? 'bg-white/10 text-white'
-                    : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
-                )}
-                style={{
-                  animationDelay: `${index * 50}ms`
-                }}
-              >
-                <div className={cn(
-                  'flex items-center justify-center transition-transform duration-200',
-                  isActive && 'scale-110',
-                  !isActive && 'group-hover:scale-105'
-                )}>
-                  <item.icon className={cn(
-                    'h-5 w-5 shrink-0',
-                    isActive && 'text-secondary'
-                  )} />
-                </div>
-                {!collapsed && (
-                  <span className="text-sm font-medium">{item.name}</span>
-                )}
-                {isActive && !collapsed && (
-                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-secondary" />
-                )}
-              </Link>
-            )
-          })}
-        </div>
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        {navigation.map((group, groupIndex) => (
+          <div key={group.label} className={cn(groupIndex > 0 && 'mt-4')}>
+            {!collapsed && (
+              <span className="block px-2 mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+                {group.label}
+              </span>
+            )}
+            {collapsed && groupIndex > 0 && (
+              <div className="mx-auto mb-2 w-4 border-t border-white/10" />
+            )}
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const isActive = pathname === item.href
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={handleNavClick}
+                    className={cn(
+                      'group flex items-center rounded-lg transition-all duration-200',
+                      collapsed ? 'justify-center p-3' : 'gap-3 px-3 py-2',
+                      isActive
+                        ? 'bg-white/10 text-white'
+                        : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
+                    )}
+                  >
+                    <div className={cn(
+                      'flex items-center justify-center transition-transform duration-200',
+                      isActive && 'scale-110',
+                      !isActive && 'group-hover:scale-105'
+                    )}>
+                      <item.icon className={cn(
+                        'h-[18px] w-[18px] shrink-0',
+                        isActive && 'text-secondary'
+                      )} />
+                    </div>
+                    {!collapsed && (
+                      <span className="text-[13px] font-medium">{item.name}</span>
+                    )}
+                    {isActive && !collapsed && (
+                      <div className="ml-auto h-1.5 w-1.5 rounded-full bg-secondary" />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* Bottom Section */}
