@@ -37,8 +37,14 @@ function getStoredClientId(): string | null {
 }
 
 export function ClientProvider({ children }: { children: React.ReactNode }) {
-  const [activeClientId, setActiveClientIdState] = useState<string | null>(getStoredClientId)
+  const [activeClientId, setActiveClientIdState] = useState<string | null>(null)
   const available = useConvexAvailable()
+
+  // Hydrate from localStorage after mount to avoid SSR mismatch
+  useEffect(() => {
+    const stored = getStoredClientId()
+    if (stored) setActiveClientIdState(stored)
+  }, [])
 
   const clientsRaw = useQuery(
     api.clients.listClients,
